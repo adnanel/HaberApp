@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="utf-8"?>
+<PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android">
+
+
+    <PreferenceCategory android:title="" android:order="1">
+
+    </PreferenceCategory>
+
+    <PreferenceCategory android:title="Postavke" android:order="2">
+
+        <Preference android:title="Očisti keš" android:key="clearCache"/>
+        <Preference android:title="O aplikaciji" android:key="about"/>
+        <Preference android:title="Verzija" android:summary="0.3b" android:key="version"/>
+    </PreferenceCategory>
+</PreferenceScreen>

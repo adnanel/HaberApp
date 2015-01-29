@@ -1,0 +1,129 @@
+<android.support.v4.widget.DrawerLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/drawer_layout"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent">
+    <!-- The main content view -->
+
+    <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+        xmlns:tools="http://schemas.android.com/tools" android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        tools:context="adnan.haber.HaberActivity">
+
+        <RelativeLayout
+            android:layout_width="fill_parent"
+            android:layout_height="65dp"
+            android:layout_alignParentTop="true"
+            android:layout_alignParentLeft="true"
+            android:layout_alignParentStart="true"
+            android:id="@+id/linearLayout">
+
+            <HorizontalScrollView
+                android:layout_width="fill_parent"
+                android:layout_height="fill_parent"
+                android:id="@+id/scrollView"
+                android:fillViewport="false" >
+
+                <LinearLayout
+                    android:orientation="horizontal"
+                    android:layout_width="fill_parent"
+                    android:layout_height="fill_parent"
+                    android:id="@+id/tabCarry"></LinearLayout>
+            </HorizontalScrollView>
+        </RelativeLayout>
+
+        <RelativeLayout
+            android:layout_width="fill_parent"
+            android:layout_height="fill_parent"
+            android:layout_below="@+id/linearLayout"
+            android:layout_alignParentLeft="true"
+            android:layout_alignParentStart="true">
+
+            <ListView
+                android:layout_width="match_parent"
+                android:layout_height="fill_parent"
+                android:id="@+id/chatListView"
+                android:layout_alignParentTop="true"
+                android:layout_alignParentLeft="true"
+                android:layout_alignParentStart="true"
+                android:smoothScrollbar="true"
+                android:stackFromBottom="true"
+                android:layout_above="@+id/relativeLayout"
+                android:divider="#ffb7b9b9"
+                android:dividerHeight="1px" />
+
+            <RelativeLayout
+                android:layout_width="fill_parent"
+                android:layout_height="50dp"
+                android:layout_alignParentBottom="true"
+                android:layout_alignParentLeft="true"
+                android:layout_alignParentStart="true"
+                android:layout_alignParentRight="true"
+                android:layout_alignParentEnd="true"
+                android:id="@+id/relativeLayout"
+                android:padding="3dp">
+
+                <ImageButton
+                    style="?android:attr/buttonStyleSmall"
+                    android:layout_width="50dp"
+                    android:layout_height="wrap_content"
+                    android:text=":)"
+                    android:id="@+id/btSmile"
+                    android:layout_alignParentBottom="true"
+                    android:src="@drawable/btsmileys"
+                    android:scaleType="fitCenter"
+                    android:layout_alignParentTop="true"
+                    android:background="#00ffffff"
+                    android:padding="2dp" />
+
+                <EditText
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:id="@+id/editText"
+                    android:layout_alignParentBottom="true"
+                    android:layout_toLeftOf="@+id/btSend"
+                    android:layout_toRightOf="@+id/btSmile"
+                    android:layout_toEndOf="@+id/btSmile" />
+
+                <ImageButton
+                    style="?android:attr/buttonStyleSmall"
+                    android:layout_width="50dp"
+                    android:layout_height="wrap_content"
+                    android:text="Pošalji"
+                    android:id="@+id/btSend"
+                    android:layout_alignParentBottom="true"
+                    android:layout_alignParentRight="true"
+                    android:layout_alignParentEnd="true"
+                    android:layout_alignParentTop="true"
+                    android:src="@drawable/btsend"
+                    android:scaleType="fitCenter"
+                    android:background="#00ffffff"
+                    android:padding="2dp" />
+
+                <ImageView
+                    android:layout_width="fill_parent"
+                    android:layout_height="1px"
+                    android:id="@+id/imageView2"
+                    android:layout_alignParentTop="true"
+                    android:layout_alignParentLeft="true"
+                    android:layout_alignParentStart="true"
+                    android:background="#80cbc4" />
+
+
+            </RelativeLayout>
+
+        </RelativeLayout>
+
+
+    </RelativeLayout>
+
+
+    <include
+        android:layout_width="240dp"
+        android:layout_gravity="start"
+        android:layout_height="fill_parent"
+        layout="@layout/left_drawer" />
+
+</android.support.v4.widget.DrawerLayout>
+

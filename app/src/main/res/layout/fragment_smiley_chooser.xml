@@ -1,0 +1,176 @@
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools" android:layout_width="match_parent"
+    android:layout_height="match_parent" tools:context="adnan.haber.SmileyChooser">
+
+    <!-- TODO: Update blank fragment layout -->
+
+    <TableLayout
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content"
+        android:layout_alignParentTop="true"
+        android:layout_alignParentLeft="true"
+        android:layout_alignParentStart="true">
+
+        <TableRow
+            android:layout_width="fill_parent"
+            android:layout_height="fill_parent">
+
+            <ImageView
+                android:layout_width="65dp"
+                android:layout_height="65dp"
+                android:id="@+id/ambivalent"
+                android:src="@drawable/ambivalent"
+                android:scaleType="center"
+                android:layout_weight="1"
+                android:onClick="onSmileyClick" />
+
+            <ImageView
+                android:layout_width="65dp"
+                android:layout_height="65dp"
+                android:id="@+id/wink"
+                android:src="@drawable/wink"
+                android:onClick="onSmileyClick"
+                android:scaleType="center"
+                android:layout_column="1"
+                android:layout_weight="1" />
+
+            <ImageView
+                android:layout_width="65dp"
+                android:layout_height="65dp"
+                android:id="@+id/largegasp"
+                android:onClick="onSmileyClick"
+                android:src="@drawable/largegasp"
+                android:scaleType="center"
+                android:layout_column="2"
+                android:layout_weight="1" />
+
+            <ImageView
+                android:layout_width="65dp"
+                android:layout_height="65dp"
+                android:onClick="onSmileyClick"
+                android:id="@+id/ohnoes"
+                android:src="@drawable/ohnoes"
+                android:scaleType="center"
+                android:layout_column="3"
+                android:layout_weight="1" />
+
+            <ImageView
+                android:layout_width="65dp"
+                android:layout_height="65dp"
+                android:onClick="onSmileyClick"
+                android:id="@+id/naughty"
+                android:src="@drawable/naughty"
+                android:scaleType="center"
+                android:layout_column="4"
+                android:layout_weight="1" />
+        </TableRow>
+
+        <TableRow
+            android:layout_width="fill_parent"
+            android:layout_height="fill_parent">
+
+            <ImageView
+                android:layout_width="65dp"
+                android:layout_height="65dp"
+                android:id="@+id/halo"
+                android:src="@drawable/halo"
+                android:onClick="onSmileyClick"
+                android:scaleType="center"
+                android:layout_weight="1" />
+
+            <ImageView
+                android:layout_width="65dp"
+                android:layout_height="65dp"
+                android:id="@+id/laugh"
+                android:onClick="onSmileyClick"
+                android:src="@drawable/laugh"
+                android:scaleType="center"
+                android:layout_column="1"
+                android:layout_weight="1" />
+
+            <ImageView
+                android:layout_width="65dp"
+                android:layout_height="65dp"
+                android:onClick="onSmileyClick"
+                android:id="@+id/frown"
+                android:src="@drawable/frown"
+                android:scaleType="center"
+                android:layout_column="2"
+                android:layout_weight="1" />
+
+            <ImageView
+                android:layout_width="65dp"
+                android:layout_height="65dp"
+                android:id="@+id/grin"
+                android:onClick="onSmileyClick"
+                android:src="@drawable/grin"
+                android:scaleType="center"
+                android:layout_column="3"
+                android:layout_weight="1" />
+
+            <ImageView
+                android:layout_width="65dp"
+                android:layout_height="65dp"
+                android:onClick="onSmileyClick"
+                android:id="@+id/stickingouttongue"
+                android:src="@drawable/stickingouttongue"
+                android:scaleType="center"
+                android:layout_column="4"
+                android:layout_weight="1" />
+        </TableRow>
+
+        <TableRow
+            android:layout_width="fill_parent"
+            android:layout_height="fill_parent">
+
+            <ImageView
+                android:layout_width="65dp"
+                android:layout_height="65dp"
+                android:id="@+id/confused"
+                android:onClick="onSmileyClick"
+                android:src="@drawable/confused"
+                android:scaleType="center"
+                android:layout_weight="1" />
+
+            <ImageView
+                android:layout_width="65dp"
+                android:layout_height="65dp"
+                android:id="@+id/undecided"
+                android:src="@drawable/undecided"
+                android:scaleType="center"
+                android:layout_column="1"
+                android:onClick="onSmileyClick"
+                android:layout_weight="1" />
+
+            <ImageView
+                android:layout_width="65dp"
+                android:layout_height="65dp"
+                android:id="@+id/hot"
+                android:src="@drawable/hot"
+                android:scaleType="center"
+                android:onClick="onSmileyClick"
+                android:layout_column="2"
+                android:layout_weight="1" />
+
+            <ImageView
+                android:layout_width="65dp"
+                android:layout_height="65dp"
+                android:id="@+id/moneymouth"
+                android:src="@drawable/moneymouth"
+                android:scaleType="center"
+                android:onClick="onSmileyClick"
+                android:layout_column="3"
+                android:layout_weight="1" />
+
+            <ImageView
+                android:layout_width="65dp"
+                android:layout_height="65dp"
+                android:id="@+id/lipsaresealed"
+                android:src="@drawable/lipsaresealed"
+                android:scaleType="center"
+                android:onClick="onSmileyClick"
+                android:layout_column="4"
+                android:layout_weight="1" />
+        </TableRow>
+    </TableLayout>
+</RelativeLayout>

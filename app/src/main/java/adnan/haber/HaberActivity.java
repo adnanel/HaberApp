@@ -14,6 +14,7 @@ import android.text.Editable;
 import android.text.TextWatcher;
 import android.view.Gravity;
 import android.view.KeyEvent;
+import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewTreeObserver;
 import android.view.Window;
@@ -28,10 +29,15 @@ import org.jivesoftware.smack.packet.Message;
 import org.jivesoftware.smackx.muc.MultiUserChat;
 
 import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.TreeMap;
 
 import adnan.haber.adapters.ChatAdapter;
+import adnan.haber.fragments.AdvancedPreferences;
 import adnan.haber.fragments.SmileyChooser;
 import adnan.haber.types.ListChatItem;
 import adnan.haber.util.ChatSaver;
@@ -72,6 +78,47 @@ public class HaberActivity extends ActionBarActivity implements Haber.HaberListe
         }
     };
 
+
+    public void sortTabs() {
+        final TreeMap<Integer, ArrayList<View>> tabs = new TreeMap<Integer, ArrayList<View>>(new Comparator<Integer>() {
+            @Override
+            public int compare(Integer lhs, Integer rhs) {
+                return lhs < rhs ? 1 : lhs > rhs ? -1 : 0;
+            }
+        });
+
+        for (Object o : chatThreads.entrySet()) {
+            Map.Entry pairs = (Map.Entry) o;
+            ChatThread thread = (ChatThread)pairs.getValue();
+
+            if ( tabs.containsKey(thread.getUnreadMessagesCount()))
+                tabs.get(thread.getUnreadMessagesCount()).add(thread.tabView);
+            else {
+                ArrayList<View> views = new ArrayList<View>();
+                views.add(thread.tabView);
+                tabs.put(thread.getUnreadMessagesCount(), views);
+            }
+        }
+
+
+        final LinearLayout scrollView = (LinearLayout)findViewById(R.id.tabCarry);
+
+
+        runOnUiThread(new Runnable() {
+            @Override
+            public void run() {
+                scrollView.removeAllViews();
+                scrollView.addView(mainChatThread.tabView);
+
+                for (Object o : tabs.entrySet()) {
+                    Map.Entry pair = (Map.Entry) o;
+                    for ( View v : (ArrayList<View>)pair.getValue() ) {
+                        scrollView.addView(v);
+                    }
+                }
+            }
+        });
+    }
 
     public void openUrl(final String url) {
         runOnUiThread(new Runnable() {
@@ -327,22 +374,22 @@ public class HaberActivity extends ActionBarActivity implements Haber.HaberListe
         Debug.log(status);
     }
 
-    @Override
-    public void onChatStarted(Chat chat, boolean isLocal) {
-
-    }
 
     @Override
     public void onLoggedIn(MultiUserChat haberChat) {
 
     }
 
+
     @Override
     public void onMessageReceived(final Chat chat, final Message message) {
         runOnUiThread(new Runnable() {
             @Override
             public void run() {
-                ((Vibrator)getSystemService(Context.VIBRATOR_SERVICE)).vibrate(100);
+
+
+                if  ( AdvancedPreferences.ShouldVibrate(HaberActivity.this))
+                    ((Vibrator)getSystemService(Context.VIBRATOR_SERVICE)).vibrate(100);
 
                 if ( chat != null ) {
                     if ( chatThreads.containsKey(chat) ) {
@@ -391,6 +438,9 @@ public class HaberActivity extends ActionBarActivity implements Haber.HaberListe
                     public void run() {
                         chatListView.smoothScrollToPosition(chatListView.getCount() - 1);
                     }});
+
+
+                sortTabs();
             }
         });
 
@@ -486,20 +536,28 @@ public class HaberActivity extends ActionBarActivity implements Haber.HaberListe
                     } else {
                         //someone else got kicked
 
-                        message = params[0] + " kickuje, razlog: " + params[1];
+                        message = params[1] + " kickuje " + params[0] + ", razlog: " + params[2];
+                    }
+                } else if ( event == Haber.ChatEvent.Banned ) {
+                    if ( params.length == 2 ) {
+                        //the user got kicked.
+
+                        message = params[0] + " vas banuje, razlog: " + params[1];
                         for (Object o : chatThreads.entrySet()) {
                             Map.Entry pairs = (Map.Entry) o;
                             ((ChatThread)pairs.getValue()).chatAdapter.putDivider(message);
                         }
-                    }
-                } else if ( event == Haber.ChatEvent.Banned ) {
-                    if ( params.length == 2 ) {
-                        //the user got banned.
+
                     } else {
-                        //someone else got banned
+                        //someone else got kicked
+
+                        message = params[1] + " banuje " + params[0] + ", razlog: " + params[2];
+
                     }
                 }
                 mainChatThread.chatAdapter.putDivider(message);
+
+                scrollToBottom(true);
             }
         });
     }
@@ -572,6 +630,10 @@ public class HaberActivity extends ActionBarActivity implements Haber.HaberListe
 
         }
 
+        public int getUnreadMessagesCount() {
+            return Integer.parseInt(tvMsgCounter.getText().toString());
+        }
+
         public void markTab() {
             setState(State.Marked);
             runOnUiThread(new Runnable() {
@@ -632,6 +694,18 @@ public class HaberActivity extends ActionBarActivity implements Haber.HaberListe
                         }
                     });
 
+                    tabView.setOnTouchListener(new View.OnTouchListener() {
+
+                        @Override
+                        public boolean onTouch(View v, MotionEvent event) {
+                            // todo
+                            if ( event.getActionMasked() == MotionEvent.ACTION_DOWN ) {
+                                Debug.log("here");
+                            }
+
+                            return false;
+                        }
+                    });
                     btClose = tabView.findViewById(R.id.tvClose);
                     if ( participant.equals("haber") )
                         btClose.setVisibility(View.INVISIBLE);

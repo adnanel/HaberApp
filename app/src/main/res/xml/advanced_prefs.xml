@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="utf-8"?>
+<PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android">
+
+    <PreferenceCategory android:title="Pristupačnost">
+        <SwitchPreference android:title="Vibriraj kada dođe poruka" android:key="vibrate" android:defaultValue="true"/>
+    </PreferenceCategory>
+
+    <PreferenceCategory android:title="Misc.">
+        <SwitchPreference
+            android:title="Debug Mode"
+            android:key="debugMode"
+            android:summary="U većini slučajeva je bolje da ovo bude off."/>
+
+        <Preference android:title="Očisti keš" android:key="clearCache"/>
+        <Preference android:title="Report bug" android:key="reportBug"/>
+
+        <Preference android:title="Git" android:key="git" />
+        <Preference android:title="Verzija" android:key="version" android:summary="0.4"/>
+    </PreferenceCategory>
+</PreferenceScreen>

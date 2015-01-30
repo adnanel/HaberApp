@@ -13,39 +13,17 @@ public class Debug {
     public static boolean DebugBuild = true;
     public static String TAG = "Adnan";
 
-    static FileWriter outputStream;
+    public static synchronized void SetDebugMode(boolean isDebug) {
+        log("Logging disabled!");
 
-    static {
-        try {
-            //todo ako je release build, outputStream staviti na neki log file
-        } catch ( Exception er ) {
-            log(er);
-        }
-    }
+        DebugBuild = isDebug;
 
-    public static void Finalize() {
-        try {
-            if ( outputStream != null ) {
-                outputStream.flush();
-                outputStream.close();
-            }
-        } catch ( Exception er ) {
-            log(er);
-        }
+        log("Logging enabled!");
     }
 
     public static void log(String msg) {
         if ( DebugBuild ) {
-            if ( outputStream != null ) {
-                try {
-                    Log.i(TAG, msg);
-                    outputStream.write(msg);
-                } catch (Exception e) {
-                    outputStream = null;
-                    log(msg);
-                }
-            } else
-                Log.i(TAG, msg);
+            Log.i(TAG, msg);
         }
     }
 

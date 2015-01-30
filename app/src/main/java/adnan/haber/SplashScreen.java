@@ -1,14 +1,10 @@
 package adnan.haber;
 
-import android.app.AlertDialog;
-import android.content.DialogInterface;
 import android.content.Intent;
+import android.os.Bundle;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.app.ActivityOptionsCompat;
 import android.support.v7.app.ActionBarActivity;
-import android.os.Bundle;
-import android.view.Menu;
-import android.view.MenuItem;
 import android.view.View;
 import android.view.animation.AnimationUtils;
 import android.widget.TextView;
@@ -54,6 +50,11 @@ public class SplashScreen extends ActionBarActivity implements Haber.HaberListen
 
     }
 
+    @Override
+    public void onDestroy() {
+        super.onDestroy();
+        HaberService.removeHaberListener(this);
+    }
 
     @Override
     public void onSaveInstanceState(Bundle bundle) {
@@ -79,10 +80,6 @@ public class SplashScreen extends ActionBarActivity implements Haber.HaberListen
 
     }
 
-    @Override
-    public void onChatStarted(Chat chat, boolean isLocal) {
-
-    }
 
     @Override
     public void onLoggedIn(MultiUserChat haberChat) {

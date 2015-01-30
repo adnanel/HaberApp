@@ -210,24 +210,6 @@ public class HaberService extends Service implements Haber.HaberListener {
     }
 
     @Override
-    public void onChatStarted(Chat chat, boolean isLocal) {
-        ArrayList<Haber.HaberListener> corpses = new ArrayList<>();
-
-        for ( Haber.HaberListener listener : getHaberListeners() ) {
-            if ( listener == null )
-                corpses.add(null);
-            else
-                listener.onChatStarted(chat, isLocal);
-        }
-
-        for (Haber.HaberListener listener : corpses )
-            removeHaberListener(listener);
-
-        if ( !chatRooms.contains( chat ) && chat != null )
-            chatRooms.add(chat);
-    }
-
-    @Override
     public void onLoggedIn(MultiUserChat haberChat) {
         ArrayList<Haber.HaberListener> corpses = new ArrayList<>();
 
@@ -254,6 +236,7 @@ public class HaberService extends Service implements Haber.HaberListener {
             else if ( listener != this )
                 listener.onMessageReceived(chat, message);
         }
+
         for (Haber.HaberListener listener : corpses )
             removeHaberListener(listener);
 
@@ -280,6 +263,16 @@ public class HaberService extends Service implements Haber.HaberListener {
 
     @Override
     public void onChatEvent(Haber.ChatEvent event, String... params) {
+        ArrayList<Haber.HaberListener> corpses = new ArrayList<>();
+
+        for ( Haber.HaberListener listener : getHaberListeners() ) {
+            if ( listener == null )
+                corpses.add(null);
+            else
+                listener.onChatEvent(event, params);
+        }
+        for (Haber.HaberListener listener : corpses )
+            removeHaberListener(listener);
 
     }
 

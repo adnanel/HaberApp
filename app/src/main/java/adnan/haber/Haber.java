@@ -120,31 +120,32 @@ public class Haber {
     }
 
 
-    public void startChat(String user) {
+    public Chat startChat(String user) {
         if ( statusListener == null ) {
             Debug.log("This isnt supposed to happen. EVER!");
-            return;
+            return null;
         }
 
         Chat chat = HaberService.haberChat.createPrivateChat(user, new MessageListener() {
             @Override
             public void processMessage(Chat chat, Message message) {
-                // Commented out because double messages were received. The global messagelistener covers this one as well (apparently)
-                // statusListener.onMessageReceived(chat, message);
+
+                statusListener.onMessageReceived(chat, message);
             }
         });
 
         statusListener.onRoomJoined(chat);
+        return chat;
     }
 
 
-    public static void StartChat(String user) {
+    public static Chat StartChat(String user) {
         if ( instance == null ) {
             Debug.log("This isnt supposed to happen. EVER!");
-            return;
+            return null;
         }
 
-        instance.startChat(user);
+        return instance.startChat(user);
     }
 
     public static String getFullUsername(String user) {
@@ -353,11 +354,20 @@ public class Haber {
                 ChatManager.getInstanceFor(connection).addChatListener(new ChatManagerListener() {
                     @Override
                     public void chatCreated(Chat chat, boolean isLocal) {
-                        statusListener.onChatStarted(chat, isLocal);
+                        if ( isLocal ) return;
+
+                        statusListener.onRoomJoined(chat);
                         chat.addMessageListener(new MessageListener() {
                             @Override
-                            public void processMessage(Chat chat, Message message) {
-                                statusListener.onMessageReceived(chat, message);
+                            public void processMessage(Chat lchat, Message message) {
+                                if ( lchat.getParticipant().equals(message.getFrom()) )
+                                    statusListener.onMessageReceived(lchat, message);
+                                else {
+                                    /* A very strange bug, need to create a new private chat with message.getFrom() */
+                                    Debug.log("Applying workaround for bug lchat.participant != message.getFrom");
+                                    Chat chat = startChat(message.getFrom());
+                                    statusListener.onMessageReceived(chat, message);
+                                }
                             }
                         });
                     }
@@ -392,7 +402,6 @@ public class Haber {
 
     public interface HaberListener {
         public abstract void onStatusChanged(String status);
-        public abstract void onChatStarted(Chat chat, boolean isLocal);
         public abstract void onLoggedIn(MultiUserChat haberChat);
         public abstract void onMessageReceived(Chat chat, Message message);
         public abstract void onRoomJoined(Chat chat);

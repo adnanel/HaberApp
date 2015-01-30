@@ -6,6 +6,7 @@
     <string name="action_settings">Settings</string>
     <string name="title_activity_haber">HaberActivity</string>
     <string name="hello_blank_fragment">Hello blank fragment</string>
+
     <string-array name="about_text_scroll">
         <item> I cried - Ann, 4 </item>
         <item> Best thing I have ever laid eyes on - You probably </item>
@@ -22,13 +23,17 @@
     <color name="NickMarkColor">#ff9c3d65</color>
     <color name="TabMarkColor">#ff9c3d65</color>
 
-    <string name="aboutText"><Data><![CDATA[Neoficijelni haber klijent za android<br/><br/>
+    <string name="aboutText"><Data>
+<![CDATA[Neoficijelni haber klijent za android<br/><br/>
 <b>Design</b><br/>
 Berina Cocalić<br/><br/>
 <b>Suggestions and constant testing</b><br/>
 Enil Pajić<br/>
 Alma Hodžić<br/><br/>
 <b>Programming</b><br/>
-Adnan Elezović]]></Data></string>
+Adnan Elezović]]>
+</Data></string>
+    <string name="title_activity_advanced_preferences">AdvancedPreferences</string>
+    <string name="title_activity_advanced_prefs">AdvancedPrefsActivity</string>
 
 </resources>

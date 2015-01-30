@@ -21,7 +21,7 @@ import java.io.InputStreamReader;
 public class JSON {
     public static UpdateInfo getUpdateInfo() throws Exception {
         try {
-            JSONObject object = new JSONObject(downloadJSON("https://dl.dropboxusercontent.com/u/67764496/haber/version.json"));
+            JSONObject object = new JSONObject(downloadJSON("https://drive.google.com/uc?export=download&id=0B310dhQuX3QdLThfYXNUTThWUEk"));
 
             UpdateInfo info = new UpdateInfo();
             info.changeLog    = object.getString("changeLog");

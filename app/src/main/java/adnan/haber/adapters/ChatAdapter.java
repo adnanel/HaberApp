@@ -123,31 +123,6 @@ public class ChatAdapter extends ArrayAdapter<ListChatItem> {
             return;
         }
 
-
-        //experimental
-        // replace images with img tag
-
-
-        //https links
-        //msg.setBody(msg.getBody().replaceAll(
-        //        "https?://[^ ]+\\.(gif|jpg|png)",
-        //        "<img src=\"$0\" class=\"embedded-image\" />"));
-
-        if ( msg.getBody().contains("http") ) {
-            Debug.log("here");
-        }
-
-
-        //http links
-        //msg.setBody(msg.getBody().replaceAll(
-        //        "http?://[^ ]+\\.(gif|jpg|png)",
-        //        "<img src=\"$0\" class=\"embedded-image\" />"));
-
-
-
-        //end of experimental
-
-
         item.message = msg.getBody();
         item.id      = msg.getPacketID();
 
@@ -237,8 +212,6 @@ public class ChatAdapter extends ArrayAdapter<ListChatItem> {
             tvMessage.setText(strBuilder);
             tvMessage.setIncludeFontPadding(false);
 
-            //old way: (tvMessage = (TextView) rowView.findViewById(R.id.tvMessage)).setText(SmileyManager.getSmiledText(context, " " + items.get(position).message + " "));
-
             ((TextView) rowView.findViewById(R.id.tvTime)).setText(items.get(position).time);
 
             if ( items.get(position).author.equals(Haber.getShortUsername(Haber.getUsername()))) {
@@ -282,6 +255,9 @@ public class ChatAdapter extends ArrayAdapter<ListChatItem> {
                             @Override
                             public void onClick(View v) {
                                 commandBarListener.onReply(items.get(position).author);
+
+                                switcher.setBackgroundColor(0);
+                                switcher.removeView(view);
                             }
                         });
 
@@ -289,6 +265,9 @@ public class ChatAdapter extends ArrayAdapter<ListChatItem> {
                             @Override
                             public void onClick(View v) {
                                 commandBarListener.onPrivateMessage(items.get(position).author);
+
+                                switcher.setBackgroundColor(0);
+                                switcher.removeView(view);
                             }
                         });
 
@@ -296,6 +275,9 @@ public class ChatAdapter extends ArrayAdapter<ListChatItem> {
                             @Override
                             public void onClick(View v) {
                                 commandBarListener.onKick(items.get(position).author);
+
+                                switcher.setBackgroundColor(0);
+                                switcher.removeView(view);
                             }
                         });
                         view.findViewById(R.id.btKick).setVisibility(HaberService.CanKick() ? View.VISIBLE : View.GONE);

@@ -204,50 +204,7 @@ public class LeftDrawer extends PreferenceFragment {
 
     @Override
     public boolean onPreferenceTreeClick(PreferenceScreen screen, Preference preference) {
-        if ( preference.getKey().equals("about") ) {
-
-            final AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
-
-
-            getActivity().runOnUiThread(new Runnable() {
-                @Override
-                public void run() {
-                    ((HaberActivity)getActivity()).closeLeftDrawer();
-
-                    View view = getActivity().getLayoutInflater().inflate(R.layout.about, null);
-                    final AboutFragment frag = (AboutFragment)getActivity().getSupportFragmentManager().findFragmentById(R.id.aboutFragment);
-
-                    builder.setTitle("O aplikaciji");
-                    builder.setNeutralButton("Zatvori", new DialogInterface.OnClickListener() {
-                        @Override
-                        public void onClick(DialogInterface dialog, int which) {
-                            FragmentTransaction transaction = getActivity().getSupportFragmentManager().beginTransaction();
-                            transaction.remove(frag);
-                            transaction.commit();
-                        }
-                    });
-
-                    builder.setCancelable(false);
-                    builder.setView(view);
-                    builder.create().show();
-                }
-            });
-        } else if ( preference.getKey().equals("clearCache") ) {
-            AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
-            builder.setTitle("Potvrdi brisanje");
-            builder.setMessage("U kešu se nalazi:\n" + ChatSaver.getSavedLobbyMessagesCount() + " haber poruka\n" + ChatSaver.getSavedMessagesCount() + " privatnih poruka.");
-            builder.setPositiveButton("Obriši", new DialogInterface.OnClickListener() {
-                @Override
-                public void onClick(DialogInterface dialog, int which) {
-                    ChatSaver.ClearCache();
-                    Intent intent = new Intent(getActivity(), HaberActivity.class);
-                    getActivity().finish();
-                    startActivity(intent);
-                }
-            });
-            builder.setNegativeButton("Prekid", null);
-            builder.create().show();
-        } else if ( preference.getKey().equals("login") ) {
+        if ( preference.getKey().equals("login") ) {
             AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
             builder.setTitle("Login");
             final View view = getActivity().getLayoutInflater().inflate(R.layout.login, null);
@@ -298,6 +255,9 @@ public class LeftDrawer extends PreferenceFragment {
             Intent intent = new Intent(getActivity(), SplashScreen.class);
             getActivity().finish();
             startActivity(intent);
+        } else if ( preference.getKey().equals("advanced")) {
+            Intent intent = new Intent(getActivity(), AdvancedPrefsActivity.class);
+            getActivity().startActivity(intent);
         }
 
         return true;

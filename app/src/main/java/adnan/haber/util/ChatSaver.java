@@ -47,11 +47,6 @@ public class ChatSaver {
             }
 
             @Override
-            public void onChatStarted(Chat chat, boolean isLocal) {
-
-            }
-
-            @Override
             public void onLoggedIn(MultiUserChat haberChat) {
 
             }

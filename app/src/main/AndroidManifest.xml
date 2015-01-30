@@ -20,7 +20,7 @@
         <activity
             android:name=".SplashScreen"
             android:label="@string/app_name"
-            android:launchMode="singleInstance">
+            android:launchMode="singleInstance" >
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 
@@ -37,7 +37,13 @@
         <activity
             android:name=".HaberActivity"
             android:label="@string/title_activity_haber"
-            android:launchMode="singleInstance">
+            android:launchMode="singleInstance" >
+        </activity>
+
+        <activity
+            android:name=".AdvancedPrefsActivity"
+            android:label="@string/title_activity_advanced_prefs"
+            android:theme="@style/PreferencesTheme">
         </activity>
     </application>
 

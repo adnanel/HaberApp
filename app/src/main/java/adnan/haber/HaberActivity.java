@@ -412,16 +412,16 @@ public class HaberActivity extends ActionBarActivity implements Haber.HaberListe
                         }
 
                         thread.chatAdapter.addItem(message);
+                        chatThreads.put(chat, thread);
+
                         try {
                             Chat cchat = getCurrentChat();
                             if (cchat != chat)
-                                chatThreads.get(chat).markTab();
+                                thread.markTab();
 
                         } catch ( Exception er ) {
                             Debug.log(er);
                         }
-
-                        chatThreads.put(chat, thread);
                     }
                 }
                 else {

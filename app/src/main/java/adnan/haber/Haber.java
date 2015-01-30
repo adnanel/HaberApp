@@ -105,7 +105,7 @@ public class Haber {
         }
     }
 
-    private Haber(HaberListener listener, Context context) {
+    private Haber(HaberListener listener, Context context) throws Exception {
         this.context = context;
 
         statusListener = listener;
@@ -115,8 +115,8 @@ public class Haber {
             statusListener.onStatusChanged("Yay!");
         } else {
             statusListener.onStatusChanged("Failed!");
+            throw new Exception("Failed!");
         }
-
     }
 
 
@@ -129,8 +129,14 @@ public class Haber {
         Chat chat = HaberService.haberChat.createPrivateChat(user, new MessageListener() {
             @Override
             public void processMessage(Chat chat, Message message) {
-
-                statusListener.onMessageReceived(chat, message);
+                if ( chat.getParticipant().equals(message.getFrom()) )
+                    statusListener.onMessageReceived(chat, message);
+                else {
+                    /* A very strange bug, need to create a new private chat with message.getFrom() */
+                    Debug.log("Applying workaround for bug lchat.participant != message.getFrom");
+                    Chat nchat = startChat(message.getFrom());
+                    statusListener.onMessageReceived(nchat, message);
+                }
             }
         });
 
@@ -354,6 +360,8 @@ public class Haber {
                 ChatManager.getInstanceFor(connection).addChatListener(new ChatManagerListener() {
                     @Override
                     public void chatCreated(Chat chat, boolean isLocal) {
+                        Debug.log("chatCreated");
+
                         if ( isLocal ) return;
 
                         statusListener.onRoomJoined(chat);
@@ -391,12 +399,18 @@ public class Haber {
     }
 
 
-    public static void initialize( HaberListener statusListener, Context context ) {
+    public static boolean initialize( HaberListener statusListener, Context context ) {
         if ( instance != null ) {
             instance.Disconnect();
         }
 
-        instance = new Haber(statusListener, context);
+        try {
+            instance = new Haber(statusListener, context);
+        } catch ( Exception er ) {
+            return false;
+        }
+
+        return true;
     }
 
 

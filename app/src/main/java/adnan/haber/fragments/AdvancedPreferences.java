@@ -15,12 +15,14 @@ import android.os.Bundle;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
+import android.widget.Toast;
 
 import adnan.haber.HaberActivity;
 import adnan.haber.R;
 import adnan.haber.fragments.AboutFragment;
 import adnan.haber.util.ChatSaver;
 import adnan.haber.util.Debug;
+import adnan.haber.util.Updater;
 
 
 public class AdvancedPreferences extends PreferenceFragment {
@@ -50,8 +52,6 @@ public class AdvancedPreferences extends PreferenceFragment {
             getActivity().runOnUiThread(new Runnable() {
                 @Override
                 public void run() {
-                    ((HaberActivity)getActivity()).closeLeftDrawer();
-
                     View view = getActivity().getLayoutInflater().inflate(R.layout.about, null);
                     final AboutFragment frag = (AboutFragment)getActivity().getSupportFragmentManager().findFragmentById(R.id.aboutFragment);
 
@@ -87,6 +87,14 @@ public class AdvancedPreferences extends PreferenceFragment {
             builder.create().show();
         } else if ( preference.getKey().equals("debugMode")) {
             Debug.SetDebugMode( IsDebug(getActivity() ) );
+        } else if ( preference.getKey().equals("version") ) {
+            getActivity().runOnUiThread(new Runnable() {
+                @Override
+                public void run() {
+                    Toast.makeText(getActivity(), "Provjeravam verziju...", Toast.LENGTH_SHORT).show();
+                }
+            });
+            Updater.CheckForUpdates(getActivity());
         }
 
         return false;

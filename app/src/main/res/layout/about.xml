@@ -7,7 +7,7 @@
     <fragment
         android:layout_width="fill_parent"
         android:layout_height="fill_parent"
-        android:name="adnan.haber.AboutFragment"
+        android:name="adnan.haber.fragments.AboutFragment"
         android:id="@+id/aboutFragment"
         android:layout_centerVertical="true"
         android:layout_centerHorizontal="true"

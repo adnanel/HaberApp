@@ -11,6 +11,8 @@ import android.os.Bundle;
 import android.preference.Preference;
 import android.preference.PreferenceCategory;
 import android.preference.PreferenceScreen;
+import android.support.v4.app.ActivityCompat;
+import android.support.v4.app.ActivityOptionsCompat;
 import android.support.v4.app.FragmentTransaction;
 import android.support.v4.preference.PreferenceFragment;
 import android.text.Spannable;
@@ -257,7 +259,8 @@ public class LeftDrawer extends PreferenceFragment {
             startActivity(intent);
         } else if ( preference.getKey().equals("advanced")) {
             Intent intent = new Intent(getActivity(), AdvancedPrefsActivity.class);
-            getActivity().startActivity(intent);
+            ActivityOptionsCompat activityOps = ActivityOptionsCompat.makeCustomAnimation(getActivity(), R.anim.slide_in_right, R.anim.slide_out_left);
+            ActivityCompat.startActivity(getActivity(), intent, activityOps.toBundle());
         }
 
         return true;

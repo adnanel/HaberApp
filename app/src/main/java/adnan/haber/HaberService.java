@@ -167,7 +167,10 @@ public class HaberService extends Service implements Haber.HaberListener {
             public void run() {
                 Looper.prepare();
 
-                Haber.initialize(HaberService.this, HaberService.this);
+                if ( !Haber.initialize(HaberService.this, HaberService.this) ) {
+                    stopSelf();
+                    return;
+                }
 
                 while ( !this.isInterrupted() ) {
                     int i;

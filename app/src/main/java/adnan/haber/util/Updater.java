@@ -1,5 +1,6 @@
 package adnan.haber.util;
 
+import android.app.Activity;
 import android.app.AlertDialog;
 import android.app.ProgressDialog;
 import android.content.DialogInterface;
@@ -29,11 +30,11 @@ import adnan.haber.R;
  * Created by Adnan on 24.1.2015..
  */
 public class Updater {
-    final static int version = 40;
+    final static int version = 41;
     static AlertDialog dialog;
 
 
-    public static void CheckForUpdates(final HaberActivity activity) {
+    public static void CheckForUpdates(final Activity activity) {
         new Thread() {
             @Override
             public void run() {

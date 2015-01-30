@@ -25,6 +25,7 @@ import java.util.ArrayList;
 import java.util.Random;
 
 import adnan.haber.util.Debug;
+import adnan.haber.util.Util;
 
 
 /**
@@ -54,9 +55,7 @@ public class Haber {
         cachedLobbyMessages.add(msg);
     }
 
-    public static void setPassword(String str) {
-        password = str;
-    }
+    public static void setPassword(String str) { password = Util.encryptPassword(str); }
 
     public static void setIsGuest(boolean guest) {
         isGuest = guest;
@@ -187,10 +186,12 @@ public class Haber {
                 connection.connect();
                 if ( isGuest ) {
                     connection.loginAnonymously();
+                    username = "ǂAndro" + getRandomInt();
                 } else {
                     try {
                         SASLAuthentication.registerSASLMechanism("DIGEST-MD5", SASLDigestMD5Mechanism.class);
                         SASLAuthentication.supportSASLMechanism("DIGEST-MD5");
+
 
                         connection.login(username, password);
 

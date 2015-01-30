@@ -62,9 +62,36 @@ public class LeftDrawer extends PreferenceFragment {
 
         view.setBackgroundColor(Color.parseColor("#FF3C3F41"));
         if ( prefcat == null ) {
-            Preference btLogin = new Preference(getActivity());
-            btLogin.setKey(Haber.IsGuest() ? "login" : "logout");
-            btLogin.setTitle(Haber.IsGuest() ? "Login" : "Logout");
+            final Preference btLogin = new Preference(getActivity());
+            if ( Haber.IsGuest() ) {
+                btLogin.setKey("login");
+                btLogin.setTitle("Login");
+            } else {
+                btLogin.setKey("logout");
+                btLogin.setSummary(Haber.getUsername());
+                new Thread() {
+                    @Override
+                    public void run() {
+                        this.setPriority(Thread.MIN_PRIORITY);
+                        while ( !this.isInterrupted() ) {
+                            try {
+                                if ( Haber.isConnected() ) break;
+                                Thread.sleep(100);
+                            } catch ( Exception er ) {
+                                Debug.log(er);
+                            }
+                        }
+
+                        getActivity().runOnUiThread(new Runnable() {
+                            @Override
+                            public void run() {
+                                btLogin.setTitle(RankIconManager.getSpanned(getActivity(), Haber.getUsername(), "Logout"));
+                            }
+                        });
+                    }
+                }.start();
+            }
+
             btLogin.setOrder(-1);
             getPreferenceScreen().addPreference(btLogin);
 
@@ -113,30 +140,10 @@ public class LeftDrawer extends PreferenceFragment {
 
             pref.setKey(user);
 
-            Rank rank = HaberService.GetRankForUser(user);
-            String span = "</guest>";
-            if ( rank == Rank.Moderator || rank == Rank.Admin ) {
-                span = "</moderator>";
-            } else if ( rank == Rank.Adnan ) {
-                span = "</adnan>";
-            } else if ( rank == Rank.User ) {
-                span = "</user>";
-            } else if ( rank == Rank.Enil ) {
-                span = "</enil>";
-            } else if ( rank == Rank.Berina ) {
-                span = "</berina>";
-            } else if ( rank == Rank.Mathilda ) {
-                span = "</mathilda>";
-            } else if ( rank == Rank.Alma ) {
-                span = "</alma>";
-            } else if ( rank == Rank.Memi ) {
-                span = "</memi>";
-            }
 
-            Spannable spannable = RankIconManager.getSpanned(getActivity(), span + "  " + Haber.getShortUsername(user));
-            //todo add other ranks here
+            Spannable span = RankIconManager.getSpanned(getActivity(), user);
 
-            pref.setTitle( spannable );
+            pref.setTitle( span );
             if ( pref.getTitle().equals(Haber.getUsername()) ) continue;
 
             pref.setOnPreferenceClickListener(new Preference.OnPreferenceClickListener() {

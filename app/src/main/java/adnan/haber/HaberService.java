@@ -79,7 +79,7 @@ public class HaberService extends Service implements Haber.HaberListener {
     }
 
     public static Rank GetRankForUser(String user) {
-        Occupant occupant = haberChat.getOccupant(user);
+        Occupant occupant = haberChat.getOccupant(Haber.getFullUsername(user));
         if ( occupant == null ) return Rank.Guest;  //todo return cached (and cache it first)
 
         if ( Haber.getShortUsername(user).toUpperCase().equals("ADNAN_E") )

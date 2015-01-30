@@ -9,7 +9,10 @@ import java.util.Map;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+import adnan.haber.Haber;
+import adnan.haber.HaberService;
 import adnan.haber.R;
+import adnan.haber.types.Rank;
 
 /**
  * Created by Adnan on 24.1.2015..
@@ -19,6 +22,57 @@ public class RankIconManager {
     private static final Spannable.Factory spannableFactory = Spannable.Factory.getInstance();
 
     private static final Map<Pattern, Integer> emoticons = new HashMap<Pattern, Integer>();
+
+
+    public static Spannable getSpanned(Context context, String username, String altString)  {
+        Rank rank = HaberService.GetRankForUser(username);
+
+        String span = "</guest>";
+        if ( rank == Rank.Moderator || rank == Rank.Admin ) {
+            span = "</moderator>";
+        } else if ( rank == Rank.Adnan ) {
+            span = "</adnan>";
+        } else if ( rank == Rank.User ) {
+            span = "</user>";
+        } else if ( rank == Rank.Enil ) {
+            span = "</enil>";
+        } else if ( rank == Rank.Berina ) {
+            span = "</berina>";
+        } else if ( rank == Rank.Mathilda ) {
+            span = "</mathilda>";
+        } else if ( rank == Rank.Alma ) {
+            span = "</alma>";
+        } else if ( rank == Rank.Memi ) {
+            span = "</memi>";
+        }
+
+        return _getSpanned(context, span + "  " + altString);
+    }
+
+    public static Spannable getSpanned(Context context, String username)  {
+        Rank rank = HaberService.GetRankForUser(username);
+
+        String span = "</guest>";
+        if ( rank == Rank.Moderator || rank == Rank.Admin ) {
+            span = "</moderator>";
+        } else if ( rank == Rank.Adnan ) {
+            span = "</adnan>";
+        } else if ( rank == Rank.User ) {
+            span = "</user>";
+        } else if ( rank == Rank.Enil ) {
+            span = "</enil>";
+        } else if ( rank == Rank.Berina ) {
+            span = "</berina>";
+        } else if ( rank == Rank.Mathilda ) {
+            span = "</mathilda>";
+        } else if ( rank == Rank.Alma ) {
+            span = "</alma>";
+        } else if ( rank == Rank.Memi ) {
+            span = "</memi>";
+        }
+
+        return _getSpanned(context, span + "  " + Haber.getShortUsername(username));
+    }
 
     static {
         addPattern(emoticons, "</guest>", R.drawable.star_empty);
@@ -37,7 +91,7 @@ public class RankIconManager {
         map.put(Pattern.compile(Pattern.quote(smile)), resource);
     }
 
-    public static boolean addSmiles(Context context, Spannable spannable) {
+    static boolean addSmiles(Context context, Spannable spannable) {
         boolean hasChanges = false;
         for (Map.Entry<Pattern, Integer> entry : emoticons.entrySet()) {
             Matcher matcher = entry.getKey().matcher(spannable);
@@ -63,7 +117,7 @@ public class RankIconManager {
         return hasChanges;
     }
 
-    public static Spannable getSpanned(Context context, CharSequence text) {
+    static Spannable _getSpanned(Context context, CharSequence text) {
         Spannable spannable = spannableFactory.newSpannable(text);
         addSmiles(context, spannable);
         return spannable;

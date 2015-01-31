@@ -194,7 +194,6 @@ public class Haber {
 
 
                         connection.login(username, password);
-
                     } catch ( Exception er ) {
                         Debug.log(er);
                         isGuest = true;

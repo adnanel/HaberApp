@@ -14,5 +14,10 @@ public class AdvancedPrefsActivity extends ActionBarActivity {
         setContentView(R.layout.activity_advanced_prefs);
     }
 
+    @Override
+    public void onBackPressed() {
+        finish();
+        overridePendingTransition(R.anim.slide_in_left,R.anim.slide_out_right);
+    }
 
 }

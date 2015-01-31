@@ -4,6 +4,8 @@ import android.app.AlertDialog;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.net.Uri;
+import android.os.Environment;
 import android.preference.Preference;
 import android.preference.PreferenceActivity;
 import android.preference.PreferenceManager;
@@ -17,6 +19,9 @@ import android.view.MenuItem;
 import android.view.View;
 import android.widget.Toast;
 
+import java.io.File;
+
+import adnan.haber.Haber;
 import adnan.haber.HaberActivity;
 import adnan.haber.R;
 import adnan.haber.fragments.AboutFragment;
@@ -95,6 +100,61 @@ public class AdvancedPreferences extends PreferenceFragment {
                 }
             });
             Updater.CheckForUpdates(getActivity());
+        } else if (preference.getKey().equals("reportbug") ) {
+            final AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
+
+
+            getActivity().runOnUiThread(new Runnable() {
+                @Override
+                public void run() {
+                    View view = getActivity().getLayoutInflater().inflate(R.layout.report, null);
+                    final ReportFragment frag = (ReportFragment)getActivity().getSupportFragmentManager().findFragmentById(R.id.fragReport);
+
+                    builder.setTitle("Prijavi bug");
+                    builder.setNegativeButton("Prekid", new DialogInterface.OnClickListener() {
+                        @Override
+                        public void onClick(DialogInterface dialog, int which) {
+                            FragmentTransaction transaction = getActivity().getSupportFragmentManager().beginTransaction();
+                            transaction.remove(frag);
+                            transaction.commit();
+                        }
+                    });
+
+                    builder.setPositiveButton("Posalji", new DialogInterface.OnClickListener() {
+                        @Override
+                        public void onClick(DialogInterface dialog, int which) {
+                            String bug = "bug";
+                            String report = "report";
+
+                            Intent i = new Intent(Intent.ACTION_SEND);
+                            i.setType("message/rfc822");
+                            i.putExtra(Intent.EXTRA_EMAIL, new String[]{"adnanel94@gmail.com"});
+                            i.putExtra(Intent.EXTRA_SUBJECT, "Bug report!");
+                            i.putExtra(Intent.EXTRA_TEXT   , "Username: " + Haber.getUsername() +
+                                    "\nBug: " + bug +
+                                    "\nKako rekonstruisati: " + report);
+
+                            File file = Debug.DumpToFile();
+                            if (!file.exists() || !file.canRead()) {
+                                Toast.makeText(getActivity(), "Attachment Error", Toast.LENGTH_SHORT).show();
+                                return;
+                            }
+                            Uri uri = Uri.parse("file://" + file);
+                            i.putExtra(Intent.EXTRA_STREAM, uri);
+
+                            try {
+                                startActivity(Intent.createChooser(i, "Izaberi mail app..."));
+                            } catch (android.content.ActivityNotFoundException ex) {
+                                Toast.makeText(getActivity(), "Nije nadjen ni jedan mail klijent!", Toast.LENGTH_SHORT).show();
+                            }
+                        }
+                    });
+
+                    builder.setCancelable(false);
+                    builder.setView(view);
+                    builder.create().show();
+                }
+            });
         }
 
         return false;

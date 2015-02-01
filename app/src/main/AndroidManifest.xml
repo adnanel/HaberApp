@@ -39,12 +39,17 @@
             android:label="@string/title_activity_haber"
             android:launchMode="singleInstance" >
         </activity>
-
         <activity
             android:name=".AdvancedPrefsActivity"
             android:label="@string/title_activity_advanced_prefs"
-            android:theme="@style/PreferencesTheme">
+            android:theme="@style/PreferencesTheme" >
         </activity>
+
+        <receiver
+            android:name=".StopServiceBroadcast"
+            android:enabled="true"
+            android:exported="true" >
+        </receiver>
     </application>
 
 </manifest>

@@ -126,6 +126,15 @@ public class ChatAdapter extends ArrayAdapter<ListChatItem> {
         item.message = msg.getBody();
         item.id      = msg.getPacketID();
 
+        for ( ListChatItem citem : items ) {
+            if ( citem.isSpacer ) continue;
+
+            if ( citem.id.equals(item.id) ) {
+                Debug.log("Blocking duplicate message");
+                return;
+            }
+        }
+
         try {
             // todo
             String time = msg.toXML().toString();
@@ -181,18 +190,18 @@ public class ChatAdapter extends ArrayAdapter<ListChatItem> {
             String string = " " + items.get(position).message + " ";
             Spannable msg = Spannable.Factory.getInstance().newSpannable(Html.fromHtml(string));
             String mark = "@" + Haber.getUsername();
-            if ( string.contains(mark) ) {
-                int start = string.indexOf(mark);
-                int end = string.indexOf(mark) + mark.length();
+            if ( string.toUpperCase().contains(mark.toUpperCase()) ) {
+                int start = string.toUpperCase().indexOf(mark.toUpperCase());
+                int end = start + mark.length();
                 msg.setSpan(new BackgroundColorSpan(context.getResources().getColor(R.color.NickMarkColor)), start, end,
                         Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
             }
             //mark name without guest character
             if ( Haber.IsGuest() ) {
                 mark = "@" + Haber.getUsername().substring(1);
-                if ( string.contains(mark) ) {
-                    int start = string.indexOf(mark);
-                    int end = string.indexOf(mark) + mark.length();
+                if ( string.toUpperCase().contains(mark.toUpperCase()) ) {
+                    int start = string.toUpperCase().indexOf(mark.toUpperCase());
+                    int end = start + mark.length();
                     msg.setSpan(new BackgroundColorSpan(context.getResources().getColor(R.color.NickMarkColor)), start, end,
                             Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
                 }

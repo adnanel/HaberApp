@@ -43,6 +43,7 @@ import adnan.haber.types.ListChatItem;
 import adnan.haber.util.ChatSaver;
 import adnan.haber.util.Debug;
 import adnan.haber.util.Updater;
+import adnan.haber.util.Util;
 
 
 public class HaberActivity extends ActionBarActivity implements Haber.HaberListener {
@@ -203,8 +204,6 @@ public class HaberActivity extends ActionBarActivity implements Haber.HaberListe
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_haber);
-
-
         Updater.CheckForUpdates(this);
 
         chatListView = (ListView)findViewById(R.id.chatListView);
@@ -214,6 +213,7 @@ public class HaberActivity extends ActionBarActivity implements Haber.HaberListe
         mainChatThread = new ChatThread("haber");
         mainChatThread.chatAdapter = new ChatAdapter(this, new ArrayList<ListChatItem>(), cmdListener);
         //load old messages
+        mainChatThread.chatAdapter.putDivider("Stare poruke");
         for ( Message msg : ChatSaver.getSavedLobbyMessages() )
             mainChatThread.chatAdapter.addItem(msg);
         mainChatThread.chatAdapter.putDivider("Ova sesija");
@@ -324,6 +324,14 @@ public class HaberActivity extends ActionBarActivity implements Haber.HaberListe
                         Message msg = new Message();
                         msg.setBody(body);
                         msg.setFrom(Haber.getFullUsername(Haber.getUsername()));
+                        msg.setTo(chat.getParticipant());
+
+                        try {
+                            msg.setPacketID(Util.makeSHA1Hash(msg.getFrom() + msg.getBody()));
+                        } catch ( Exception er ) {
+                            Debug.log(er);
+                        }
+                        ChatSaver.OnMessageReceived(chat, msg);
 
                         chatThreads.get(chat).chatAdapter.addItem(msg);
 
@@ -570,6 +578,8 @@ public class HaberActivity extends ActionBarActivity implements Haber.HaberListe
         }
 
         chatThreads.clear();
+
+        finish();
     }
 
 

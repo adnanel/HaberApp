@@ -7,6 +7,8 @@ import org.jivesoftware.smack.Chat;
 import org.jivesoftware.smack.packet.Message;
 import org.jivesoftware.smackx.muc.MultiUserChat;
 
+import java.security.MessageDigest;
+import java.security.NoSuchAlgorithmException;
 import java.util.ArrayList;
 
 import adnan.haber.Haber;
@@ -15,7 +17,7 @@ import adnan.haber.HaberService;
 /**
  * Created by Adnan on 24.1.2015..
  */
-public class ChatSaver {
+public class ChatSaver implements Haber.HaberListener {
     static Context context;
     static SharedPreferences sharedPreferences;
 
@@ -34,47 +36,22 @@ public class ChatSaver {
     final static String PREF_LOBBY_FROM  = "lfrom";
     final static String PREF_LOBBY_ID    = "lid";
 
+    static ChatSaver instance;
+    private ChatSaver() {
+        instance = this;
+    }
+
     public static void Initialize(Context context) {
         CredentialManager.Initialize(context);
 
         ChatSaver.context = context;
         sharedPreferences = context.getSharedPreferences(PREFS, Context.MODE_PRIVATE);
 
-        HaberService.addHaberListener(new Haber.HaberListener() {
-            @Override
-            public void onStatusChanged(String status) {
+        if ( instance == null ) {
+            instance = new ChatSaver();
 
-            }
-
-            @Override
-            public void onLoggedIn(MultiUserChat haberChat) {
-
-            }
-
-            @Override
-            public void onMessageReceived(Chat chat, Message message) {
-                //message.setPacketID(message.);
-                if (chat == null) {
-                    SaveLobbyMessage(message);
-                } else
-                    SaveMessage(message);
-            }
-
-            @Override
-            public void onRoomJoined(Chat chat) {
-
-            }
-
-            @Override
-            public void onChatEvent(Haber.ChatEvent event, String... params) {
-
-            }
-
-            @Override
-            public void onSoftDisconnect() {
-
-            }
-        });
+            HaberService.addHaberListener(instance);
+        }
     }
 
     public static int getSavedMessagesCount() {
@@ -85,7 +62,7 @@ public class ChatSaver {
     public static ArrayList<Message> getSavedMessages() {
         ArrayList<Message> result = new ArrayList<>();
 
-        int count = 0; //sharedPreferences.getInt(PREF_COUNT, 0);
+        int count = sharedPreferences.getInt(PREF_COUNT, 0);
         for ( int i = 0; i < count; i ++ ) {
             Message msg = new Message();
             msg.setBody(sharedPreferences.getString(PREF_BODY + i, ""));
@@ -116,7 +93,7 @@ public class ChatSaver {
     public static ArrayList<Message> getSavedLobbyMessages() {
         ArrayList<Message> result = new ArrayList<>();
 
-        int count = 0; //sharedPreferences.getInt(PREF_LOBBY_COUNT, 0);
+        int count = sharedPreferences.getInt(PREF_LOBBY_COUNT, 0);
         for ( int i = 0; i < count; i ++ ) {
             Message msg = new Message();
             msg.setBody(sharedPreferences.getString(PREF_LOBBY_BODY + i, ""));
@@ -173,7 +150,9 @@ public class ChatSaver {
         editor.commit();
     }
 
+
     static void SaveMessage(Message msg) {
+
         ArrayList<Message> messages = getSavedMessages();
         messages.add(msg);
         saveMessages(messages);
@@ -184,5 +163,49 @@ public class ChatSaver {
         messages.add(msg);
         saveLobbyMessages(messages);
     }
+
+    @Override
+    public void onStatusChanged(String status) {
+
+    }
+
+    @Override
+    public void onLoggedIn(MultiUserChat haberChat) {
+
+    }
+
+    //Helper function to save outcoming private messages
+    public static void OnMessageReceived(Chat chat, Message message) {
+        if ( instance == null ) {
+            Debug.log("ChatSaver instance is null!!");
+            return;
+        }
+        instance.onMessageReceived(chat, message);
+    }
+
+    @Override
+    public void onMessageReceived(Chat chat, Message message) {
+        //message.setPacketID(message.);
+        if (chat == null) {
+            SaveLobbyMessage(message);
+        } else
+            SaveMessage(message);
+    }
+
+    @Override
+    public void onRoomJoined(Chat chat) {
+
+    }
+
+    @Override
+    public void onChatEvent(Haber.ChatEvent event, String... params) {
+
+    }
+
+    @Override
+    public void onSoftDisconnect() {
+
+    }
+
 }
 

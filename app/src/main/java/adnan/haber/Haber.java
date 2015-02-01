@@ -128,6 +128,12 @@ public class Haber {
         Chat chat = HaberService.haberChat.createPrivateChat(user, new MessageListener() {
             @Override
             public void processMessage(Chat chat, Message message) {
+                try {
+                    message.setPacketID(Util.makeSHA1Hash(message.getFrom() + message.getBody() + message.getPacketID()));
+                } catch ( Exception er ) {
+                    Debug.log(er);
+                }
+
                 if ( chat.getParticipant().equals(message.getFrom()) )
                     statusListener.onMessageReceived(chat, message);
                 else {
@@ -349,6 +355,13 @@ public class Haber {
                     public void processPacket(Packet packet) throws SmackException.NotConnectedException {
                         try {
                             Message message = (Message)packet;
+                            try {
+                                message.setPacketID(Util.makeSHA1Hash(message.getFrom() + message.getBody() + message.getPacketID()));
+                            } catch ( Exception er ) {
+                                Debug.log(er);
+                            }
+
+
                             statusListener.onMessageReceived(null, message);
                             addMessageToCache(message);
                         } catch ( Exception e ) {
@@ -368,6 +381,12 @@ public class Haber {
                         chat.addMessageListener(new MessageListener() {
                             @Override
                             public void processMessage(Chat lchat, Message message) {
+                                try {
+                                    message.setPacketID(Util.makeSHA1Hash(message.getFrom() + message.getBody() + message.getPacketID()));
+                                } catch ( Exception er ) {
+                                    Debug.log(er);
+                                }
+
                                 if ( lchat.getParticipant().equals(message.getFrom()) )
                                     statusListener.onMessageReceived(lchat, message);
                                 else {

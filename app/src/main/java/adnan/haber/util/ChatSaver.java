@@ -9,7 +9,9 @@ import org.jivesoftware.smackx.muc.MultiUserChat;
 
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Calendar;
 
 import adnan.haber.Haber;
 import adnan.haber.HaberService;
@@ -51,6 +53,14 @@ public class ChatSaver implements Haber.HaberListener {
             instance = new ChatSaver();
 
             HaberService.addHaberListener(instance);
+
+            //divider na lobby-u
+            Message msg = new Message();
+            msg.setFrom("haber");
+            msg.setTo("haber");
+            msg.setBody(new SimpleDateFormat("dd-MM-yyyy HH:mm").format(Calendar.getInstance().getTime()));
+            msg.setPacketID("divider");
+            instance.onMessageReceived(null, msg);
         }
     }
 
@@ -194,7 +204,12 @@ public class ChatSaver implements Haber.HaberListener {
 
     @Override
     public void onRoomJoined(Chat chat) {
-
+        Message msg = new Message();
+        msg.setFrom("haber");
+        msg.setTo("haber");
+        msg.setBody(new SimpleDateFormat("dd-MM-yyyy HH:mm").format(Calendar.getInstance().getTime()));
+        msg.setPacketID("divider");
+        instance.onMessageReceived(chat, msg);
     }
 
     @Override

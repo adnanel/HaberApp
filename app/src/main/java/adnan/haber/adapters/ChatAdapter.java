@@ -135,27 +135,6 @@ public class ChatAdapter extends ArrayAdapter<ListChatItem> {
             }
         }
 
-        try {
-            // todo
-            String time = msg.toXML().toString();
-            time = time.substring(time.indexOf("stamp=\"") + "stamp=\"".length());
-            time = time.substring(0, time.indexOf("\"") + 1);
-
-            int year = Integer.parseInt(time.substring(0, time.indexOf("-")));
-            time = time.substring(time.indexOf("-") + 1);
-
-            int month = Integer.parseInt(time.substring(0, time.indexOf("-")));
-            time = time.substring(time.indexOf("-") + 1);
-
-            int day = Integer.parseInt(time.substring(0, time.indexOf("T")));
-            time = time.substring(time.indexOf("T") + 1);
-
-            item.time = "Davno :o";
-        } catch ( Exception e ) {
-            Date date = new Date();
-            item.time = new SimpleDateFormat("yyyy-MM-dd HH:mm").format(Calendar.getInstance().getTime());
-        }
-
         item.time = "";
         items.add(item);
         notifyDataSetChanged();

@@ -214,8 +214,12 @@ public class HaberActivity extends ActionBarActivity implements Haber.HaberListe
         mainChatThread.chatAdapter = new ChatAdapter(this, new ArrayList<ListChatItem>(), cmdListener);
         //load old messages
         mainChatThread.chatAdapter.putDivider("Stare poruke");
-        for ( Message msg : ChatSaver.getSavedLobbyMessages() )
-            mainChatThread.chatAdapter.addItem(msg);
+        for ( Message msg : ChatSaver.getSavedLobbyMessages() ) {
+            if ( msg.getPacketID().equals("divider") )
+                mainChatThread.chatAdapter.putDivider(msg.getBody());
+            else
+                mainChatThread.chatAdapter.addItem(msg);
+        }
         mainChatThread.chatAdapter.putDivider("Ova sesija");
 
         for ( Message msg : Haber.getCachedLobbyMessages() )
@@ -415,7 +419,10 @@ public class HaberActivity extends ActionBarActivity implements Haber.HaberListe
                         thread.chatAdapter = new ChatAdapter(HaberActivity.this, new ArrayList<ListChatItem>(), cmdListener);
                         for ( Message msg : ChatSaver.getSavedMessages() ) {
                             if ( msg.getFrom().equals(chat.getParticipant()) || msg.getTo().equals(chat.getParticipant())) {
-                                thread.chatAdapter.addItem(msg);
+                                if ( msg.getPacketID().equals("divider") )
+                                    thread.chatAdapter.putDivider(msg.getBody());
+                                else
+                                    thread.chatAdapter.addItem(msg);
                             }
                         }
 

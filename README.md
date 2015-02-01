@@ -9,6 +9,21 @@ https://drive.google.com/uc?export=download&id=0B310dhQuX3QdMlZtbXozMFA5ejg
 # Change log
 ------------------
 
+Verzija 0.4b
+------------------
+- Implementirane teme 
+
+
+
+Verzija 0.4a
+------------------
+- @Reply je case insensitive
+- Poruke se keĹˇiraju
+- Implementiran bug reporter
+- Servis se moze ukinuti preko notifikacije
+
+
+
 Verzija 0.4
 ------------------
 - Ispravljeni @Reply marker

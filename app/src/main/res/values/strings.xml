@@ -35,5 +35,6 @@ Adnan Elezović]]>
 </Data></string>
     <string name="title_activity_advanced_preferences">AdvancedPreferences</string>
     <string name="title_activity_advanced_prefs">AdvancedPrefsActivity</string>
+    <string name="title_activity_theme_chooser">ThemeChooser</string>
 
 </resources>

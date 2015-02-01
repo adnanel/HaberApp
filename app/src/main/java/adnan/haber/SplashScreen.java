@@ -15,6 +15,7 @@ import org.jivesoftware.smackx.muc.MultiUserChat;
 
 import adnan.haber.util.ChatSaver;
 import adnan.haber.util.Debug;
+import adnan.haber.util.ThemeManager;
 
 
 public class SplashScreen extends ActionBarActivity implements Haber.HaberListener {
@@ -32,9 +33,11 @@ public class SplashScreen extends ActionBarActivity implements Haber.HaberListen
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_splash_screen);
+
+        Debug.Initialize(this); // <- must be first
+        ThemeManager.Initialize(this);
         LeftDrawer.initialize(this);
         ChatSaver.Initialize(this);
-        Debug.Initialize(this);
 
         if ( HaberService.isConnected ) {
             start();

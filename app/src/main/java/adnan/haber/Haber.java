@@ -33,6 +33,7 @@ import adnan.haber.util.Util;
  */
 public class Haber {
     static Haber instance = null;
+    static String lastError = "";
 
     HaberListener statusListener;
     Context context;
@@ -113,7 +114,7 @@ public class Haber {
         if ( connect() ) {
             statusListener.onStatusChanged("Yay!");
         } else {
-            statusListener.onStatusChanged("Failed!");
+            statusListener.onStatusChanged(lastError);
             throw new Exception("Failed!");
         }
     }
@@ -412,6 +413,7 @@ public class Haber {
             return true;
         }
         catch (Exception e) {
+            lastError = e.toString();
             Debug.log(e);
             return false;
         }

@@ -50,6 +50,11 @@
             android:enabled="true"
             android:exported="true" >
         </receiver>
+
+        <activity
+            android:name=".ThemeChooser"
+            android:label="@string/title_activity_theme_chooser" >
+        </activity>
     </application>
 
 </manifest>

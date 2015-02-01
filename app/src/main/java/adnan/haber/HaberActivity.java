@@ -4,7 +4,13 @@ import android.app.AlertDialog;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.content.res.ColorStateList;
 import android.graphics.Color;
+import android.graphics.Outline;
+import android.graphics.drawable.ColorDrawable;
+import android.graphics.drawable.Drawable;
+import android.graphics.drawable.GradientDrawable;
+import android.graphics.drawable.ShapeDrawable;
 import android.os.Bundle;
 import android.os.Vibrator;
 import android.support.v4.app.FragmentTransaction;
@@ -42,6 +48,7 @@ import adnan.haber.fragments.SmileyChooser;
 import adnan.haber.types.ListChatItem;
 import adnan.haber.util.ChatSaver;
 import adnan.haber.util.Debug;
+import adnan.haber.util.ThemeManager;
 import adnan.haber.util.Updater;
 import adnan.haber.util.Util;
 
@@ -207,6 +214,11 @@ public class HaberActivity extends ActionBarActivity implements Haber.HaberListe
         Updater.CheckForUpdates(this);
 
         chatListView = (ListView)findViewById(R.id.chatListView);
+
+        chatListView.setDividerHeight(1);
+        chatListView.setDivider(new ColorDrawable(ThemeManager.GetColor(ThemeManager.COLOR_CHAT_DIVIDER)));
+        chatListView.setBackgroundColor(ThemeManager.GetColor(ThemeManager.COLOR_CHAT_BACKGROUND));
+
         setListenerToRootView();
 
         //glavni Haber chat
@@ -612,15 +624,28 @@ public class HaberActivity extends ActionBarActivity implements Haber.HaberListe
                 @Override
                 public void run() {
                     if ( state == State.Active ) {
-                        tabBackground.setBackgroundResource(R.drawable.tab_background_active);
+                        GradientDrawable d = (GradientDrawable)getResources().getDrawable(R.drawable.tab_background_active);
+                        d.setStroke(Util.DpiToPixel(HaberActivity.this, 2), ThemeManager.GetColor(ThemeManager.COLOR_CHAT_ACTIVE_STROKE));
+                        d.setColor(ThemeManager.GetColor(ThemeManager.COLOR_CHAT_TAB_BACKGROUND));
+
+                        tabBackground.setBackgroundDrawable(d);
                         rlMsgCounter.setVisibility(View.INVISIBLE);
                         tvMsgCounter.setText("0");
                     } else if ( state == State.Normal ) {
-                        tabBackground.setBackgroundResource(R.drawable.tab_background);
+                        GradientDrawable d = (GradientDrawable)getResources().getDrawable(R.drawable.tab_background);
+                        d.setColor(ThemeManager.GetColor(ThemeManager.COLOR_CHAT_TAB_BACKGROUND));
+
+                        tabBackground.setBackgroundDrawable(d);
+
                         rlMsgCounter.setVisibility(View.INVISIBLE);
                         tvMsgCounter.setText("0");
                     } else if ( state == State.Marked ) {
-                        tabBackground.setBackgroundResource(R.drawable.tab_background_selected);
+                        GradientDrawable d = (GradientDrawable)getResources().getDrawable(R.drawable.tab_background_selected);
+                        //d.setStroke(Util.DpiToPixel(HaberActivity.this, 2), ThemeManager.GetColor(ThemeManager.COLOR_CHAT_ACTIVE_STROKE));
+                        d.setColor(ThemeManager.GetColor(ThemeManager.COLOR_CHAT_ACTIVE_STROKE));
+
+                        tabBackground.setBackgroundDrawable(d);
+
                         rlMsgCounter.setVisibility(View.VISIBLE);
                     }
 

@@ -35,6 +35,7 @@ import adnan.haber.util.ChatSaver;
 import adnan.haber.util.CredentialManager;
 import adnan.haber.util.Debug;
 import adnan.haber.util.RankIconManager;
+import adnan.haber.util.ThemeManager;
 
 public class LeftDrawer extends PreferenceFragment {
     static SharedPreferences preferences;
@@ -49,18 +50,11 @@ public class LeftDrawer extends PreferenceFragment {
         preferences = context.getSharedPreferences(preference, Context.MODE_PRIVATE);
     }
 
-
-    public static LeftDrawer newInstance() {
-        LeftDrawer fragment = new LeftDrawer();
-
-        return fragment;
-    }
-
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         View view = super.onCreateView(inflater, container, savedInstanceState);
 
-        view.setBackgroundColor(Color.parseColor("#FF3C3F41"));
+        view.setBackgroundColor(ThemeManager.GetColor(ThemeManager.COLOR_LEFT_DRAWER_BACKGROUND));
         if ( prefcat == null ) {
             final Preference btLogin = new Preference(getActivity());
             if ( Haber.IsGuest() ) {
@@ -213,7 +207,13 @@ public class LeftDrawer extends PreferenceFragment {
 
     @Override
     public boolean onPreferenceTreeClick(PreferenceScreen screen, Preference preference) {
-        if ( preference.getKey().equals("login") ) {
+        if ( preference.getKey().equals("themes") ) {
+            Intent intent = new Intent(getActivity(), ThemeChooser.class);
+            ActivityOptionsCompat activityOps = ActivityOptionsCompat.makeCustomAnimation(getActivity(), R.anim.slide_in_right, R.anim.slide_out_left);
+            ActivityCompat.startActivity(getActivity(), intent, activityOps.toBundle());
+            ThemeChooser.activity = (HaberActivity)getActivity();
+
+        } else if ( preference.getKey().equals("login") ) {
             AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
             builder.setTitle("Login");
             final View view = getActivity().getLayoutInflater().inflate(R.layout.login, null);

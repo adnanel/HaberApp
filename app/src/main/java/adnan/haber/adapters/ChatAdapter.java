@@ -51,6 +51,7 @@ import adnan.haber.R;
 import adnan.haber.types.ListChatItem;
 import adnan.haber.util.Debug;
 import adnan.haber.util.SmileyManager;
+import adnan.haber.util.ThemeManager;
 
 /**
  * Created by Adnan on 23.1.2015..
@@ -158,7 +159,8 @@ public class ChatAdapter extends ArrayAdapter<ListChatItem> {
             TextView tvMessage;
 
             rowView = inflater.inflate(R.layout.single_chat_item, parent, false);
-
+            rowView.findViewById(R.id.nameCarry).setBackgroundColor(ThemeManager.GetColor(ThemeManager.COLOR_CHAT_USER_BACKGROUND));
+            rowView.setBackgroundColor(ThemeManager.GetColor(ThemeManager.COLOR_CHAT_ITEM_BACKGROUND));
 
             (tvUsername = (TextView) rowView.findViewById(R.id.tvName)).setText(items.get(position).author);
 
@@ -226,6 +228,8 @@ public class ChatAdapter extends ArrayAdapter<ListChatItem> {
                                 .getSystemService(Context.LAYOUT_INFLATER_SERVICE);
 
                         final View view = inflater.inflate(R.layout.single_user_menu, null);
+                        view.setBackgroundColor(ThemeManager.GetColor(ThemeManager.COLOR_CHAT_BACKGROUND));
+
                         switcher.addView(view);
                         switcher.setInAnimation(context, R.anim.slide_in_left);
                         switcher.setOutAnimation(context, R.anim.slide_out_right);

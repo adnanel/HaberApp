@@ -17,6 +17,6 @@
         <Preference android:title="Git" android:key="git" />
 
         <Preference android:title="O aplikaciji..." android:key="about"/>
-        <Preference android:title="Verzija" android:key="version" android:summary="0.4"/>
+        <Preference android:title="Verzija" android:key="version" android:summary="0.4b"/>
     </PreferenceCategory>
 </PreferenceScreen>

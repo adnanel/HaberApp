@@ -9,6 +9,21 @@ https://drive.google.com/uc?export=download&id=0B310dhQuX3QdMlZtbXozMFA5ejg
 # Change log
 ------------------
 
+Verzija 0.4b
+------------------
+- Implementirane teme 
+
+
+
+Verzija 0.4a
+------------------
+- @Reply je case insensitive
+- Poruke se kesiraju
+- Implementiran bug reporter
+- Servis se moze ukinuti preko notifikacije
+
+
+
 Verzija 0.4
 ------------------
 - Ispravljeni @Reply marker
@@ -32,7 +47,7 @@ Verzija 0.3a
 ------------------
 - Hotfix update, ispravljeno par manjih bugova
 - Ispravljeni moguci bugovi sa korisnickim imenima
-- @AndroXXX i @Ç‚AndroXXX se oboje tretiraju kao reply (umjesto samo @Ç‚AndroXXX)
+- @AndroXXX i @ǂAndroXXX se oboje tretiraju kao reply (umjesto samo @ǂAndroXXX)
 - Ispravljen bug na online listi (vise nije moguce dopisivat se sam sa sobom, koliko god usamljeni bili)
 - Razni visual updates
 - Command bar pri kliku na nickname usera

@@ -6,12 +6,14 @@ import org.jivesoftware.smack.Chat;
 import org.jivesoftware.smack.ChatManager;
 import org.jivesoftware.smack.ChatManagerListener;
 import org.jivesoftware.smack.ConnectionConfiguration;
+import org.jivesoftware.smack.ConnectionListener;
 import org.jivesoftware.smack.MessageListener;
 import org.jivesoftware.smack.PacketListener;
 import org.jivesoftware.smack.SASLAuthentication;
 import org.jivesoftware.smack.SmackAndroid;
 import org.jivesoftware.smack.SmackException;
 import org.jivesoftware.smack.XMPPConnection;
+import org.jivesoftware.smack.filter.PacketFilter;
 import org.jivesoftware.smack.packet.Message;
 import org.jivesoftware.smack.packet.Packet;
 import org.jivesoftware.smack.sasl.SASLDigestMD5Mechanism;
@@ -38,6 +40,7 @@ public class Haber {
     HaberListener statusListener;
     Context context;
     XMPPConnection connection;
+    MultiUserChat haberChat;
 
     private static String  username = "ǂAndro" + getRandomInt();
     private static boolean isGuest = true;
@@ -98,7 +101,7 @@ public class Haber {
     public static boolean isConnected() {
         if ( instance == null ) return false;
         try {
-            return instance.connection.isConnected();
+            return instance.connection.isConnected() && instance.haberChat.isJoined();
         } catch (Exception e) {
             Debug.log(e);
             return false;
@@ -145,6 +148,7 @@ public class Haber {
                 }
             }
         });
+
 
         statusListener.onRoomJoined(chat);
         return chat;
@@ -212,6 +216,7 @@ public class Haber {
                 chat.join(username);
 
                 statusListener.onLoggedIn(chat);
+                haberChat = chat;
 
                 chat.addParticipantStatusListener(new ParticipantStatusListener() {
                     @Override

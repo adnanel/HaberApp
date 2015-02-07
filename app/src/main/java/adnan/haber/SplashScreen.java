@@ -1,5 +1,7 @@
 package adnan.haber;
 
+import android.app.AlertDialog;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.v4.app.ActivityCompat;
@@ -15,10 +17,12 @@ import org.jivesoftware.smackx.muc.MultiUserChat;
 
 import adnan.haber.util.ChatSaver;
 import adnan.haber.util.Debug;
-import adnan.haber.util.ThemeManager;
 
 
 public class SplashScreen extends ActionBarActivity implements Haber.HaberListener {
+    boolean started = false;
+    boolean canStart = true;
+
     public void setStatus(String status) {
         View tv = findViewById(R.id.tvStatus);
         if ( tv == null ) return;
@@ -35,11 +39,10 @@ public class SplashScreen extends ActionBarActivity implements Haber.HaberListen
         setContentView(R.layout.activity_splash_screen);
 
         Debug.Initialize(this); // <- must be first
-        ThemeManager.Initialize(this);
         LeftDrawer.initialize(this);
         ChatSaver.Initialize(this);
 
-        if ( HaberService.isConnected ) {
+        if ( Haber.isConnected() ) {
             start();
             return;
         }
@@ -91,11 +94,14 @@ public class SplashScreen extends ActionBarActivity implements Haber.HaberListen
     }
 
     public void start() {
+        if ( !canStart ) return;
+
         Intent intent = new Intent(this, HaberActivity.class);
         intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
         ActivityOptionsCompat activityOps = ActivityOptionsCompat.makeCustomAnimation(this, R.anim.slide_in_right, R.anim.slide_out_left);
         ActivityCompat.startActivity(this, intent, activityOps.toBundle());
         finish();
+        started = true;
     }
 
     int counter = 0;
@@ -113,12 +119,34 @@ public class SplashScreen extends ActionBarActivity implements Haber.HaberListen
     }
 
     @Override
-    public void onChatEvent(Haber.ChatEvent event, String... params) {
+    public void onChatEvent(Haber.ChatEvent event, final String... params) {
+        if ( started ) return;
 
+        if ( params.length == 2 && ( event == Haber.ChatEvent.Banned || event == Haber.ChatEvent.Kicked ) ) {
+            canStart = false;
+
+            runOnUiThread(new Runnable() {
+                @Override
+                public void run() {
+                    AlertDialog.Builder builder = new AlertDialog.Builder(SplashScreen.this);
+                    builder.setTitle("Whops!");
+                    builder.setMessage(params[0] + ": " + params[1]);
+                    builder.setPositiveButton("Close app", new DialogInterface.OnClickListener() {
+                        @Override
+                        public void onClick(DialogInterface dialog, int which) {
+                            finish();
+                        }
+                    });
+                    builder.setCancelable(false);
+                    builder.create().show();
+                }
+            });
+        }
     }
 
     @Override
     public void onSoftDisconnect() {
 
     }
+
 }

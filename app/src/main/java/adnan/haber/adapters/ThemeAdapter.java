@@ -1,6 +1,6 @@
 package adnan.haber.adapters;
 
-
+/*
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -16,7 +16,7 @@ import adnan.haber.util.ThemeManager;
 
 /**
  * Created by Adnan on 1.2.2015..
- */
+
 public class ThemeAdapter  extends RecyclerView.Adapter<ThemeAdapter.TableViewHolder> {
     private List<Theme> values;
     private OnThemeChangedListener themeListener;
@@ -84,3 +84,4 @@ public class ThemeAdapter  extends RecyclerView.Adapter<ThemeAdapter.TableViewHo
         public abstract void onApplyTheme(Theme theme);
     }
 }
+*/

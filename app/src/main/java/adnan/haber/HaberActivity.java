@@ -4,20 +4,11 @@ import android.app.AlertDialog;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
-import android.content.res.ColorStateList;
-import android.graphics.Color;
-import android.graphics.Outline;
-import android.graphics.drawable.ColorDrawable;
-import android.graphics.drawable.Drawable;
-import android.graphics.drawable.GradientDrawable;
-import android.graphics.drawable.ShapeDrawable;
 import android.os.Bundle;
 import android.os.Vibrator;
 import android.support.v4.app.FragmentTransaction;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBarActivity;
-import android.text.Editable;
-import android.text.TextWatcher;
 import android.view.Gravity;
 import android.view.KeyEvent;
 import android.view.MotionEvent;
@@ -35,8 +26,6 @@ import org.jivesoftware.smack.packet.Message;
 import org.jivesoftware.smackx.muc.MultiUserChat;
 
 import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Collections;
 import java.util.Comparator;
 import java.util.HashMap;
 import java.util.Map;
@@ -48,7 +37,6 @@ import adnan.haber.fragments.SmileyChooser;
 import adnan.haber.types.ListChatItem;
 import adnan.haber.util.ChatSaver;
 import adnan.haber.util.Debug;
-import adnan.haber.util.ThemeManager;
 import adnan.haber.util.Updater;
 import adnan.haber.util.Util;
 
@@ -62,8 +50,24 @@ public class HaberActivity extends ActionBarActivity implements Haber.HaberListe
     ChatAdapter.CommandBarListener cmdListener = new ChatAdapter.CommandBarListener() {
 
         @Override
-        public void onKick(String user) {
-            HaberService.KickUser(user, "");
+        public void onKick(final String user) {
+            runOnUiThread(new Runnable() {
+                @Override
+                public void run() {
+                    AlertDialog.Builder builder = new AlertDialog.Builder(HaberActivity.this);
+                    builder.setTitle("Razlog?");
+                    final EditText etReason = new EditText(HaberActivity.this);
+                    builder.setView(etReason);
+                    builder.setPositiveButton("Kick!", new DialogInterface.OnClickListener() {
+                        @Override
+                        public void onClick(DialogInterface dialog, int which) {
+                            HaberService.KickUser(user, etReason.getText().toString());
+                        }
+                    });
+                    builder.setNegativeButton("Prekini", null);
+                    builder.create().show();
+                }
+            });
         }
 
         @Override
@@ -86,6 +90,72 @@ public class HaberActivity extends ActionBarActivity implements Haber.HaberListe
         }
     };
 
+    public Runnable sendMessage = new Runnable() {
+        @Override
+        public void run() {
+            final EditText editText = (EditText)findViewById(R.id.editText);
+            String str = editText.getText().toString();
+            if ( str.length() == 0 ) return;
+            while ( str.charAt(0) == '\n' && str.length() > 1 ) str = str.substring(1);
+            while ( str.charAt(str.length() - 1) == '\n' && str.length() > 1 ) str = str.substring(0, str.length() - 1);
+
+            if ( str.trim().length() == 0 ) return;
+
+            Chat chat;
+            try {
+                chat = getCurrentChat();
+            } catch ( Exception e ) {
+                Debug.log(e);
+                return;
+            }
+
+            if ( chat == null ) {
+                try {
+                    HaberService.haberChat.sendMessage(editText.getText().toString());
+                } catch (Exception e) {
+                    Debug.log(e);
+                }
+            } else {
+                try {
+                    String body = editText.getText().toString();
+                    chat.sendMessage(body);
+
+                    Message msg = new Message();
+                    msg.setBody(body);
+                    msg.setFrom(Haber.getFullUsername(Haber.getUsername()));
+                    msg.setTo(chat.getParticipant());
+
+                    try {
+                        msg.setPacketID(Util.makeSHA1Hash(msg.getFrom() + msg.getBody()));
+                    } catch ( Exception er ) {
+                        Debug.log(er);
+                    }
+                    ChatSaver.OnMessageReceived(chat, msg);
+
+                    chatThreads.get(chat).chatAdapter.addItem(msg);
+
+                    runOnUiThread(new Runnable() {
+                        @Override
+                        public void run() {
+                            chatListView.post(new Runnable(){
+                                public void run() {
+                                    chatListView.smoothScrollToPosition(chatListView.getCount() - 1);
+                                }});
+                        }
+                    });
+                } catch (Exception e) {
+                    Debug.log(e);
+                }
+            }
+
+            runOnUiThread(new Runnable() {
+                @Override
+                public void run() {
+                    editText.setText("");
+                }
+            });
+        }
+    };
 
     public void sortTabs() {
         final TreeMap<Integer, ArrayList<View>> tabs = new TreeMap<Integer, ArrayList<View>>(new Comparator<Integer>() {
@@ -144,7 +214,11 @@ public class HaberActivity extends ActionBarActivity implements Haber.HaberListe
 
                 WebView webView = (WebView)view.findViewById(R.id.webView);
                 webView.getSettings().setJavaScriptEnabled(true);
-                webView.loadUrl(url);   //todo currently just white
+                if ( url.endsWith(".jpg") && url.startsWith("http://pokit.org/get/?")) {
+                    String nUrl = url.replace("get/?", "get/img/");
+                    webView.loadUrl(nUrl);
+                } else
+                    webView.loadUrl(url);
 
                 builder.setView(view);
                 AlertDialog dialog = builder.create();
@@ -194,6 +268,7 @@ public class HaberActivity extends ActionBarActivity implements Haber.HaberListe
         });
     }
 
+
     @Override
     public void onResume() {
         super.onResume();
@@ -214,16 +289,11 @@ public class HaberActivity extends ActionBarActivity implements Haber.HaberListe
         Updater.CheckForUpdates(this);
 
         chatListView = (ListView)findViewById(R.id.chatListView);
-
-        chatListView.setDividerHeight(1);
-        chatListView.setDivider(new ColorDrawable(ThemeManager.GetColor(ThemeManager.COLOR_CHAT_DIVIDER)));
-        chatListView.setBackgroundColor(ThemeManager.GetColor(ThemeManager.COLOR_CHAT_BACKGROUND));
-
         setListenerToRootView();
 
         //glavni Haber chat
         mainChatThread = new ChatThread("haber");
-        mainChatThread.chatAdapter = new ChatAdapter(this, new ArrayList<ListChatItem>(), cmdListener);
+        mainChatThread.chatAdapter = new ChatAdapter(this, new ArrayList<ListChatItem>(), cmdListener, false);
         //load old messages
         mainChatThread.chatAdapter.putDivider("Stare poruke");
         for ( Message msg : ChatSaver.getSavedLobbyMessages() ) {
@@ -241,11 +311,18 @@ public class HaberActivity extends ActionBarActivity implements Haber.HaberListe
         //ostali chatovi
         for ( Chat chats : HaberService.chatRooms ) {
             ChatThread thread = new ChatThread(chats.getParticipant());
-            thread.chatAdapter = new ChatAdapter(this, new ArrayList<ListChatItem>(), cmdListener);
+            thread.chatAdapter = new ChatAdapter(this, new ArrayList<ListChatItem>(), cmdListener, true);
 
+
+            for ( Message msg : ChatSaver.getSavedMessages() ) {
+                if ( msg.getFrom().equals(chats.getParticipant()) || msg.getTo().equals(chats.getParticipant())) {
+                    thread.chatAdapter.addItem(msg);
+                }
+            }
 
             chatThreads.put(chats, thread);
         }
+
 
         HaberService.addHaberListener(this);
 
@@ -283,7 +360,7 @@ public class HaberActivity extends ActionBarActivity implements Haber.HaberListe
         });
 
         //todo shift enter fix
-        ((EditText)findViewById(R.id.editText)).setOnKeyListener(new View.OnKeyListener() {
+        (findViewById(R.id.editText)).setOnKeyListener(new View.OnKeyListener() {
             @Override
             public boolean onKey(View v, int keyCode, KeyEvent event) {
                 if ( keyCode == KeyEvent.KEYCODE_ENTER && event.getAction() == KeyEvent.ACTION_DOWN ) {
@@ -298,10 +375,13 @@ public class HaberActivity extends ActionBarActivity implements Haber.HaberListe
                         runOnUiThread(new Runnable() {
                             @Override
                             public void run() {
-                                findViewById(R.id.btSend).performClick();
+                                sendMessage.run();
                             }
                         });
+
+                        return true;
                     }
+
                 }
                 return false;
             }
@@ -310,67 +390,7 @@ public class HaberActivity extends ActionBarActivity implements Haber.HaberListe
         findViewById(R.id.btSend).setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                final EditText editText = (EditText)findViewById(R.id.editText);
-                String str = editText.getText().toString();
-                if ( str.length() == 0 ) return;
-                while ( str.charAt(0) == '\n' && str.length() > 1 ) str = str.substring(1);
-                while ( str.charAt(str.length() - 1) == '\n' && str.length() > 1 ) str = str.substring(0, str.length() - 1);
-
-                if ( str.trim().length() == 0 ) return;
-
-                Chat chat;
-                try {
-                    chat = getCurrentChat();
-                } catch ( Exception e ) {
-                    Debug.log(e);
-                    return;
-                }
-
-                if ( chat == null ) {
-                    try {
-                        HaberService.haberChat.sendMessage(editText.getText().toString());
-                    } catch (Exception e) {
-                        Debug.log(e);
-                    }
-                } else {
-                    try {
-                        String body = editText.getText().toString();
-                        chat.sendMessage(body);
-
-                        Message msg = new Message();
-                        msg.setBody(body);
-                        msg.setFrom(Haber.getFullUsername(Haber.getUsername()));
-                        msg.setTo(chat.getParticipant());
-
-                        try {
-                            msg.setPacketID(Util.makeSHA1Hash(msg.getFrom() + msg.getBody()));
-                        } catch ( Exception er ) {
-                            Debug.log(er);
-                        }
-                        ChatSaver.OnMessageReceived(chat, msg);
-
-                        chatThreads.get(chat).chatAdapter.addItem(msg);
-
-                        runOnUiThread(new Runnable() {
-                            @Override
-                            public void run() {
-                                chatListView.post(new Runnable(){
-                                    public void run() {
-                                    chatListView.smoothScrollToPosition(chatListView.getCount() - 1);
-                                }});
-                            }
-                        });
-                    } catch (Exception e) {
-                        Debug.log(e);
-                    }
-                }
-
-                runOnUiThread(new Runnable() {
-                    @Override
-                    public void run() {
-                        editText.setText("");
-                    }
-                });
+                sendMessage.run();
             }
         });
     }
@@ -428,7 +448,7 @@ public class HaberActivity extends ActionBarActivity implements Haber.HaberListe
                         }
                     } else {
                         ChatThread thread = new ChatThread(chat.getParticipant());
-                        thread.chatAdapter = new ChatAdapter(HaberActivity.this, new ArrayList<ListChatItem>(), cmdListener);
+                        thread.chatAdapter = new ChatAdapter(HaberActivity.this, new ArrayList<ListChatItem>(), cmdListener, true);
                         for ( Message msg : ChatSaver.getSavedMessages() ) {
                             if ( msg.getFrom().equals(chat.getParticipant()) || msg.getTo().equals(chat.getParticipant())) {
                                 if ( msg.getPacketID().equals("divider") )
@@ -526,7 +546,7 @@ public class HaberActivity extends ActionBarActivity implements Haber.HaberListe
 
                 if ( !chatThreads.containsKey(chat) ) {
                     ChatThread thread = new ChatThread(chat.getParticipant());
-                    thread.chatAdapter = new ChatAdapter(HaberActivity.this, new ArrayList<ListChatItem>(), cmdListener);
+                    thread.chatAdapter = new ChatAdapter(HaberActivity.this, new ArrayList<ListChatItem>(), cmdListener, true);
                     for ( Message msg : ChatSaver.getSavedMessages() ) {
                         if ( msg.getFrom().equals(chat.getParticipant()) || msg.getTo().equals(chat.getParticipant())) {
                             thread.chatAdapter.addItem(msg);
@@ -624,27 +644,17 @@ public class HaberActivity extends ActionBarActivity implements Haber.HaberListe
                 @Override
                 public void run() {
                     if ( state == State.Active ) {
-                        GradientDrawable d = (GradientDrawable)getResources().getDrawable(R.drawable.tab_background_active);
-                        d.setStroke(Util.DpiToPixel(HaberActivity.this, 2), ThemeManager.GetColor(ThemeManager.COLOR_CHAT_ACTIVE_STROKE));
-                        d.setColor(ThemeManager.GetColor(ThemeManager.COLOR_CHAT_TAB_BACKGROUND));
+                        tabBackground.setBackgroundResource(R.drawable.tab_background_active);
 
-                        tabBackground.setBackgroundDrawable(d);
                         rlMsgCounter.setVisibility(View.INVISIBLE);
                         tvMsgCounter.setText("0");
                     } else if ( state == State.Normal ) {
-                        GradientDrawable d = (GradientDrawable)getResources().getDrawable(R.drawable.tab_background);
-                        d.setColor(ThemeManager.GetColor(ThemeManager.COLOR_CHAT_TAB_BACKGROUND));
-
-                        tabBackground.setBackgroundDrawable(d);
+                        tabBackground.setBackgroundResource(R.drawable.tab_background);
 
                         rlMsgCounter.setVisibility(View.INVISIBLE);
                         tvMsgCounter.setText("0");
                     } else if ( state == State.Marked ) {
-                        GradientDrawable d = (GradientDrawable)getResources().getDrawable(R.drawable.tab_background_selected);
-                        //d.setStroke(Util.DpiToPixel(HaberActivity.this, 2), ThemeManager.GetColor(ThemeManager.COLOR_CHAT_ACTIVE_STROKE));
-                        d.setColor(ThemeManager.GetColor(ThemeManager.COLOR_CHAT_ACTIVE_STROKE));
-
-                        tabBackground.setBackgroundDrawable(d);
+                        tabBackground.setBackgroundResource(R.drawable.tab_background_selected);
 
                         rlMsgCounter.setVisibility(View.VISIBLE);
                     }
@@ -702,6 +712,7 @@ public class HaberActivity extends ActionBarActivity implements Haber.HaberListe
                     tabView = getLayoutInflater().inflate(R.layout.single_tab, null);
 
                     rlMsgCounter = tabView.findViewById(R.id.rlMessageCounter);
+
                     tvMsgCounter = (TextView)tabView.findViewById(R.id.tvMessageCounter);
 
                     tabBackground = tabView.findViewById(R.id.rlTabBackground);

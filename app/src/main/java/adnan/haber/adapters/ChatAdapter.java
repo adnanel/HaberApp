@@ -51,7 +51,6 @@ import adnan.haber.R;
 import adnan.haber.types.ListChatItem;
 import adnan.haber.util.Debug;
 import adnan.haber.util.SmileyManager;
-import adnan.haber.util.ThemeManager;
 
 /**
  * Created by Adnan on 23.1.2015..
@@ -61,13 +60,14 @@ public class ChatAdapter extends ArrayAdapter<ListChatItem> {
     List<ListChatItem> items;
     HaberActivity context;
     CommandBarListener commandBarListener;
+    boolean isPrivate = false;
 
-    public ChatAdapter(HaberActivity context, List<ListChatItem> items, CommandBarListener cmdListener) {
+    public ChatAdapter(HaberActivity context, List<ListChatItem> items, CommandBarListener cmdListener, boolean isPrivate) {
         super(context, R.layout.single_chat_item, items);
         this.items = items;
         this.context = context;
         this.commandBarListener = cmdListener;
-
+        this.isPrivate = isPrivate;
     }
 
     @Override
@@ -127,6 +127,7 @@ public class ChatAdapter extends ArrayAdapter<ListChatItem> {
         item.message = msg.getBody();
         item.id      = msg.getPacketID();
 
+
         for ( ListChatItem citem : items ) {
             if ( citem.isSpacer ) continue;
 
@@ -159,8 +160,6 @@ public class ChatAdapter extends ArrayAdapter<ListChatItem> {
             TextView tvMessage;
 
             rowView = inflater.inflate(R.layout.single_chat_item, parent, false);
-            rowView.findViewById(R.id.nameCarry).setBackgroundColor(ThemeManager.GetColor(ThemeManager.COLOR_CHAT_USER_BACKGROUND));
-            rowView.setBackgroundColor(ThemeManager.GetColor(ThemeManager.COLOR_CHAT_ITEM_BACKGROUND));
 
             (tvUsername = (TextView) rowView.findViewById(R.id.tvName)).setText(items.get(position).author);
 
@@ -174,7 +173,7 @@ public class ChatAdapter extends ArrayAdapter<ListChatItem> {
             if ( string.toUpperCase().contains(mark.toUpperCase()) ) {
                 int start = string.toUpperCase().indexOf(mark.toUpperCase());
                 int end = start + mark.length();
-                msg.setSpan(new BackgroundColorSpan(context.getResources().getColor(R.color.NickMarkColor)), start, end,
+                msg.setSpan(new BackgroundColorSpan(Color.parseColor("#ff9e3e67")), start, end,
                         Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
             }
             //mark name without guest character
@@ -183,7 +182,7 @@ public class ChatAdapter extends ArrayAdapter<ListChatItem> {
                 if ( string.toUpperCase().contains(mark.toUpperCase()) ) {
                     int start = string.toUpperCase().indexOf(mark.toUpperCase());
                     int end = start + mark.length();
-                    msg.setSpan(new BackgroundColorSpan(context.getResources().getColor(R.color.NickMarkColor)), start, end,
+                    msg.setSpan(new BackgroundColorSpan(Color.parseColor("#ff9e3e67")), start, end,
                             Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
                 }
             }
@@ -228,7 +227,6 @@ public class ChatAdapter extends ArrayAdapter<ListChatItem> {
                                 .getSystemService(Context.LAYOUT_INFLATER_SERVICE);
 
                         final View view = inflater.inflate(R.layout.single_user_menu, null);
-                        view.setBackgroundColor(ThemeManager.GetColor(ThemeManager.COLOR_CHAT_BACKGROUND));
 
                         switcher.addView(view);
                         switcher.setInAnimation(context, R.anim.slide_in_left);
@@ -256,12 +254,14 @@ public class ChatAdapter extends ArrayAdapter<ListChatItem> {
                         view.findViewById(R.id.btStartPrivate).setOnClickListener(new View.OnClickListener() {
                             @Override
                             public void onClick(View v) {
-                                commandBarListener.onPrivateMessage(items.get(position).author);
+                                commandBarListener.onPrivateMessage(Haber.getFullUsername(items.get(position).author));
 
                                 switcher.setBackgroundColor(0);
                                 switcher.removeView(view);
                             }
                         });
+                        if ( isPrivate )
+                            view.findViewById(R.id.btStartPrivate).setVisibility(View.GONE);
 
                         view.findViewById(R.id.btKick).setOnClickListener(new View.OnClickListener() {
                             @Override

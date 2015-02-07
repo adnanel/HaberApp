@@ -8,7 +8,8 @@
 
 
     <PreferenceCategory android:title="Postavke" android:order="2">
-        <Preference android:title="Teme" android:key="themes" />
+        <!-- <Preference android:title="Teme" android:key="themes" /> -->
+
         <Preference android:title="Napredno" android:key="advanced"/>
     </PreferenceCategory>
 </PreferenceScreen>

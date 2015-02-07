@@ -17,10 +17,6 @@ import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
-import java.util.ArrayList;
-
-import adnan.haber.R;
-import adnan.haber.types.Theme;
 
 /**
  * Created by Adnan on 24.1.2015..
@@ -43,6 +39,7 @@ public class JSON {
         }
     }
 
+    /*
     static Theme readThemeJSON(JSONObject object) throws Exception {
         Theme theme = new Theme();
         theme.COLOR_CHAT_ACTIVE_STROKE      = Color.parseColor(object.getString(ThemeManager.COLOR_CHAT_ACTIVE_STROKE));
@@ -52,6 +49,8 @@ public class JSON {
         theme.COLOR_LEFT_DRAWER_BACKGROUND  = Color.parseColor(object.getString(ThemeManager.COLOR_LEFT_DRAWER_BACKGROUND));
         theme.COLOR_CHAT_USER_BACKGROUND    = Color.parseColor(object.getString(ThemeManager.COLOR_CHAT_USER_BACKGROUND));
         theme.COLOR_CHAT_ITEM_BACKGROUND    = Color.parseColor(object.getString(ThemeManager.COLOR_CHAT_ITEM_BACKGROUND));
+        theme.COLOR_TAB_COUNTER_CIRCLE      = Color.parseColor(object.getString(ThemeManager.COLOR_TAB_COUNTER_CIRCLE));
+        theme.COLOR_CHAT_MARK               = Color.parseColor(object.getString(ThemeManager.COLOR_CHAT_MARK));
 
         return theme;
     }
@@ -91,6 +90,7 @@ public class JSON {
             return null;
         }
     }
+    */
 
     public static String downloadJSON(String url) throws Exception {
         StringBuilder builder = new StringBuilder();

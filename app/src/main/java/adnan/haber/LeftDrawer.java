@@ -29,13 +29,10 @@ import java.util.Arrays;
 import java.util.Comparator;
 import java.util.Map;
 
-import adnan.haber.fragments.AboutFragment;
 import adnan.haber.types.Rank;
-import adnan.haber.util.ChatSaver;
 import adnan.haber.util.CredentialManager;
 import adnan.haber.util.Debug;
 import adnan.haber.util.RankIconManager;
-import adnan.haber.util.ThemeManager;
 
 public class LeftDrawer extends PreferenceFragment {
     static SharedPreferences preferences;
@@ -53,8 +50,8 @@ public class LeftDrawer extends PreferenceFragment {
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         View view = super.onCreateView(inflater, container, savedInstanceState);
+        view.setBackgroundColor(Color.parseColor("#ff3c3f41"));
 
-        view.setBackgroundColor(ThemeManager.GetColor(ThemeManager.COLOR_LEFT_DRAWER_BACKGROUND));
         if ( prefcat == null ) {
             final Preference btLogin = new Preference(getActivity());
             if ( Haber.IsGuest() ) {
@@ -208,11 +205,11 @@ public class LeftDrawer extends PreferenceFragment {
     @Override
     public boolean onPreferenceTreeClick(PreferenceScreen screen, Preference preference) {
         if ( preference.getKey().equals("themes") ) {
-            Intent intent = new Intent(getActivity(), ThemeChooser.class);
+            /*Intent intent = new Intent(getActivity(), ThemeChooser.class);
             ActivityOptionsCompat activityOps = ActivityOptionsCompat.makeCustomAnimation(getActivity(), R.anim.slide_in_right, R.anim.slide_out_left);
             ActivityCompat.startActivity(getActivity(), intent, activityOps.toBundle());
             ThemeChooser.activity = (HaberActivity)getActivity();
-
+            */
         } else if ( preference.getKey().equals("login") ) {
             AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
             builder.setTitle("Login");
@@ -237,6 +234,8 @@ public class LeftDrawer extends PreferenceFragment {
 
                     if ( ((CheckBox)view.findViewById(R.id.cbRememberMe)).isChecked())
                         CredentialManager.Save(username, password);
+                    else
+                        CredentialManager.Save("", "");
 
                     try {
                         Haber.Disconnect();

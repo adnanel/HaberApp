@@ -7,7 +7,8 @@
     <HorizontalScrollView
         android:layout_width="fill_parent"
         android:layout_height="wrap_content"
-        android:id="@+id/horizontalScrollView">
+        android:id="@+id/horizontalScrollView"
+        android:background="#ff4f5456">
 
         <LinearLayout
             android:orientation="horizontal"

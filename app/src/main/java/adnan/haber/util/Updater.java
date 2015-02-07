@@ -30,7 +30,7 @@ import adnan.haber.R;
  * Created by Adnan on 24.1.2015..
  */
 public class Updater {
-    final static int version = 45;
+    final static int version = 47;
     static AlertDialog dialog;
 
 
@@ -184,8 +184,11 @@ public class Updater {
                     }
                     total += count;
                     // publishing the progress....
-                    if (fileLength > 0) // only if total length is known
-                        publishProgress((int) (total * 100 / fileLength));
+                    if (fileLength > 0) {
+                        int progress = (int) (total * 100 / fileLength);
+                        if ( progress != 100 )
+                            publishProgress(progress);
+                    }
                     output.write(data, 0, count);
                 }
             } catch (Exception e) {
@@ -202,6 +205,7 @@ public class Updater {
                 if (connection != null)
                     connection.disconnect();
             }
+            onProgressUpdate(100);
             return null;
         }
     }

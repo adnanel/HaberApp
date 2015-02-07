@@ -1,5 +1,6 @@
 package adnan.haber;
 
+/*
 import android.app.AlertDialog;
 import android.app.ProgressDialog;
 import android.content.DialogInterface;
@@ -148,3 +149,4 @@ public class ThemeChooser extends ActionBarActivity {
         }
     }
 }
+*/

@@ -23,8 +23,6 @@ public class ChatSaver implements Haber.HaberListener {
     static Context context;
     static SharedPreferences sharedPreferences;
 
-    //todo clear prefs, store packet ID as well.
-    //todo also load cache when starting a new chat
 
     final static String PREFS = "chat_cache";
     final static String PREF_COUNT = "count";
@@ -73,7 +71,10 @@ public class ChatSaver implements Haber.HaberListener {
         ArrayList<Message> result = new ArrayList<>();
 
         int count = sharedPreferences.getInt(PREF_COUNT, 0);
-        for ( int i = 0; i < count; i ++ ) {
+        int start = count - 100;
+        if ( start < 0 ) start = 0;
+
+        for ( int i = start; i < count; i ++ ) {
             Message msg = new Message();
             msg.setBody(sharedPreferences.getString(PREF_BODY + i, ""));
             msg.setFrom(sharedPreferences.getString(PREF_FROM + i, ""));
@@ -104,7 +105,10 @@ public class ChatSaver implements Haber.HaberListener {
         ArrayList<Message> result = new ArrayList<>();
 
         int count = sharedPreferences.getInt(PREF_LOBBY_COUNT, 0);
-        for ( int i = 0; i < count; i ++ ) {
+        int start = count - 100;
+        if ( start < 0 ) start = 0;
+
+        for ( int i = start; i < count; i ++ ) {
             Message msg = new Message();
             msg.setBody(sharedPreferences.getString(PREF_LOBBY_BODY + i, ""));
             msg.setFrom(sharedPreferences.getString(PREF_LOBBY_FROM + i, ""));

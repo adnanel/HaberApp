@@ -1,5 +1,6 @@
 package adnan.haber;
 
+import android.app.AlertDialog;
 import android.app.Notification;
 import android.app.NotificationManager;
 import android.app.PendingIntent;
@@ -31,7 +32,6 @@ public class HaberService extends Service implements Haber.HaberListener {
     static List<Chat> chatRooms = new ArrayList<>();
     static MultiUserChat haberChat;
 
-    public static boolean isConnected = false;
     public static synchronized void runOnHaberThread(Runnable runnable) {
         runnables.add(runnable);
     }
@@ -179,6 +179,11 @@ public class HaberService extends Service implements Haber.HaberListener {
                     stopSelf();
                     return;
                 }
+                if ( !haberChat.isJoined() ) {
+                    Toast.makeText(HaberService.this, "Izbaceni ste iz sobe!", Toast.LENGTH_LONG).show();
+                    stopSelf();
+                    return;
+                }
 
                 while ( !this.isInterrupted() ) {
                     int i;
@@ -234,7 +239,6 @@ public class HaberService extends Service implements Haber.HaberListener {
             removeHaberListener(listener);
 
         HaberService.haberChat = haberChat;
-        isConnected = true;
     }
 
     @Override

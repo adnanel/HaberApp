@@ -17,6 +17,7 @@ import android.os.Bundle;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
+import android.widget.EditText;
 import android.widget.Toast;
 
 import java.io.File;
@@ -123,8 +124,8 @@ public class AdvancedPreferences extends PreferenceFragment {
                     builder.setPositiveButton("Posalji", new DialogInterface.OnClickListener() {
                         @Override
                         public void onClick(DialogInterface dialog, int which) {
-                            String bug = "bug";
-                            String report = "report";
+                            String bug = ((EditText)frag.getView().findViewById(R.id.editText5)).getText().toString();
+                            String report = ((EditText)frag.getView().findViewById(R.id.editText4)).getText().toString();;
 
                             Intent i = new Intent(Intent.ACTION_SEND);
                             i.setType("message/rfc822");

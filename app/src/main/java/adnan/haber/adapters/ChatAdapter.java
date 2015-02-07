@@ -61,6 +61,7 @@ public class ChatAdapter extends ArrayAdapter<ListChatItem> {
     HaberActivity context;
     CommandBarListener commandBarListener;
     boolean isPrivate = false;
+    static String ownUsername = null;
 
     public ChatAdapter(HaberActivity context, List<ListChatItem> items, CommandBarListener cmdListener, boolean isPrivate) {
         super(context, R.layout.single_chat_item, items);
@@ -159,7 +160,13 @@ public class ChatAdapter extends ArrayAdapter<ListChatItem> {
             TextView tvUsername;
             TextView tvMessage;
 
-            rowView = inflater.inflate(R.layout.single_chat_item, parent, false);
+            if ( ownUsername == null )
+                ownUsername = Haber.getShortUsername(Haber.getUsername());
+
+            if ( items.get(position).author.equals(ownUsername))
+                rowView = inflater.inflate(R.layout.single_own_chat_item, parent, false);
+            else
+                rowView = inflater.inflate(R.layout.single_chat_item, parent, false);
 
             (tvUsername = (TextView) rowView.findViewById(R.id.tvName)).setText(items.get(position).author);
 

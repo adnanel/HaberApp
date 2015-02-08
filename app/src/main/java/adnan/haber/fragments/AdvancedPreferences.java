@@ -5,17 +5,12 @@ import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.net.Uri;
-import android.os.Environment;
 import android.preference.Preference;
-import android.preference.PreferenceActivity;
 import android.preference.PreferenceManager;
 import android.preference.PreferenceScreen;
 import android.support.v4.app.FragmentTransaction;
 import android.support.v4.preference.PreferenceFragment;
-import android.support.v7.app.ActionBarActivity;
 import android.os.Bundle;
-import android.view.Menu;
-import android.view.MenuItem;
 import android.view.View;
 import android.widget.EditText;
 import android.widget.Toast;
@@ -65,7 +60,7 @@ public class AdvancedPreferences extends PreferenceFragment {
     }
 
 
-    public static boolean IsDebug(Context context) {
+    private static boolean IsDebug(Context context) {
         return PreferenceManager.getDefaultSharedPreferences(context).getBoolean("debugMode", true);
     }
 
@@ -85,7 +80,7 @@ public class AdvancedPreferences extends PreferenceFragment {
                 @Override
                 public void run() {
                     View view = getActivity().getLayoutInflater().inflate(R.layout.about, null);
-                    final AboutFragment frag = (AboutFragment)getActivity().getSupportFragmentManager().findFragmentById(R.id.aboutFragment);
+                    final AboutFragment frag = (AboutFragment) getActivity().getSupportFragmentManager().findFragmentById(R.id.aboutFragment);
 
                     builder.setTitle("O aplikaciji");
                     builder.setNeutralButton("Zatvori", new DialogInterface.OnClickListener() {
@@ -119,7 +114,7 @@ public class AdvancedPreferences extends PreferenceFragment {
             builder.setNegativeButton("Prekid", null);
             builder.create().show();
         } else if ( preference.getKey().equals("debugMode")) {
-            Debug.SetDebugMode( IsDebug(getActivity() ) );
+            Debug.SetDebugMode(IsDebug(getActivity()));
         } else if ( preference.getKey().equals("version") ) {
             getActivity().runOnUiThread(new Runnable() {
                 @Override

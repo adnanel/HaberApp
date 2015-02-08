@@ -2,47 +2,26 @@ package adnan.haber.adapters;
 
 import android.content.Context;
 import android.graphics.Color;
-import android.graphics.drawable.Drawable;
 import android.text.Html;
 import android.text.Spannable;
 import android.text.SpannableStringBuilder;
-import android.text.Spanned;
-import android.text.TextUtils;
 import android.text.method.LinkMovementMethod;
 import android.text.style.BackgroundColorSpan;
 import android.text.style.ClickableSpan;
-import android.text.style.ImageSpan;
 import android.text.style.URLSpan;
 import android.util.Patterns;
 import android.view.LayoutInflater;
-import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
-import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 import android.widget.ViewSwitcher;
 
-import org.apache.http.HttpResponse;
-import org.apache.http.client.methods.HttpGet;
-import org.apache.http.impl.client.DefaultHttpClient;
 import org.jivesoftware.smack.packet.Message;
 
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.OutputStream;
-import java.net.HttpURLConnection;
-import java.net.MalformedURLException;
-import java.net.URL;
-import java.text.SimpleDateFormat;
-import java.util.ArrayList;
-import java.util.Calendar;
-import java.util.Date;
 import java.util.List;
-import java.util.Map;
 import java.util.regex.Matcher;
-import java.util.regex.Pattern;
 
 import adnan.haber.Haber;
 import adnan.haber.HaberActivity;
@@ -58,11 +37,11 @@ import adnan.haber.util.SmileyManager;
  */
 
 public class ChatAdapter extends ArrayAdapter<ListChatItem> {
-    List<ListChatItem> items;
-    HaberActivity context;
-    CommandBarListener commandBarListener;
-    boolean isPrivate = false;
-    static String ownUsername = null;
+    private List<ListChatItem> items;
+    private HaberActivity context;
+    private CommandBarListener commandBarListener;
+    private boolean isPrivate = false;
+    private static String ownUsername = null;
 
     public ChatAdapter(HaberActivity context, List<ListChatItem> items, CommandBarListener cmdListener, boolean isPrivate) {
         super(context, R.layout.single_chat_item, items);
@@ -82,7 +61,7 @@ public class ChatAdapter extends ArrayAdapter<ListChatItem> {
         notifyDataSetChanged();
     }
 
-    public static boolean makeLinksClickable(Context context, Spannable spannable) {
+    private static void makeLinksClickable(Spannable spannable) {
         boolean hasChanges = false;
 
         Matcher matcher = Patterns.WEB_URL.matcher(spannable);
@@ -104,8 +83,6 @@ public class ChatAdapter extends ArrayAdapter<ListChatItem> {
                         Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
             }
         }
-
-        return hasChanges;
     }
 
     public void addItem(Message msg) {
@@ -144,7 +121,7 @@ public class ChatAdapter extends ArrayAdapter<ListChatItem> {
         notifyDataSetChanged();
     }
 
-    static ViewSwitcher lastSwitcher = null;
+    private static ViewSwitcher lastSwitcher = null;
 
 
     @Override
@@ -152,7 +129,7 @@ public class ChatAdapter extends ArrayAdapter<ListChatItem> {
         LayoutInflater inflater = (LayoutInflater) context
                 .getSystemService(Context.LAYOUT_INFLATER_SERVICE);
 
-        View rowView = null;
+        View rowView;
         if ( items.get(position).isSpacer ) {
             rowView = inflater.inflate(R.layout.single_divider_item, parent, false);
 
@@ -197,7 +174,7 @@ public class ChatAdapter extends ArrayAdapter<ListChatItem> {
 
             //smileys and urls
             SpannableStringBuilder strBuilder = new SpannableStringBuilder(msg);
-            makeLinksClickable(context, strBuilder);
+            makeLinksClickable(strBuilder);
             URLSpan[] urls = strBuilder.getSpans(0, msg.length(), URLSpan.class);
 
             for(URLSpan cspan : urls) {
@@ -289,7 +266,7 @@ public class ChatAdapter extends ArrayAdapter<ListChatItem> {
         return rowView;
     }
 
-    protected void makeLinkClickable(SpannableStringBuilder strBuilder, final URLSpan span)
+    void makeLinkClickable(SpannableStringBuilder strBuilder, final URLSpan span)
     {
         int start = strBuilder.getSpanStart(span);
         int end = strBuilder.getSpanEnd(span);

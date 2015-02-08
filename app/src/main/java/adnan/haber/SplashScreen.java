@@ -20,16 +20,16 @@ import adnan.haber.util.Debug;
 
 
 public class SplashScreen extends ActionBarActivity implements Haber.HaberListener {
-    boolean started = false;
-    boolean canStart = true;
+    private boolean started = false;
+    private boolean canStart = true;
 
-    public void setStatus(String status) {
+    void setStatus(String status) {
         View tv = findViewById(R.id.tvStatus);
         if ( tv == null ) return;
         ((TextView)tv).setText(status);
     }
 
-    public String getStatus() {
+    String getStatus() {
         return ((TextView)findViewById(R.id.tvStatus)).getText().toString();
     }
 
@@ -94,7 +94,7 @@ public class SplashScreen extends ActionBarActivity implements Haber.HaberListen
     }
 
 
-    public void start() {
+    void start() {
         if ( !canStart ) return;
 
         Intent intent = new Intent(this, HaberActivity.class);
@@ -105,7 +105,7 @@ public class SplashScreen extends ActionBarActivity implements Haber.HaberListen
         started = true;
     }
 
-    int counter = 0;
+    private int counter = 0;
     @Override
     public void onMessageReceived(Chat chat, Message message) {
         counter++;

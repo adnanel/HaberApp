@@ -39,17 +39,17 @@ public class GIFPlayer extends View {
     public GIFPlayer(Context context, AttributeSet attrs, int defStyle) {
         super(context, attrs, defStyle);
 
-        setViewAttributes(context, attrs, defStyle);
+        setViewAttributes(context, attrs);
     }
 
     public GIFPlayer(Context context, AttributeSet attrs) {
         super(context, attrs);
 
-        setViewAttributes(context, attrs, 0);
+        setViewAttributes(context, attrs);
     }
 
     @SuppressLint("NewApi")
-    private void setViewAttributes(Context context, AttributeSet attrs, int defStyle) {
+    private void setViewAttributes(Context context, AttributeSet attrs) {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.HONEYCOMB) {
             setLayerType(View.LAYER_TYPE_SOFTWARE, null);
         }

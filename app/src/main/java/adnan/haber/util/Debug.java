@@ -9,20 +9,18 @@ import android.os.Environment;
 import android.util.Log;
 
 import java.io.File;
-import java.io.FileOutputStream;
-import java.io.FileWriter;
 import java.io.PrintWriter;
 
 public class Debug {
-    public static boolean DebugBuild = true;
-    public static String TAG = "Adnan";
+    private static boolean DebugBuild = true;
+    private static String TAG = "Adnan";
 
-    static SharedPreferences sharedPreferences;
-    static SharedPreferences.Editor editor;
+    private static SharedPreferences sharedPreferences;
+    private static SharedPreferences.Editor editor;
 
-    final static String PREFS = "log";
-    final static String PREF_COUNT = "count";
-    final static String PREF_ITEM  = "logitem";
+    private final static String PREFS = "log";
+    private final static String PREF_COUNT = "count";
+    private final static String PREF_ITEM  = "logitem";
 
     public static void Initialize(Context context) {
         sharedPreferences = context.getSharedPreferences(PREFS, Context.MODE_PRIVATE);

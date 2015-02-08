@@ -1,8 +1,5 @@
 package adnan.haber.util;
 
-import android.content.Context;
-import android.graphics.Color;
-
 import org.apache.http.HttpEntity;
 import org.apache.http.HttpResponse;
 import org.apache.http.StatusLine;
@@ -10,7 +7,6 @@ import org.apache.http.client.ClientProtocolException;
 import org.apache.http.client.HttpClient;
 import org.apache.http.client.methods.HttpGet;
 import org.apache.http.impl.client.DefaultHttpClient;
-import org.json.JSONArray;
 import org.json.JSONObject;
 
 import java.io.BufferedReader;
@@ -92,7 +88,7 @@ public class JSON {
     }
     */
 
-    public static String downloadJSON(String url) throws Exception {
+    private static String downloadJSON(String url) throws Exception {
         StringBuilder builder = new StringBuilder();
         HttpClient client = new DefaultHttpClient();
         HttpGet httpGet = new HttpGet(url);

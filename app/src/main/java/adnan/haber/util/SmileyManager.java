@@ -1,11 +1,8 @@
 package adnan.haber.util;
 
 import android.content.Context;
-import android.text.Html;
 import android.text.Spannable;
-import android.text.SpannableString;
 import android.text.SpannableStringBuilder;
-import android.text.Spanned;
 import android.text.style.ImageSpan;
 
 import java.util.HashMap;
@@ -101,7 +98,7 @@ public class SmileyManager {
         map.put(Pattern.compile(Pattern.quote(smile)), resource);
     }
 
-    public static boolean addSmiles(Context context, Spannable spannable) {
+    private static boolean addSmiles(Context context, Spannable spannable) {
         boolean hasChanges = false;
         for (Map.Entry<Pattern, Integer> entry : emoticons.entrySet()) {
             Matcher matcher = entry.getKey().matcher(spannable);

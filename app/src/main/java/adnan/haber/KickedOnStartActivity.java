@@ -5,18 +5,12 @@ import android.content.DialogInterface;
 import android.content.Intent;
 import android.support.v7.app.ActionBarActivity;
 import android.os.Bundle;
-import android.view.Menu;
-import android.view.MenuItem;
 import android.view.View;
 import android.widget.CheckBox;
 import android.widget.EditText;
 
-import java.util.ArrayList;
-import java.util.List;
-
 import adnan.haber.util.CredentialManager;
 import adnan.haber.util.Debug;
-import adnan.haber.views.GIFPlayer;
 
 
 public class KickedOnStartActivity extends ActionBarActivity {

@@ -13,7 +13,6 @@ import android.preference.PreferenceCategory;
 import android.preference.PreferenceScreen;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.app.ActivityOptionsCompat;
-import android.support.v4.app.FragmentTransaction;
 import android.support.v4.preference.PreferenceFragment;
 import android.text.Spannable;
 import android.view.LayoutInflater;
@@ -35,10 +34,10 @@ import adnan.haber.util.Debug;
 import adnan.haber.util.RankIconManager;
 
 public class LeftDrawer extends PreferenceFragment {
-    static SharedPreferences preferences;
+    private static SharedPreferences preferences;
 
-    ArrayList<Preference> onlineUsers = new ArrayList<Preference>();
-    PreferenceCategory prefcat;
+    private ArrayList<Preference> onlineUsers = new ArrayList<Preference>();
+    private PreferenceCategory prefcat;
 
 
     public static void initialize(Context context) {
@@ -97,7 +96,7 @@ public class LeftDrawer extends PreferenceFragment {
         return view;
     }
 
-    public void refreshOnlineList() {
+    void refreshOnlineList() {
         Object[] users = HaberService.haberChat.getOccupants().toArray();
         Arrays.sort(users, new Comparator<Object>() {
             @Override

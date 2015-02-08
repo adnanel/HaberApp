@@ -4,9 +4,6 @@ import android.content.Context;
 import android.content.res.Resources;
 import android.util.TypedValue;
 
-import org.apache.http.HttpConnection;
-import org.apache.http.client.HttpClient;
-
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStream;
@@ -108,12 +105,14 @@ public class Util {
             StringBuilder text = new StringBuilder();
             while ((str = in.readLine()) != null)
             {
-                text.append(str + "\n");
+                text.append(str).append("\n");
             }
             in.close();
             return text.toString();
         } catch (MalformedURLException e) {
+            Debug.log(e);
         } catch (IOException e) {
+            Debug.log(e);
         }
         return "Failed to download!";
     }

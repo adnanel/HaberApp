@@ -43,13 +43,13 @@ import adnan.haber.util.Util;
 
 public class HaberActivity extends ActionBarActivity implements Haber.HaberListener {
     HashMap<Chat, ChatThread> chatThreads = new HashMap<>();
-    ChatThread mainChatThread;
-    ListView chatListView;
-    AlertDialog smileyDialog;
+    private ChatThread mainChatThread;
+    private ListView chatListView;
+    private AlertDialog smileyDialog;
 
-    boolean vibrationLock = true;
+    private boolean vibrationLock = true;
 
-    ChatAdapter.CommandBarListener cmdListener = new ChatAdapter.CommandBarListener() {
+    private ChatAdapter.CommandBarListener cmdListener = new ChatAdapter.CommandBarListener() {
 
         @Override
         public void onKick(final String user) {
@@ -92,7 +92,7 @@ public class HaberActivity extends ActionBarActivity implements Haber.HaberListe
         }
     };
 
-    public Runnable sendMessage = new Runnable() {
+    private Runnable sendMessage = new Runnable() {
         @Override
         public void run() {
             final EditText editText = (EditText)findViewById(R.id.editText);
@@ -159,7 +159,7 @@ public class HaberActivity extends ActionBarActivity implements Haber.HaberListe
         }
     };
 
-    public void sortTabs() {
+    void sortTabs() {
         final TreeMap<Integer, ArrayList<View>> tabs = new TreeMap<Integer, ArrayList<View>>(new Comparator<Integer>() {
             @Override
             public int compare(Integer lhs, Integer rhs) {
@@ -230,7 +230,7 @@ public class HaberActivity extends ActionBarActivity implements Haber.HaberListe
         });
     }
 
-    public Chat getCurrentChat()  {
+    Chat getCurrentChat()  {
         if ( chatListView.getAdapter() == mainChatThread.chatAdapter )
             return null;
 
@@ -523,9 +523,9 @@ public class HaberActivity extends ActionBarActivity implements Haber.HaberListe
 
     }
 
-    boolean isSoftKeyboardOpened = false;
+    private boolean isSoftKeyboardOpened = false;
 
-    public void setListenerToRootView(){
+    void setListenerToRootView(){
         final View activityRootView = getWindow().getDecorView().findViewById(android.R.id.content);
         activityRootView.getViewTreeObserver().addOnGlobalLayoutListener(new ViewTreeObserver.OnGlobalLayoutListener() {
             @Override
@@ -546,7 +546,7 @@ public class HaberActivity extends ActionBarActivity implements Haber.HaberListe
         });
     }
 
-    public void scrollToBottom(final boolean smooth) {
+    void scrollToBottom(final boolean smooth) {
         runOnUiThread(new Runnable() {
             @Override
             public void run() {

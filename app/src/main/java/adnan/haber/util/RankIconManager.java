@@ -91,7 +91,7 @@ public class RankIconManager {
         map.put(Pattern.compile(Pattern.quote(smile)), resource);
     }
 
-    static boolean addSmiles(Context context, Spannable spannable) {
+    private static boolean addSmiles(Context context, Spannable spannable) {
         boolean hasChanges = false;
         for (Map.Entry<Pattern, Integer> entry : emoticons.entrySet()) {
             Matcher matcher = entry.getKey().matcher(spannable);
@@ -117,7 +117,7 @@ public class RankIconManager {
         return hasChanges;
     }
 
-    static Spannable _getSpanned(Context context, CharSequence text) {
+    private static Spannable _getSpanned(Context context, CharSequence text) {
         Spannable spannable = spannableFactory.newSpannable(text);
         addSmiles(context, spannable);
         return spannable;

@@ -1,14 +1,11 @@
 package adnan.haber;
 
-import android.app.AlertDialog;
-import android.app.Notification;
 import android.app.NotificationManager;
 import android.app.PendingIntent;
 import android.app.Service;
 import android.content.Context;
 import android.content.Intent;
 import android.graphics.BitmapFactory;
-import android.os.Bundle;
 import android.os.IBinder;
 import android.os.Looper;
 import android.support.v4.app.NotificationCompat;
@@ -104,7 +101,7 @@ public class HaberService extends Service implements Haber.HaberListener {
         return Rank.fromString(role);
     }
 
-    public static synchronized ArrayList<Haber.HaberListener> getHaberListeners() {
+    private static synchronized ArrayList<Haber.HaberListener> getHaberListeners() {
         ArrayList<Haber.HaberListener> result = new ArrayList<>();
         for (Haber.HaberListener listener : haberListeners )
             result.add(listener);
@@ -175,7 +172,7 @@ public class HaberService extends Service implements Haber.HaberListener {
             public void run() {
                 Looper.prepare();
 
-                if ( !Haber.initialize(HaberService.this, HaberService.this) ) {
+                if (Haber.Initialize(HaberService.this, HaberService.this)) {
                     stopSelf();
                     return;
                 }

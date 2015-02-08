@@ -6,14 +6,12 @@ import org.jivesoftware.smack.Chat;
 import org.jivesoftware.smack.ChatManager;
 import org.jivesoftware.smack.ChatManagerListener;
 import org.jivesoftware.smack.ConnectionConfiguration;
-import org.jivesoftware.smack.ConnectionListener;
 import org.jivesoftware.smack.MessageListener;
 import org.jivesoftware.smack.PacketListener;
 import org.jivesoftware.smack.SASLAuthentication;
 import org.jivesoftware.smack.SmackAndroid;
 import org.jivesoftware.smack.SmackException;
 import org.jivesoftware.smack.XMPPConnection;
-import org.jivesoftware.smack.filter.PacketFilter;
 import org.jivesoftware.smack.packet.Message;
 import org.jivesoftware.smack.packet.Packet;
 import org.jivesoftware.smack.sasl.SASLDigestMD5Mechanism;
@@ -425,7 +423,7 @@ public class Haber {
     }
 
 
-    public static boolean initialize( HaberListener statusListener, Context context ) {
+    public static boolean Initialize(HaberListener statusListener, Context context) {
         if ( instance != null ) {
             instance.Disconnect();
         }
@@ -433,10 +431,10 @@ public class Haber {
         try {
             instance = new Haber(statusListener, context);
         } catch ( Exception er ) {
-            return false;
+            return true;
         }
 
-        return true;
+        return false;
     }
 
 

@@ -7,8 +7,6 @@ import org.jivesoftware.smack.Chat;
 import org.jivesoftware.smack.packet.Message;
 import org.jivesoftware.smackx.muc.MultiUserChat;
 
-import java.security.MessageDigest;
-import java.security.NoSuchAlgorithmException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
@@ -20,23 +18,22 @@ import adnan.haber.HaberService;
  * Created by Adnan on 24.1.2015..
  */
 public class ChatSaver implements Haber.HaberListener {
-    static Context context;
-    static SharedPreferences sharedPreferences;
+    private static SharedPreferences sharedPreferences;
 
 
-    final static String PREFS = "chat_cache";
-    final static String PREF_COUNT = "count";
-    final static String PREF_BODY = "body";
-    final static String PREF_FROM = "from";
-    final static String PREF_TO   = "to";
-    final static String PREF_ID   = "id";
+    private final static String PREFS = "chat_cache";
+    private final static String PREF_COUNT = "count";
+    private final static String PREF_BODY = "body";
+    private final static String PREF_FROM = "from";
+    private final static String PREF_TO   = "to";
+    private final static String PREF_ID   = "id";
 
-    final static String PREF_LOBBY_COUNT = "lcount";
-    final static String PREF_LOBBY_BODY  = "lbody";
-    final static String PREF_LOBBY_FROM  = "lfrom";
-    final static String PREF_LOBBY_ID    = "lid";
+    private final static String PREF_LOBBY_COUNT = "lcount";
+    private final static String PREF_LOBBY_BODY  = "lbody";
+    private final static String PREF_LOBBY_FROM  = "lfrom";
+    private final static String PREF_LOBBY_ID    = "lid";
 
-    static ChatSaver instance;
+    private static ChatSaver instance;
     private ChatSaver() {
         instance = this;
     }
@@ -44,7 +41,6 @@ public class ChatSaver implements Haber.HaberListener {
     public static void Initialize(Context context) {
         CredentialManager.Initialize(context);
 
-        ChatSaver.context = context;
         sharedPreferences = context.getSharedPreferences(PREFS, Context.MODE_PRIVATE);
 
         if ( instance == null ) {
@@ -63,8 +59,7 @@ public class ChatSaver implements Haber.HaberListener {
     }
 
     public static int getSavedMessagesCount() {
-        int count = sharedPreferences.getInt(PREF_COUNT, 0);
-        return count;
+        return sharedPreferences.getInt(PREF_COUNT, 0);
     }
 
     public static ArrayList<Message> getSavedMessages() {
@@ -97,8 +92,7 @@ public class ChatSaver implements Haber.HaberListener {
     }
 
     public static int getSavedLobbyMessagesCount() {
-        int count = sharedPreferences.getInt(PREF_LOBBY_COUNT, 0);
-        return count;
+        return sharedPreferences.getInt(PREF_LOBBY_COUNT, 0);
     }
 
     public static ArrayList<Message> getSavedLobbyMessages() {

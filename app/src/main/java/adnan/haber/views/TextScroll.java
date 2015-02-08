@@ -18,10 +18,13 @@ import adnan.haber.util.Debug;
 
 /**
  * Created by Adnan on 17.9.2014.
+ *
+ * ! Ne koristi se vise !
  */
+@Deprecated
 public class TextScroll extends FrameLayout {
     Context context;
-    private OnClickListener clickListener;
+
     private int delay = 2250;
 
     private TextView textView;
@@ -77,8 +80,7 @@ public class TextScroll extends FrameLayout {
 
     @Override
     public void setOnClickListener(OnClickListener listener ) {
-        this.clickListener = listener;
-
+        textView.setOnClickListener(listener);
     }
 
 

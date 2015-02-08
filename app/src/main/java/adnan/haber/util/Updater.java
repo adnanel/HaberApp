@@ -22,7 +22,6 @@ import java.io.OutputStream;
 import java.net.HttpURLConnection;
 import java.net.URL;
 
-import adnan.haber.HaberActivity;
 import adnan.haber.HaberService;
 import adnan.haber.R;
 
@@ -30,8 +29,8 @@ import adnan.haber.R;
  * Created by Adnan on 24.1.2015..
  */
 public class Updater {
-    final static int version = 50;
-    static AlertDialog dialog;
+    private final static int version = 51;
+    private static AlertDialog dialog;
 
 
     public static void CheckForUpdates(final Activity activity) {

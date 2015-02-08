@@ -181,7 +181,7 @@ public abstract class PreferenceFragment extends Fragment implements
      *
      * @param preferenceScreen The root {@link PreferenceScreen} of the preference hierarchy.
      */
-    public void setPreferenceScreen(PreferenceScreen preferenceScreen) {
+    void setPreferenceScreen(PreferenceScreen preferenceScreen) {
         if (PreferenceManagerCompat.setPreferences(mPreferenceManager, preferenceScreen) && preferenceScreen != null) {
             mHavePrefs = true;
             if (mInitDone) {
@@ -196,7 +196,7 @@ public abstract class PreferenceFragment extends Fragment implements
      * @return The {@link PreferenceScreen} that is the root of the preference
      *         hierarchy.
      */
-    public PreferenceScreen getPreferenceScreen() {
+    protected PreferenceScreen getPreferenceScreen() {
         return PreferenceManagerCompat.getPreferenceScreen(mPreferenceManager);
     }
     
@@ -217,7 +217,7 @@ public abstract class PreferenceFragment extends Fragment implements
      *
      * @param preferencesResId The XML resource ID to inflate.
      */
-    public void addPreferencesFromResource(int preferencesResId) {
+    protected void addPreferencesFromResource(int preferencesResId) {
         requirePreferenceManager();
 
         setPreferenceScreen(PreferenceManagerCompat.inflateFromResource(mPreferenceManager, getActivity(),
@@ -230,12 +230,7 @@ public abstract class PreferenceFragment extends Fragment implements
     public boolean onPreferenceTreeClick(PreferenceScreen preferenceScreen,
             Preference preference) {
         //if (preference.getFragment() != null &&
-    	if (
-                getActivity() instanceof OnPreferenceStartFragmentCallback) {
-            return ((OnPreferenceStartFragmentCallback)getActivity()).onPreferenceStartFragment(
-                    this, preference);
-        }
-        return false;
+        return getActivity() instanceof OnPreferenceStartFragmentCallback && ((OnPreferenceStartFragmentCallback) getActivity()).onPreferenceStartFragment(this, preference);
     }
 	
     /**

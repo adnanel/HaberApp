@@ -6,7 +6,6 @@ import android.support.v4.app.Fragment;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.Toast;
 
 import adnan.haber.HaberActivity;
 import adnan.haber.R;
@@ -92,9 +91,7 @@ public class SmileyChooser extends Fragment {
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
-        View view = inflater.inflate(R.layout.fragment_smiley_chooser, container, false);
-
-        return view;
+        return inflater.inflate(R.layout.fragment_smiley_chooser, container, false);
     }
 
 

@@ -3,6 +3,15 @@
 
     <PreferenceCategory android:title="Pristupačnost">
         <SwitchPreference android:title="Vibriraj kada dođe poruka" android:key="vibrate" android:defaultValue="true"/>
+        <SwitchPreference android:title="Vibriraj za poruke na aktivnom tabu" android:dependency="vibrate" android:key="vibrateonactive" android:defaultValue="true"/>
+        <SwitchPreference android:title="Vibriraj za poruke na javnom chatu" android:dependency="vibrate" android:key="vibrateonpublic" android:defaultValue="true"/>
+        <SwitchPreference android:title="Vibriraj za @Reply poruke" android:dependency="vibrate" android:key="vibrateonreply" android:defaultValue="true"/>
+
+        <SwitchPreference android:title="Prebaci na tab kada neko zapocne private" android:key="switchToNewChat" android:defaultValue="true"/>
+    </PreferenceCategory>
+
+    <PreferenceCategory android:title="Izgled">
+        <SwitchPreference android:title="Svoje poruke poravnaj desno" android:key="ownMessageAlignRight" android:defaultValue="true"/>
     </PreferenceCategory>
 
     <PreferenceCategory android:title="Misc.">
@@ -17,6 +26,6 @@
         <Preference android:title="Git" android:key="git" />
 
         <Preference android:title="O aplikaciji..." android:key="about"/>
-        <Preference android:title="Verzija" android:key="version" android:summary="0.4b"/>
+        <Preference android:title="Verzija" android:key="version" android:summary="0.5"/>
     </PreferenceCategory>
 </PreferenceScreen>

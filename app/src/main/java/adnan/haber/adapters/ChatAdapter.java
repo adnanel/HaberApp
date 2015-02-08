@@ -48,6 +48,7 @@ import adnan.haber.Haber;
 import adnan.haber.HaberActivity;
 import adnan.haber.HaberService;
 import adnan.haber.R;
+import adnan.haber.fragments.AdvancedPreferences;
 import adnan.haber.types.ListChatItem;
 import adnan.haber.util.Debug;
 import adnan.haber.util.SmileyManager;
@@ -163,7 +164,7 @@ public class ChatAdapter extends ArrayAdapter<ListChatItem> {
             if ( ownUsername == null )
                 ownUsername = Haber.getShortUsername(Haber.getUsername());
 
-            if ( items.get(position).author.equals(ownUsername))
+            if ( items.get(position).author.equals(ownUsername) && AdvancedPreferences.ShouldAlignOwnMessagesRight(context) )
                 rowView = inflater.inflate(R.layout.single_own_chat_item, parent, false);
             else
                 rowView = inflater.inflate(R.layout.single_chat_item, parent, false);

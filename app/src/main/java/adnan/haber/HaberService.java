@@ -180,7 +180,10 @@ public class HaberService extends Service implements Haber.HaberListener {
                     return;
                 }
                 if ( !haberChat.isJoined() ) {
-                    Toast.makeText(HaberService.this, "Izbaceni ste iz sobe!", Toast.LENGTH_LONG).show();
+                    Intent kickOnStart = new Intent(HaberService.this, KickedOnStartActivity.class);
+                    kickOnStart.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+                    HaberService.this.startActivity(kickOnStart);
+
                     stopSelf();
                     return;
                 }
@@ -200,6 +203,13 @@ public class HaberService extends Service implements Haber.HaberListener {
 
                     if ( !Haber.isConnected() ) {
                         stopSelf();
+                    } else if ( !haberChat.isJoined() ) {
+                        Intent kickOnStart = new Intent(HaberService.this, KickedOnStartActivity.class);
+                        kickOnStart.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+                        HaberService.this.startActivity(kickOnStart);
+
+                        stopSelf();
+                        return;
                     }
                 }
 
@@ -289,6 +299,11 @@ public class HaberService extends Service implements Haber.HaberListener {
         for (Haber.HaberListener listener : corpses )
             removeHaberListener(listener);
 
+        if ( params.length == 2 && (event == Haber.ChatEvent.Banned || event == Haber.ChatEvent.Kicked)) {
+            Intent kickOnStart = new Intent(HaberService.this, KickedOnStartActivity.class);
+            kickOnStart.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+            HaberService.this.startActivity(kickOnStart);
+        }
     }
 
     @Override

@@ -44,6 +44,27 @@ public class AdvancedPreferences extends PreferenceFragment {
         return PreferenceManager.getDefaultSharedPreferences(context).getBoolean("vibrate", true);
     }
 
+    public static boolean ShouldVibrateOnPublic(Context context) {
+        return PreferenceManager.getDefaultSharedPreferences(context).getBoolean("vibrateonpublic", true);
+    }
+
+    public static boolean ShouldVibrateOnActive(Context context) {
+        return PreferenceManager.getDefaultSharedPreferences(context).getBoolean("vibrateonactive", true);
+    }
+
+    public static boolean ShouldAlignOwnMessagesRight(Context context) {
+        return PreferenceManager.getDefaultSharedPreferences(context).getBoolean("ownMessageAlignRight", true);
+    }
+
+    public static boolean ShouldVibrateOnReply(Context context) {
+        return PreferenceManager.getDefaultSharedPreferences(context).getBoolean("vibrateonreply", true);
+    }
+
+    public static boolean ShouldSwitchToNewTab(Context context) {
+        return PreferenceManager.getDefaultSharedPreferences(context).getBoolean("switchToNewChat", true);
+    }
+
+
     public static boolean IsDebug(Context context) {
         return PreferenceManager.getDefaultSharedPreferences(context).getBoolean("debugMode", true);
     }
@@ -51,7 +72,12 @@ public class AdvancedPreferences extends PreferenceFragment {
 
     @Override
     public boolean onPreferenceTreeClick(PreferenceScreen screen, Preference preference) {
-        if ( preference.getKey().equals("about") ) {
+        if ( preference.getKey().equals("git") ) {
+            String url = "https://github.com/adnanel/HaberApp";
+            Intent i = new Intent(Intent.ACTION_VIEW);
+            i.setData(Uri.parse(url));
+            startActivity(i);
+        } else if ( preference.getKey().equals("about") ) {
             final AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
 
 
@@ -85,6 +111,7 @@ public class AdvancedPreferences extends PreferenceFragment {
                 public void onClick(DialogInterface dialog, int which) {
                     ChatSaver.ClearCache();
                     Intent intent = new Intent(getActivity(), HaberActivity.class);
+                    Debug.log("finishing due to cache clear...");
                     getActivity().finish();
                     startActivity(intent);
                 }

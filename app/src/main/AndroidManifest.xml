@@ -55,6 +55,12 @@
             android:name=".ThemeChooser"
             android:label="@string/title_activity_theme_chooser" >
         </activity>
+
+        <activity
+            android:name=".KickedOnStartActivity"
+            android:label="@string/title_activity_kicked_on_start" >
+
+        </activity>
     </application>
 
 </manifest>

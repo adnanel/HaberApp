@@ -93,6 +93,7 @@ public class SplashScreen extends ActionBarActivity implements Haber.HaberListen
 
     }
 
+
     public void start() {
         if ( !canStart ) return;
 

@@ -7,19 +7,6 @@
     <string name="title_activity_haber">HaberActivity</string>
     <string name="hello_blank_fragment">Hello blank fragment</string>
 
-    <string-array name="about_text_scroll">
-        <item> I cried - Ann, 4 </item>
-        <item> Best thing I have ever laid eyes on - You probably </item>
-        <item> Oh Em Gee - 12 yr old CoD player </item>
-        <item> 9 out of 11 - D.K., 20 </item>
-        <item> I heard the coder of this is really handsome </item>
-        <item> Me too!</item>
-        <item> What is haber? - Girl from bus</item>
-        <item> Please leave me alone - same girl</item>
-        <item> Sir, you must keep your distance. - Officer</item>
-        <item> Kaće LAG? </item>
-    </string-array>
-
     <color name="NickMarkColor">#ff9c3d65</color>
     <color name="TabMarkColor">#ff9c3d65</color>
 
@@ -36,5 +23,6 @@ Adnan Elezović]]>
     <string name="title_activity_advanced_preferences">AdvancedPreferences</string>
     <string name="title_activity_advanced_prefs">AdvancedPrefsActivity</string>
     <string name="title_activity_theme_chooser">ThemeChooser</string>
+    <string name="title_activity_kicked_on_start">KickedOnStartActivity</string>
 
 </resources>

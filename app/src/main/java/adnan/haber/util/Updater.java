@@ -30,7 +30,7 @@ import adnan.haber.R;
  * Created by Adnan on 24.1.2015..
  */
 public class Updater {
-    final static int version = 48;
+    final static int version = 50;
     static AlertDialog dialog;
 
 
@@ -79,6 +79,7 @@ public class Updater {
                                                         Debug.log(e);
                                                     }
 
+                                                    Debug.log("finishing activity (updater)");
                                                     activity.finish();
 
                                                     Intent intent = new Intent(Intent.ACTION_VIEW);
@@ -136,6 +137,13 @@ public class Updater {
                             }
                         });
 
+                    } else {
+                        activity.runOnUiThread(new Runnable() {
+                            @Override
+                            public void run() {
+                                Toast.makeText(activity, "Nema nove verzije!", Toast.LENGTH_SHORT).show();
+                            }
+                        });
                     }
                 } catch ( Exception e ) {
                     Debug.log(e);

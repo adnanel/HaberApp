@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <declare-styleable name="GIFPlayer">
+        <attr name="src" format="reference"/>
+        <attr name="paused" format="boolean"/>
+    </declare-styleable>
+</resources>

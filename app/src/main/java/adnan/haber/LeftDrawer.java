@@ -223,6 +223,7 @@ public class LeftDrawer extends PreferenceFragment {
             builder.setPositiveButton("Login", new DialogInterface.OnClickListener() {
                 @Override
                 public void onClick(DialogInterface dialog, int which) {
+                    Debug.log("Finishing activity due to login...");
                     getActivity().finish();
 
                     String password;
@@ -249,7 +250,6 @@ public class LeftDrawer extends PreferenceFragment {
 
                     HaberService.RestartService(getActivity());
                     Intent intent = new Intent(getActivity(), SplashScreen.class);
-                    getActivity().finish();
                     startActivity(intent);
                 }
             });
@@ -261,6 +261,7 @@ public class LeftDrawer extends PreferenceFragment {
 
             HaberService.RestartService(getActivity());
             Intent intent = new Intent(getActivity(), SplashScreen.class);
+            Debug.log("finishing activity duo to logout...");
             getActivity().finish();
             startActivity(intent);
         } else if ( preference.getKey().equals("advanced")) {

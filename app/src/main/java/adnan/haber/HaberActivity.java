@@ -47,6 +47,8 @@ public class HaberActivity extends ActionBarActivity implements Haber.HaberListe
     ListView chatListView;
     AlertDialog smileyDialog;
 
+    boolean vibrationLock = true;
+
     ChatAdapter.CommandBarListener cmdListener = new ChatAdapter.CommandBarListener() {
 
         @Override
@@ -228,7 +230,7 @@ public class HaberActivity extends ActionBarActivity implements Haber.HaberListe
         });
     }
 
-    public Chat getCurrentChat() throws Exception {
+    public Chat getCurrentChat()  {
         if ( chatListView.getAdapter() == mainChatThread.chatAdapter )
             return null;
 
@@ -238,8 +240,8 @@ public class HaberActivity extends ActionBarActivity implements Haber.HaberListe
                 return (Chat) pairs.getKey();
         }
 
-        Debug.log("This isn't supposed to happen!");
-        throw new Exception("Oh maw gaaaawd");
+        Debug.log(new Exception("This isn't supposed to happen! EVERR"));
+        return null;
     }
 
 
@@ -322,7 +324,7 @@ public class HaberActivity extends ActionBarActivity implements Haber.HaberListe
 
             chatThreads.put(chats, thread);
         }
-
+        vibrationLock = false;
 
         HaberService.addHaberListener(this);
 
@@ -430,12 +432,17 @@ public class HaberActivity extends ActionBarActivity implements Haber.HaberListe
         runOnUiThread(new Runnable() {
             @Override
             public void run() {
-
-
-                if  ( AdvancedPreferences.ShouldVibrate(HaberActivity.this))
-                    ((Vibrator)getSystemService(Context.VIBRATOR_SERVICE)).vibrate(100);
+                boolean vibratedYet = false;
 
                 if ( chat != null ) {
+                    if  ( AdvancedPreferences.ShouldVibrate(HaberActivity.this) && !vibrationLock ) {
+                        if ( (getCurrentChat() != chat) || (getCurrentChat() == chat && AdvancedPreferences.ShouldVibrateOnActive(HaberActivity.this)) ) {
+                            ((Vibrator) getSystemService(Context.VIBRATOR_SERVICE)).vibrate(100);
+                            vibratedYet = true;
+                        }
+                    }
+
+
                     if ( chatThreads.containsKey(chat) ) {
                         chatThreads.get(chat).chatAdapter.addItem(message);
                         try {
@@ -472,6 +479,13 @@ public class HaberActivity extends ActionBarActivity implements Haber.HaberListe
                     }
                 }
                 else {
+                    if  ( AdvancedPreferences.ShouldVibrate(HaberActivity.this) && !vibrationLock  ) {
+                        if ( (getCurrentChat() != null && AdvancedPreferences.ShouldVibrateOnPublic(HaberActivity.this)) || (getCurrentChat() == null && AdvancedPreferences.ShouldVibrateOnActive(HaberActivity.this)) ) {
+                            ((Vibrator) getSystemService(Context.VIBRATOR_SERVICE)).vibrate(100);
+                            vibratedYet = true;
+                        }
+                    }
+
                     mainChatThread.chatAdapter.addItem(message);
                     try {
                         if ( getCurrentChat() != null )
@@ -488,6 +502,22 @@ public class HaberActivity extends ActionBarActivity implements Haber.HaberListe
 
 
                 sortTabs();
+
+
+                //check for @Reply and vibrates
+                if ( !vibratedYet && AdvancedPreferences.ShouldVibrateOnReply(HaberActivity.this) ) {
+                    String mark = "@" + Haber.getUsername();
+                    if ( message.getBody().toUpperCase().contains(mark.toUpperCase()) ) {
+                        ((Vibrator) getSystemService(Context.VIBRATOR_SERVICE)).vibrate(100);
+                        vibratedYet = true;
+                    } else if (Haber.IsGuest() ) {
+                        mark = "@" + Haber.getUsername().substring(1);
+                        if ( message.getBody().toUpperCase().contains(mark.toUpperCase()) ) {
+                            ((Vibrator) getSystemService(Context.VIBRATOR_SERVICE)).vibrate(100);
+                            vibratedYet = true;
+                        }
+                    }
+                }
             }
         });
 
@@ -553,11 +583,13 @@ public class HaberActivity extends ActionBarActivity implements Haber.HaberListe
                         }
                     }
 
-                    thread.tabView.performClick();
+                    if ( AdvancedPreferences.ShouldSwitchToNewTab(HaberActivity.this))
+                        thread.tabView.performClick();
 
                     chatThreads.put(chat, thread);
                 } else {
-                    chatThreads.get(chat).tabView.performClick();
+                    if ( AdvancedPreferences.ShouldSwitchToNewTab(HaberActivity.this))
+                        chatThreads.get(chat).tabView.performClick();
 
                 }
             }
@@ -618,6 +650,7 @@ public class HaberActivity extends ActionBarActivity implements Haber.HaberListe
 
         chatThreads.clear();
 
+        Debug.log("finishing due to onSoftDisconnect...");
         finish();
     }
 
@@ -816,6 +849,7 @@ public class HaberActivity extends ActionBarActivity implements Haber.HaberListe
                             Debug.log(e);
                         }
 
+                        Debug.log("Finishing because of user interaction (haber shutting down)");
                         finish();
                     }
                 }.start();
@@ -824,6 +858,7 @@ public class HaberActivity extends ActionBarActivity implements Haber.HaberListe
         builder.setNeutralButton("Sakrij se u pozadini", new DialogInterface.OnClickListener() {
             @Override
             public void onClick(DialogInterface dialog, int which) {
+                Debug.log("Finishg because of user interaction (move to back)");
                 finish();
             }
         });

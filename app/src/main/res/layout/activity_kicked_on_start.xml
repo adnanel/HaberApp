@@ -34,8 +34,16 @@
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="Izbaceni ste iz sobe!\nJedan od mogucih razloga je da su gosti zabranjeni"
+            android:text="Izbaceni ste iz sobe!"
             android:id="@+id/textView7"
+            android:layout_gravity="center_horizontal"
+            android:gravity="center_horizontal" />
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Jedan od mogucih razloga je da je pristup gostima privremeno zabranjen"
+            android:id="@+id/tvGuestMessage"
             android:layout_gravity="center_horizontal"
             android:gravity="center_horizontal"
             android:paddingBottom="20dp" />

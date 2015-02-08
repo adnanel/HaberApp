@@ -26,6 +26,10 @@ public class KickedOnStartActivity extends ActionBarActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_kicked_on_start);
 
+        if ( !Haber.IsGuest() ) {
+            findViewById(R.id.btLogin).setVisibility(View.GONE);
+            findViewById(R.id.tvGuestMessage).setVisibility(View.GONE);
+        }
     }
 
     public void login(View v) {

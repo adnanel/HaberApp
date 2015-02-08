@@ -49,9 +49,7 @@
                 android:layout_alignParentStart="true"
                 android:smoothScrollbar="true"
                 android:stackFromBottom="true"
-                android:layout_above="@+id/relativeLayout"
-                android:divider="#ffb7b9b9"
-                android:dividerHeight="1px" />
+                android:layout_above="@+id/relativeLayout" />
 
             <RelativeLayout
                 android:layout_width="fill_parent"

@@ -67,7 +67,7 @@ public class Debug {
 
         int count;
         editor.putInt(PREF_COUNT, count = sharedPreferences.getInt(PREF_COUNT, 0) + 1);
-        editor.putString(msg, PREF_ITEM + (count - 1));
+        editor.putString( PREF_ITEM + (count - 1), msg);
 
         editor.commit();
     }

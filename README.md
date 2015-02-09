@@ -9,6 +9,14 @@ https://drive.google.com/uc?export=download&id=0B310dhQuX3QdMlZtbXozMFA5ejg
 # Change log
 ------------------
 
+Verzija 0.5
+------------------
+- Teme privremeno sakrivene
+- "Zapocni private" vise nije ponudjeno ako korisnik nije online
+- Ispravljeno dosta bugova
+- Veca kontrola nad vibracijom
+- Kick/ban notifikacije imaju timeout
+
 Verzija 0.4b
 ------------------
 - Implementirane teme 

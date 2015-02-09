@@ -784,18 +784,6 @@ public class HaberActivity extends ActionBarActivity implements Haber.HaberListe
                         }
                     });
 
-                    tabView.setOnTouchListener(new View.OnTouchListener() {
-
-                        @Override
-                        public boolean onTouch(View v, MotionEvent event) {
-                            // todo
-                            if ( event.getActionMasked() == MotionEvent.ACTION_DOWN ) {
-                                Debug.log("here");
-                            }
-
-                            return false;
-                        }
-                    });
                     btClose = tabView.findViewById(R.id.tvClose);
                     if ( participant.equals("haber") )
                         btClose.setVisibility(View.INVISIBLE);

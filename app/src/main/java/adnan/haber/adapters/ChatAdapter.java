@@ -184,7 +184,7 @@ public class ChatAdapter extends ArrayAdapter<ListChatItem> {
 
             //mark name
             String string = " " + items.get(position).message + " ";
-            Spannable msg = Spannable.Factory.getInstance().newSpannable(Html.fromHtml(string));
+            Spannable msg = Spannable.Factory.getInstance().newSpannable(string);
             String mark = "@" + Haber.getUsername();
             if ( string.toUpperCase().contains(mark.toUpperCase()) ) {
                 int start = string.toUpperCase().indexOf(mark.toUpperCase());

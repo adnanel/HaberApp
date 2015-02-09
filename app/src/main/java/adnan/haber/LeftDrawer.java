@@ -214,9 +214,9 @@ public class LeftDrawer extends PreferenceFragment {
             builder.setTitle("Login");
             final View view = getActivity().getLayoutInflater().inflate(R.layout.login, null);
 
-            ((EditText)view.findViewById(R.id.editText2)).setText(CredentialManager.GetSavedUsername());
-            ((EditText)view.findViewById(R.id.editText3)).setText(CredentialManager.GetSavedPassword());
-            ((CheckBox)view.findViewById(R.id.cbRememberMe)).setChecked(CredentialManager.GetSavedPassword().length() > 0);
+            ((EditText)view.findViewById(R.id.editText2)).setText(CredentialManager.GetSavedUsername(getActivity()));
+            ((EditText)view.findViewById(R.id.editText3)).setText(CredentialManager.GetSavedPassword(getActivity()));
+            ((CheckBox)view.findViewById(R.id.cbRememberMe)).setChecked(CredentialManager.GetSavedPassword(getActivity()).length() > 0);
 
             builder.setView(view);
             builder.setPositiveButton("Login", new DialogInterface.OnClickListener() {
@@ -230,9 +230,9 @@ public class LeftDrawer extends PreferenceFragment {
 
 
                     if ( ((CheckBox)view.findViewById(R.id.cbRememberMe)).isChecked())
-                        CredentialManager.Save(username, password);
+                        CredentialManager.Save(getActivity(), username, password);
                     else
-                        CredentialManager.Save("", "");
+                        CredentialManager.Save(getActivity(), "", "");
 
                     new Thread() {
                         @Override

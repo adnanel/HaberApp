@@ -50,9 +50,13 @@ public class Haber {
         for ( Message msg : cachedLobbyMessages )
             messages.add(msg);
 
-        cachedLobbyMessages.clear();
-        cachedLobbyMessages = null;
         return messages;
+    }
+
+    public static boolean IsOnline(String user) {
+        for ( String str : HaberService.haberChat.getOccupants() )
+            if ( str.equals(user) ) return true;
+        return false;
     }
 
     public static boolean IsGuest() { return isGuest; }

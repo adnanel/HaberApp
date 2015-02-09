@@ -16,7 +16,8 @@
 Berina Cocalić<br/><br/>
 <b>Suggestions and constant testing</b><br/>
 Enil Pajić<br/>
-Alma Hodžić<br/><br/>
+Alma Hodžić<br/>
+Lamija Lemeš<br/><br/>
 <b>Programming</b><br/>
 Adnan Elezović]]>
 </Data></string>
@@ -24,5 +25,17 @@ Adnan Elezović]]>
     <string name="title_activity_advanced_prefs">AdvancedPrefsActivity</string>
     <string name="title_activity_theme_chooser">ThemeChooser</string>
     <string name="title_activity_kicked_on_start">KickedOnStartActivity</string>
+
+    <string-array name="notificationTimeouts">
+        <item>1 sekunda</item>
+        <item>5 sekundi</item>
+        <item>10 sekundi</item>
+    </string-array>
+
+    <string-array name="notificationTimeoutsValues">
+        <item>1</item>
+        <item>5</item>
+        <item>10</item>
+    </string-array>
 
 </resources>

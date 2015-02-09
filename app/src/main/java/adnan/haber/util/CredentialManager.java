@@ -7,17 +7,14 @@ import android.content.SharedPreferences;
  * Created by Adnan on 25.1.2015..
  */
 public class CredentialManager {
-    private static SharedPreferences sharedPreferences;
+
     private static final String PREFS = "credentials";
     private static final String PREF_USERNAME = "username";
     private static final String PREF_PASSWORD = "password";
 
-    public static void Initialize(Context context) {
-        sharedPreferences = context.getSharedPreferences(PREFS, Context.MODE_PRIVATE);
-    }
 
-    public static void Save(String username, String password) {
-        SharedPreferences.Editor editor = sharedPreferences.edit();
+    public static void Save(Context context, String username, String password) {
+        SharedPreferences.Editor editor = context.getSharedPreferences(PREFS, Context.MODE_PRIVATE).edit();
 
         editor.putString(PREF_PASSWORD, password);
         editor.putString(PREF_USERNAME, username);
@@ -25,11 +22,15 @@ public class CredentialManager {
         editor.commit();
     }
 
-    public static String GetSavedUsername() {
+    public static String GetSavedUsername(Context context) {
+        SharedPreferences sharedPreferences = context.getSharedPreferences(PREFS, Context.MODE_PRIVATE);
+
         return sharedPreferences.getString(PREF_USERNAME, "");
     }
 
-    public static String GetSavedPassword() {
+    public static String GetSavedPassword(Context context) {
+        SharedPreferences sharedPreferences = context.getSharedPreferences(PREFS, Context.MODE_PRIVATE);
+
         return sharedPreferences.getString(PREF_PASSWORD, "");
     }
 }

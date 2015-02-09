@@ -8,6 +8,9 @@
         <SwitchPreference android:title="Vibriraj za @Reply poruke" android:dependency="vibrate" android:key="vibrateonreply" android:defaultValue="true"/>
 
         <SwitchPreference android:title="Prebaci na tab kada neko zapocne private" android:key="switchToNewChat" android:defaultValue="true"/>
+
+        <SwitchPreference android:title="Obrisi ban/kick notifikacije" android:key="deleteNotificationsEnabled" android:defaultValue="true"/>
+        <ListPreference android:title="Vrijeme zivljenja notifikacija" android:entries="@array/notificationTimeouts" android:entryValues="@array/notificationTimeoutsValues" android:dependency="deleteNotificationsEnabled" android:key="notificationTimeout" android:defaultValue="true"/>
     </PreferenceCategory>
 
     <PreferenceCategory android:title="Izgled">

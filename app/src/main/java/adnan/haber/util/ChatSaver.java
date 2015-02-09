@@ -39,8 +39,6 @@ public class ChatSaver implements Haber.HaberListener {
     }
 
     public static void Initialize(Context context) {
-        CredentialManager.Initialize(context);
-
         sharedPreferences = context.getSharedPreferences(PREFS, Context.MODE_PRIVATE);
 
         if ( instance == null ) {

@@ -612,8 +612,27 @@ public class HaberActivity extends ActionBarActivity implements Haber.HaberListe
 
                         message = params[0] + " vas kickuje, razlog: " + params[1];
                         for (Object o : chatThreads.entrySet()) {
-                            Map.Entry pairs = (Map.Entry) o;
-                            ((ChatThread)pairs.getValue()).chatAdapter.putDivider(message);
+                            final Map.Entry pairs = (Map.Entry) o;
+                            final ListChatItem item = ((ChatThread)pairs.getValue()).chatAdapter.putDivider(message);
+                            if ( AdvancedPreferences.ShouldClearNotifications(HaberActivity.this)) {
+                                new Thread() {
+                                    @Override
+                                    public void run() {
+                                        try {
+                                            Thread.sleep(AdvancedPreferences.GetStatusChangeTimeout(HaberActivity.this));
+                                        } catch (Exception er) {
+                                            Debug.log(er);
+                                        }
+
+                                        runOnUiThread(new Runnable() {
+                                            @Override
+                                            public void run() {
+                                                ((ChatThread) pairs.getValue()).chatAdapter.remove(item);
+                                            }
+                                        });
+                                    }
+                                }.start();
+                            }
                         }
 
                     } else {
@@ -638,7 +657,27 @@ public class HaberActivity extends ActionBarActivity implements Haber.HaberListe
 
                     }
                 }
-                mainChatThread.chatAdapter.putDivider(message);
+               final ListChatItem item = mainChatThread.chatAdapter.putDivider(message);
+
+                if ( AdvancedPreferences.ShouldClearNotifications(HaberActivity.this)) {
+                    new Thread() {
+                        @Override
+                        public void run() {
+                            try {
+                                Thread.sleep(AdvancedPreferences.GetStatusChangeTimeout(HaberActivity.this));
+                            } catch (Exception er) {
+                                Debug.log(er);
+                            }
+
+                            runOnUiThread(new Runnable() {
+                                @Override
+                                public void run() {
+                                    mainChatThread.chatAdapter.remove(item);
+                                }
+                            });
+                        }
+                    }.start();
+                }
 
                 scrollToBottom(true);
             }

@@ -9,6 +9,7 @@ public class ListChatItem {
     public String time;
     public String id;
     public boolean isSpacer = false;
+
     public Rank rank;
 
     public ListChatItem() {

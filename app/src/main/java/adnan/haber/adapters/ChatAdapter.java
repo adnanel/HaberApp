@@ -85,9 +85,17 @@ public class ChatAdapter extends ArrayAdapter<ListChatItem> {
         return items.size();
     }
 
-    public void putDivider(String msg) {
-        items.add(new ListChatItem(msg));
+    @Override
+    public void remove(ListChatItem item) {
+        items.remove(item);
         notifyDataSetChanged();
+    }
+
+    public ListChatItem putDivider(String msg) {
+        ListChatItem item;
+        items.add(item = new ListChatItem(msg));
+        notifyDataSetChanged();
+        return item;
     }
 
     private static void makeLinksClickable(Spannable spannable) {
@@ -267,15 +275,21 @@ public class ChatAdapter extends ArrayAdapter<ListChatItem> {
                             }
                         });
 
-                        view.findViewById(R.id.btStartPrivate).setOnClickListener(new View.OnClickListener() {
-                            @Override
-                            public void onClick(View v) {
-                                commandBarListener.onPrivateMessage(Haber.getFullUsername(items.get(position).author));
 
-                                switcher.setBackgroundColor(0);
-                                switcher.removeView(view);
-                            }
-                        });
+                        if ( !Haber.IsOnline(Haber.getFullUsername(items.get(position).author)) ) {
+                            view.findViewById(R.id.btStartPrivate).setVisibility(View.GONE);
+                        } else {
+                            view.findViewById(R.id.btStartPrivate).setOnClickListener(new View.OnClickListener() {
+                                @Override
+                                public void onClick(View v) {
+                                    commandBarListener.onPrivateMessage(Haber.getFullUsername(items.get(position).author));
+
+                                    switcher.setBackgroundColor(0);
+                                    switcher.removeView(view);
+                                }
+                            });
+                        }
+
                         if ( isPrivate )
                             view.findViewById(R.id.btStartPrivate).setVisibility(View.GONE);
 

@@ -57,6 +57,14 @@ public class AdvancedPreferences extends PreferenceFragment {
         });
     }
 
+    public static boolean ShouldClearNotifications(Context context) {
+        return PreferenceManager.getDefaultSharedPreferences(context).getBoolean("deleteNotificationsEnabled", true);
+    }
+
+    public static int GetStatusChangeTimeout(Context context) {
+        return 1000 * Integer.parseInt(PreferenceManager.getDefaultSharedPreferences(context).getString("notificationTimeout", "1"));
+    }
+
     public static boolean ShouldVibrate(Context context) {
         return PreferenceManager.getDefaultSharedPreferences(context).getBoolean("vibrate", true);
     }

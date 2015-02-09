@@ -31,9 +31,9 @@ public class KickedOnStartActivity extends ActionBarActivity {
         builder.setTitle("Login");
         final View view = getLayoutInflater().inflate(R.layout.login, null);
 
-        ((EditText)view.findViewById(R.id.editText2)).setText(CredentialManager.GetSavedUsername());
-        ((EditText)view.findViewById(R.id.editText3)).setText(CredentialManager.GetSavedPassword());
-        ((CheckBox)view.findViewById(R.id.cbRememberMe)).setChecked(CredentialManager.GetSavedPassword().length() > 0);
+        ((EditText)view.findViewById(R.id.editText2)).setText(CredentialManager.GetSavedUsername(KickedOnStartActivity.this));
+        ((EditText)view.findViewById(R.id.editText3)).setText(CredentialManager.GetSavedPassword(KickedOnStartActivity.this));
+        ((CheckBox)view.findViewById(R.id.cbRememberMe)).setChecked(CredentialManager.GetSavedPassword(KickedOnStartActivity.this).length() > 0);
 
         builder.setView(view);
         builder.setPositiveButton("Login", new DialogInterface.OnClickListener() {
@@ -48,9 +48,9 @@ public class KickedOnStartActivity extends ActionBarActivity {
                password = ((EditText) view.findViewById(R.id.editText3)).getText().toString();
 
                 if ( ((CheckBox)view.findViewById(R.id.cbRememberMe)).isChecked())
-                    CredentialManager.Save(username, password);
+                    CredentialManager.Save(KickedOnStartActivity.this, username, password);
                 else
-                    CredentialManager.Save("", "");
+                    CredentialManager.Save(KickedOnStartActivity.this, "", "");
 
                 try {
                     Haber.Disconnect();

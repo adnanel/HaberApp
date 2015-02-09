@@ -66,7 +66,7 @@ public class ChatSaver implements Haber.HaberListener {
         ArrayList<Message> result = new ArrayList<>();
 
         int count = sharedPreferences.getInt(PREF_COUNT, 0);
-        int start = count - 100;
+        int start = count - 30;
         if ( start < 0 ) start = 0;
 
         for ( int i = start; i < count; i ++ ) {
@@ -99,7 +99,7 @@ public class ChatSaver implements Haber.HaberListener {
         ArrayList<Message> result = new ArrayList<>();
 
         int count = sharedPreferences.getInt(PREF_LOBBY_COUNT, 0);
-        int start = count - 100;
+        int start = count - 30;
         if ( start < 0 ) start = 0;
 
         for ( int i = start; i < count; i ++ ) {

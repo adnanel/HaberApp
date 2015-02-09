@@ -8,6 +8,7 @@ import android.net.Uri;
 import android.preference.Preference;
 import android.preference.PreferenceManager;
 import android.preference.PreferenceScreen;
+import android.preference.SwitchPreference;
 import android.support.v4.app.FragmentTransaction;
 import android.support.v4.preference.PreferenceFragment;
 import android.os.Bundle;
@@ -20,6 +21,7 @@ import java.io.File;
 import adnan.haber.Haber;
 import adnan.haber.HaberActivity;
 import adnan.haber.R;
+import adnan.haber.adapters.ChatAdapter;
 import adnan.haber.fragments.AboutFragment;
 import adnan.haber.util.ChatSaver;
 import adnan.haber.util.Debug;
@@ -27,12 +29,32 @@ import adnan.haber.util.Updater;
 
 
 public class AdvancedPreferences extends PreferenceFragment {
+    public boolean shouldInvalidatedChatAdapters = false;
+
+    @Override
+    public void onDestroy() {
+        if ( shouldInvalidatedChatAdapters ) {
+            ChatAdapter.invalidateAll(getActivity());
+        }
+
+        super.onDestroy();
+    }
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
+        shouldInvalidatedChatAdapters = false;
+
         super.onCreate(savedInstanceState);
         this.addPreferencesFromResource(R.xml.advanced_prefs);
 
+        SwitchPreference pref = (SwitchPreference)this.getPreferenceScreen().findPreference("ownMessageAlignRight");
+        pref.setOnPreferenceChangeListener(new Preference.OnPreferenceChangeListener() {
+            @Override
+            public boolean onPreferenceChange(Preference preference, Object newValue) {
+                shouldInvalidatedChatAdapters = true;
+                return true;
+            }
+        });
     }
 
     public static boolean ShouldVibrate(Context context) {
@@ -63,7 +85,6 @@ public class AdvancedPreferences extends PreferenceFragment {
     private static boolean IsDebug(Context context) {
         return PreferenceManager.getDefaultSharedPreferences(context).getBoolean("debugMode", true);
     }
-
 
     @Override
     public boolean onPreferenceTreeClick(PreferenceScreen screen, Preference preference) {
@@ -146,6 +167,8 @@ public class AdvancedPreferences extends PreferenceFragment {
                     builder.setPositiveButton("Posalji", new DialogInterface.OnClickListener() {
                         @Override
                         public void onClick(DialogInterface dialog, int which) {
+                            if ( 1 < 2 ) return;
+
                             String bug = ((EditText)frag.getView().findViewById(R.id.editText5)).getText().toString();
                             String report = ((EditText)frag.getView().findViewById(R.id.editText4)).getText().toString();;
 
@@ -157,7 +180,7 @@ public class AdvancedPreferences extends PreferenceFragment {
                                     "\nBug: " + bug +
                                     "\nKako rekonstruisati: " + report);
 
-                            File file = Debug.DumpToFile();
+                            File file = null;//Debug.DumpToFile();
                             if (!file.exists() || !file.canRead()) {
                                 Toast.makeText(getActivity(), "Attachment Error", Toast.LENGTH_SHORT).show();
                                 return;

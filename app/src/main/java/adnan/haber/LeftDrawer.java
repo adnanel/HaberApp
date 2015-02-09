@@ -225,31 +225,34 @@ public class LeftDrawer extends PreferenceFragment {
                     Debug.log("Finishing activity due to login...");
                     getActivity().finish();
 
-                    String password;
-                    String username;
+                    final String username = ((EditText)view.findViewById(R.id.editText2)).getText().toString();
+                    final String password = ((EditText) view.findViewById(R.id.editText3)).getText().toString();
 
-                    Haber.setUser(username = ((EditText)view.findViewById(R.id.editText2)).getText().toString());
-                    Haber.setPassword(password = ((EditText) view.findViewById(R.id.editText3)).getText().toString());
-                    Haber.setIsGuest(false);
 
                     if ( ((CheckBox)view.findViewById(R.id.cbRememberMe)).isChecked())
                         CredentialManager.Save(username, password);
                     else
                         CredentialManager.Save("", "");
 
-                    try {
-                        Haber.Disconnect();
-                    } catch ( Exception e ) {
-                        Debug.log(e);
-                    }
+                    new Thread() {
+                        @Override
+                        public void run() {
+                            try {
+                                Haber.Disconnect();
+                                Haber.setUser(username);
+                                Haber.setPassword(password);
+                                Haber.setIsGuest(false);
+                            } catch ( Exception e ) {
+                                Debug.log(e);
+                            }
 
-                    Haber.setUser(username);
-                    Haber.setPassword(password);
-                    Haber.setIsGuest(false);
 
-                    HaberService.RestartService(getActivity());
-                    Intent intent = new Intent(getActivity(), SplashScreen.class);
-                    startActivity(intent);
+                            HaberService.RestartService(getActivity());
+                            Intent intent = new Intent(getActivity(), SplashScreen.class);
+                            startActivity(intent);
+                        }
+                    }.start();
+
                 }
             });
             builder.setNegativeButton("Prekid", null);

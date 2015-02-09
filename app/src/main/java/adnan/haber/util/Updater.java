@@ -29,7 +29,7 @@ import adnan.haber.R;
  * Created by Adnan on 24.1.2015..
  */
 public class Updater {
-    private final static int version = 51;
+    private final static int version = 54;
     private static AlertDialog dialog;
 
 

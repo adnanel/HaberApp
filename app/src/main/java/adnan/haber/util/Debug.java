@@ -15,16 +15,8 @@ public class Debug {
     private static boolean DebugBuild = true;
     private static String TAG = "Adnan";
 
-    private static SharedPreferences sharedPreferences;
-    private static SharedPreferences.Editor editor;
-
-    private final static String PREFS = "log";
-    private final static String PREF_COUNT = "count";
-    private final static String PREF_ITEM  = "logitem";
-
     public static void Initialize(Context context) {
-        sharedPreferences = context.getSharedPreferences(PREFS, Context.MODE_PRIVATE);
-        editor = sharedPreferences.edit();
+        // todo old method was too heavy. find something else
     }
 
     public static synchronized void SetDebugMode(boolean isDebug) {
@@ -35,39 +27,11 @@ public class Debug {
         log("Logging enabled!");
     }
 
-    public static File DumpToFile() {
-        try {
-            File dir = new File(Environment.getExternalStorageDirectory()
-                    + "/haber/");
-            dir.mkdirs();
-
-            File file = new File(dir, "log.dmp");
-            PrintWriter output = new PrintWriter(file);
-
-            int count = sharedPreferences.getInt(PREF_COUNT, 0);
-            for ( int i = 0; i < count; i ++ ) {
-                output.println(sharedPreferences.getString(PREF_ITEM + i, ""));
-            }
-            output.flush();
-
-            return file;
-        } catch ( Exception er ) {
-            Debug.log(er);
-            return null;
-        }
-    }
 
     public static void log(String msg) {
         if ( DebugBuild ) {
             Log.i(TAG, msg);
         }
-
-
-        int count;
-        editor.putInt(PREF_COUNT, count = sharedPreferences.getInt(PREF_COUNT, 0) + 1);
-        editor.putString( PREF_ITEM + (count - 1), msg);
-
-        editor.commit();
     }
 
 

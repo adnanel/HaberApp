@@ -128,7 +128,7 @@ public class HaberActivity extends ActionBarActivity implements Haber.HaberListe
                     msg.setTo(chat.getParticipant());
 
                     try {
-                        msg.setPacketID(Util.makeSHA1Hash(msg.getFrom() + msg.getBody()));
+                        msg.setPacketID(Util.makeSHA1Hash(msg.getFrom() + msg.getBody() + Util.getRandomInt(100)));
                     } catch ( Exception er ) {
                         Debug.log(er);
                     }
@@ -281,6 +281,7 @@ public class HaberActivity extends ActionBarActivity implements Haber.HaberListe
 
     @Override
     public void onDestroy() {
+        HaberService.removeHaberListener(this);
         super.onDestroy();
     }
 
@@ -302,13 +303,13 @@ public class HaberActivity extends ActionBarActivity implements Haber.HaberListe
             if ( msg.getPacketID().equals("divider") )
                 mainChatThread.chatAdapter.putDivider(msg.getBody());
             else
-                mainChatThread.chatAdapter.addItem(msg);
+                mainChatThread.chatAdapter.addItem(msg, false);
         }
         mainChatThread.chatAdapter.putDivider("Ova sesija");
 
         for ( Message msg : Haber.getCachedLobbyMessages() )
-            mainChatThread.chatAdapter.addItem(msg);
-
+            mainChatThread.chatAdapter.addItem(msg, false);
+        mainChatThread.chatAdapter.notifyDataSetChanged();
 
         //ostali chatovi
         for ( Chat chats : HaberService.chatRooms ) {
@@ -318,13 +319,13 @@ public class HaberActivity extends ActionBarActivity implements Haber.HaberListe
 
             for ( Message msg : ChatSaver.getSavedMessages() ) {
                 if ( msg.getFrom().equals(chats.getParticipant()) || msg.getTo().equals(chats.getParticipant())) {
-                    thread.chatAdapter.addItem(msg);
+                    thread.chatAdapter.addItem(msg, false);
                 }
             }
 
+            thread.chatAdapter.notifyDataSetChanged();
             chatThreads.put(chats, thread);
         }
-        vibrationLock = false;
 
         HaberService.addHaberListener(this);
 
@@ -395,6 +396,9 @@ public class HaberActivity extends ActionBarActivity implements Haber.HaberListe
                 sendMessage.run();
             }
         });
+
+
+        vibrationLock = false;
     }
 
     @Override
@@ -505,7 +509,7 @@ public class HaberActivity extends ActionBarActivity implements Haber.HaberListe
 
 
                 //check for @Reply and vibrates
-                if ( !vibratedYet && AdvancedPreferences.ShouldVibrateOnReply(HaberActivity.this) ) {
+                if ( !vibrationLock && !vibratedYet && AdvancedPreferences.ShouldVibrateOnReply(HaberActivity.this) && (message.getBody() != null) ) {
                     String mark = "@" + Haber.getUsername();
                     if ( message.getBody().toUpperCase().contains(mark.toUpperCase()) ) {
                         ((Vibrator) getSystemService(Context.VIBRATOR_SERVICE)).vibrate(100);

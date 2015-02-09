@@ -49,11 +49,16 @@ public class Haber {
         ArrayList<Message> messages = new ArrayList<>();
         for ( Message msg : cachedLobbyMessages )
             messages.add(msg);
+
+        cachedLobbyMessages.clear();
+        cachedLobbyMessages = null;
         return messages;
     }
 
     public static boolean IsGuest() { return isGuest; }
     static synchronized void addMessageToCache(Message msg) {
+        if ( cachedLobbyMessages == null ) return;
+
         cachedLobbyMessages.add(msg);
     }
 
@@ -73,11 +78,14 @@ public class Haber {
         Debug.log("Disconnecting...");
 
         try {
-            instance.statusListener.onSoftDisconnect();
-            instance.statusListener = null;
+            if ( instance != null ) {
+                if (instance.statusListener != null) {
+                    instance.statusListener.onSoftDisconnect();
+                    instance.statusListener = null;
+                }
 
-            instance.connection.disconnect();
-            cachedLobbyMessages.clear();
+                instance.connection.disconnect();
+            }
 
             instance = null;
 
@@ -92,7 +100,8 @@ public class Haber {
         return rand.nextInt(1000);
     }
 
-    public static void setUser(String user) {
+    public static void setUser(String user) throws Exception {
+        if ( isConnected() ) throw new Exception("Can't set username while connected!");
         username = user;
     }
 
@@ -131,7 +140,7 @@ public class Haber {
             @Override
             public void processMessage(Chat chat, Message message) {
                 try {
-                    message.setPacketID(Util.makeSHA1Hash(message.getFrom() + message.getBody() + message.getPacketID()));
+                    message.setPacketID(Util.makeSHA1Hash(message.getFrom() + message.getBody() + message.getPacketID() + Util.getRandomInt(100)));
                 } catch ( Exception er ) {
                     Debug.log(er);
                 }
@@ -186,8 +195,6 @@ public class Haber {
             SmackAndroid.init(context);
             ConnectionConfiguration config = new ConnectionConfiguration(server, port);
             config.setSecurityMode(ConnectionConfiguration.SecurityMode.disabled);
-
-            config.setDebuggerEnabled(true);
 
             connection = new XMPPTCPConnection(config);
 
@@ -360,7 +367,7 @@ public class Haber {
                         try {
                             Message message = (Message)packet;
                             try {
-                                message.setPacketID(Util.makeSHA1Hash(message.getFrom() + message.getBody() + message.getPacketID()));
+                                message.setPacketID(Util.makeSHA1Hash(message.getFrom() + message.getBody() + message.getPacketID() + Util.getRandomInt(100)));
                             } catch ( Exception er ) {
                                 Debug.log(er);
                             }
@@ -386,7 +393,7 @@ public class Haber {
                             @Override
                             public void processMessage(Chat lchat, Message message) {
                                 try {
-                                    message.setPacketID(Util.makeSHA1Hash(message.getFrom() + message.getBody() + message.getPacketID()));
+                                    message.setPacketID(Util.makeSHA1Hash(message.getFrom() + message.getBody() + message.getPacketID() + Util.getRandomInt(100)));
                                 } catch ( Exception er ) {
                                     Debug.log(er);
                                 }
@@ -424,6 +431,8 @@ public class Haber {
 
 
     public static boolean Initialize(HaberListener statusListener, Context context) {
+        cachedLobbyMessages = new ArrayList<>();
+
         if ( instance != null ) {
             instance.Disconnect();
         }

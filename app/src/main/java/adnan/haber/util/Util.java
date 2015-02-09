@@ -14,6 +14,7 @@ import java.net.URL;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 import java.util.Formatter;
+import java.util.Random;
 
 /**
  * Created by Adnan on 26.1.2015..
@@ -115,5 +116,10 @@ public class Util {
             Debug.log(e);
         }
         return "Failed to download!";
+    }
+
+    public static int getRandomInt(int n) {
+        Random rand = new Random();
+        return rand.nextInt(n);
     }
 }

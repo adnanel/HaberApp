@@ -1,5 +1,6 @@
 package adnan.haber.adapters;
 
+import android.app.Activity;
 import android.content.Context;
 import android.graphics.Color;
 import android.text.Html;
@@ -20,6 +21,7 @@ import android.widget.ViewSwitcher;
 
 import org.jivesoftware.smack.packet.Message;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.regex.Matcher;
 
@@ -43,12 +45,39 @@ public class ChatAdapter extends ArrayAdapter<ListChatItem> {
     private boolean isPrivate = false;
     private static String ownUsername = null;
 
+    private static ArrayList<ChatAdapter> allAdapters = new ArrayList<ChatAdapter>();
+
     public ChatAdapter(HaberActivity context, List<ListChatItem> items, CommandBarListener cmdListener, boolean isPrivate) {
         super(context, R.layout.single_chat_item, items);
         this.items = items;
         this.context = context;
         this.commandBarListener = cmdListener;
         this.isPrivate = isPrivate;
+        addAdapter(this);
+    }
+
+    public static synchronized void invalidateAll(Activity activity) {
+        activity.runOnUiThread(new Runnable() {
+            @Override
+            public void run() {
+                for ( ChatAdapter adapter : allAdapters )
+                    adapter.notifyDataSetChanged();
+            }
+        });
+    }
+
+    private synchronized void addAdapter(ChatAdapter adapter) {
+        allAdapters.add(adapter);
+    }
+
+    private synchronized void removeAdapter(ChatAdapter adapter) {
+        allAdapters.remove(adapter);
+    }
+
+    @Override
+    public void finalize() throws Throwable {
+        removeAdapter(this);
+        super.finalize();
     }
 
     @Override
@@ -62,8 +91,6 @@ public class ChatAdapter extends ArrayAdapter<ListChatItem> {
     }
 
     private static void makeLinksClickable(Spannable spannable) {
-        boolean hasChanges = false;
-
         Matcher matcher = Patterns.WEB_URL.matcher(spannable);
         while (matcher.find()) {
             boolean set = true;
@@ -77,7 +104,6 @@ public class ChatAdapter extends ArrayAdapter<ListChatItem> {
                     break;
                 }
             if (set) {
-                hasChanges = true;
                 spannable.setSpan(new URLSpan(spannable.subSequence(matcher.start(), matcher.end()).toString()),
                         matcher.start(), matcher.end(),
                         Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
@@ -86,6 +112,11 @@ public class ChatAdapter extends ArrayAdapter<ListChatItem> {
     }
 
     public void addItem(Message msg) {
+        addItem(msg, true);
+        notifyDataSetChanged();
+    }
+
+    public void addItem(Message msg, boolean shouldNotifyDataSetChanged) {
         ListChatItem item = new ListChatItem();
         item.rank = HaberService.GetRankForUser(msg.getFrom());
 
@@ -118,7 +149,8 @@ public class ChatAdapter extends ArrayAdapter<ListChatItem> {
 
         item.time = "";
         items.add(item);
-        notifyDataSetChanged();
+        if ( shouldNotifyDataSetChanged )
+            notifyDataSetChanged();
     }
 
     private static ViewSwitcher lastSwitcher = null;
@@ -138,8 +170,7 @@ public class ChatAdapter extends ArrayAdapter<ListChatItem> {
             TextView tvUsername;
             TextView tvMessage;
 
-            if ( ownUsername == null )
-                ownUsername = Haber.getShortUsername(Haber.getUsername());
+            ownUsername = Haber.getShortUsername(Haber.getUsername());
 
             if ( items.get(position).author.equals(ownUsername) && AdvancedPreferences.ShouldAlignOwnMessagesRight(context) )
                 rowView = inflater.inflate(R.layout.single_own_chat_item, parent, false);

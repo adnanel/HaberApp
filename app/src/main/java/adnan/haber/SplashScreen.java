@@ -95,7 +95,7 @@ public class SplashScreen extends ActionBarActivity implements Haber.HaberListen
 
 
     void start() {
-        if ( !canStart ) return;
+        if ( !canStart || started ) return;
 
         Intent intent = new Intent(this, HaberActivity.class);
         intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
@@ -109,9 +109,10 @@ public class SplashScreen extends ActionBarActivity implements Haber.HaberListen
     @Override
     public void onMessageReceived(Chat chat, Message message) {
         counter++;
-        if ( counter >= 25 ) {
+        if ( counter >= 26 ) {
             start();
         }
+        Debug.log(counter + "");
     }
 
     @Override
@@ -125,23 +126,6 @@ public class SplashScreen extends ActionBarActivity implements Haber.HaberListen
 
         if ( params.length == 2 && ( event == Haber.ChatEvent.Banned || event == Haber.ChatEvent.Kicked ) ) {
             canStart = false;
-
-            runOnUiThread(new Runnable() {
-                @Override
-                public void run() {
-                    AlertDialog.Builder builder = new AlertDialog.Builder(SplashScreen.this);
-                    builder.setTitle("Whops!");
-                    builder.setMessage(params[0] + ": " + params[1]);
-                    builder.setPositiveButton("Close app", new DialogInterface.OnClickListener() {
-                        @Override
-                        public void onClick(DialogInterface dialog, int which) {
-                            finish();
-                        }
-                    });
-                    builder.setCancelable(false);
-                    builder.create().show();
-                }
-            });
         }
     }
 

@@ -44,9 +44,8 @@ public class KickedOnStartActivity extends ActionBarActivity {
                 String password;
                 String username;
 
-                Haber.setUser(username = ((EditText)view.findViewById(R.id.editText2)).getText().toString());
-                Haber.setPassword(password = ((EditText) view.findViewById(R.id.editText3)).getText().toString());
-                Haber.setIsGuest(false);
+                username = ((EditText)view.findViewById(R.id.editText2)).getText().toString();
+               password = ((EditText) view.findViewById(R.id.editText3)).getText().toString();
 
                 if ( ((CheckBox)view.findViewById(R.id.cbRememberMe)).isChecked())
                     CredentialManager.Save(username, password);
@@ -55,13 +54,14 @@ public class KickedOnStartActivity extends ActionBarActivity {
 
                 try {
                     Haber.Disconnect();
+
+                    Haber.setUser(username);
+                    Haber.setPassword(password);
+                    Haber.setIsGuest(false);
                 } catch ( Exception e ) {
                     Debug.log(e);
                 }
 
-                Haber.setUser(username);
-                Haber.setPassword(password);
-                Haber.setIsGuest(false);
 
                 HaberService.RestartService(KickedOnStartActivity.this);
                 Intent intent = new Intent(KickedOnStartActivity.this, SplashScreen.class);

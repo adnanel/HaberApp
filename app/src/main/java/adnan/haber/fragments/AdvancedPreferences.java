@@ -154,7 +154,7 @@ public class AdvancedPreferences extends PreferenceFragment {
                 }
             });
             Updater.CheckForUpdates(getActivity());
-        } 
+        }
 
         return false;
     }

@@ -40,4 +40,6 @@ Adnan Elezović]]>
     </string-array>
 
     <string name="kicked_message" formatted="false">%s vas kickuje, razlog: %s</string>
+    <string name="acc_drawer_open">Otvori listu korisnika</string>
+    <string name="acc_drawer_close">Zatvori listu korisnika</string>
 </resources>

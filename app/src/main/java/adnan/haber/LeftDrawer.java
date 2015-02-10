@@ -134,6 +134,7 @@ public class LeftDrawer extends PreferenceFragment {
 
             pref.setKey(user);
             pref.setLayoutResource(R.layout.online_user_list_item);
+
             Spannable span = RankIconManager.getSpanned(getActivity(), user);
 
             pref.setTitle( span );

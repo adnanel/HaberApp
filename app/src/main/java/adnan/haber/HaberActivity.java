@@ -1,11 +1,14 @@
 package adnan.haber;
 
+import android.annotation.SuppressLint;
 import android.app.AlertDialog;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.os.Build;
 import android.os.Bundle;
 import android.os.Vibrator;
+import android.support.v4.app.ActionBarDrawerToggle;
 import android.support.v4.app.FragmentTransaction;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBarActivity;
@@ -17,10 +20,12 @@ import android.view.ViewTreeObserver;
 import android.view.Window;
 import android.view.animation.Animation;
 import android.view.animation.AnimationUtils;
+import android.view.animation.TranslateAnimation;
 import android.webkit.WebView;
 import android.widget.EditText;
 import android.widget.LinearLayout;
 import android.widget.ListView;
+import android.widget.RelativeLayout;
 import android.widget.TextView;
 
 import org.jivesoftware.smack.Chat;
@@ -51,6 +56,11 @@ public class HaberActivity extends ActionBarActivity implements Haber.HaberListe
 
     private boolean vibrationLock = true;
     private static HaberActivity instance = null;
+    private ActionBarDrawerToggle mDrawerToggle;
+    private float lastTranslate = 0.0f;
+    private DrawerLayout mDrawerLayout;
+
+    private RelativeLayout rlContent;
 
     private ChatAdapter.CommandBarListener cmdListener = new ChatAdapter.CommandBarListener() {
 
@@ -409,6 +419,36 @@ public class HaberActivity extends ActionBarActivity implements Haber.HaberListe
 
 
         vibrationLock = false;
+
+
+        //left drawer
+        mDrawerLayout = (DrawerLayout) findViewById(R.id.drawer_layout);
+        rlContent = (RelativeLayout) findViewById(R.id.rlContent);
+
+        mDrawerToggle = new ActionBarDrawerToggle(this, mDrawerLayout, R.drawable.ic_launcher, R.string.acc_drawer_open, R.string.acc_drawer_close)
+        {
+            @SuppressLint("NewApi")
+            public void onDrawerSlide(View drawerView, float slideOffset)
+            {
+                float moveFactor = (Util.DpiToPixel(HaberActivity.this, 250) * slideOffset);
+
+                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.HONEYCOMB)
+                {
+                    rlContent.setTranslationX(moveFactor);
+                }
+                else
+                {
+                    TranslateAnimation anim = new TranslateAnimation(lastTranslate, moveFactor, 0.0f, 0.0f);
+                    anim.setDuration(0);
+                    anim.setFillAfter(true);
+                    rlContent.startAnimation(anim);
+
+                    lastTranslate = moveFactor;
+                }
+            }
+        };
+
+        mDrawerLayout.setDrawerListener(mDrawerToggle);
     }
 
     @Override
@@ -416,9 +456,9 @@ public class HaberActivity extends ActionBarActivity implements Haber.HaberListe
         if (keyCode == KeyEvent.KEYCODE_MENU && event.getRepeatCount() == 0) {
             DrawerLayout drawer = (DrawerLayout)findViewById(R.id.drawer_layout);
             if ( !drawer.isDrawerOpen(Gravity.LEFT) ) {
-                drawer.openDrawer(Gravity.LEFT);
+                openLeftDrawer();
             } else {
-                drawer.closeDrawer(Gravity.LEFT);
+                closeLeftDrawer();
             }
         } else if ( keyCode == KeyEvent.KEYCODE_ENTER && event.getRepeatCount() == 0 ) {
             findViewById(R.id.btSend).performClick();
@@ -578,6 +618,13 @@ public class HaberActivity extends ActionBarActivity implements Haber.HaberListe
         DrawerLayout drawer = (DrawerLayout)findViewById(R.id.drawer_layout);
         if ( drawer.isDrawerOpen(Gravity.LEFT) ) {
             drawer.closeDrawer(Gravity.LEFT);
+        }
+    }
+
+    public void openLeftDrawer() {
+        DrawerLayout drawer = (DrawerLayout)findViewById(R.id.drawer_layout);
+        if ( !drawer.isDrawerOpen(Gravity.LEFT) ) {
+            drawer.openDrawer(Gravity.LEFT);
         }
     }
 
@@ -824,10 +871,7 @@ public class HaberActivity extends ActionBarActivity implements Haber.HaberListe
                                             chatListView.smoothScrollToPosition(chatListView.getCount() - 1);
                                         }});
 
-                                    DrawerLayout drawer = (DrawerLayout)findViewById(R.id.drawer_layout);
-                                    if ( drawer.isDrawerOpen(Gravity.LEFT) ) {
-                                        drawer.closeDrawer(Gravity.LEFT);
-                                    }
+                                    closeLeftDrawer();
                                 }
                             });
                         }
@@ -884,7 +928,7 @@ public class HaberActivity extends ActionBarActivity implements Haber.HaberListe
     public void onBackPressed() {
         DrawerLayout drawer = (DrawerLayout)findViewById(R.id.drawer_layout);
         if ( drawer.isDrawerOpen(Gravity.LEFT) ) {
-            drawer.closeDrawer(Gravity.LEFT);
+            closeLeftDrawer();
             return;
         }
 

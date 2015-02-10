@@ -2,6 +2,7 @@ package adnan.haber;
 
 import android.content.Context;
 
+import org.apache.http.auth.InvalidCredentialsException;
 import org.jivesoftware.smack.Chat;
 import org.jivesoftware.smack.ChatManager;
 import org.jivesoftware.smack.ChatManagerListener;
@@ -125,12 +126,14 @@ public class Haber {
         statusListener = listener;
 
         statusListener.onStatusChanged("Povezujem se...");
-        if ( connect() ) {
+
+        if (connect()) {
             statusListener.onStatusChanged("Yay!");
         } else {
             statusListener.onStatusChanged(lastError);
             throw new Exception("Failed!");
         }
+
     }
 
 
@@ -189,7 +192,7 @@ public class Haber {
         return user;
     }
 
-    public boolean connect() {
+    public boolean connect() throws InvalidCredentialsException {
         try {
 
             // Create a connection to the igniterealtime.org XMPP server.
@@ -215,6 +218,13 @@ public class Haber {
 
                         connection.login(username, password);
                     } catch ( Exception er ) {
+                        if ( er.toString().endsWith("not-authorized") ) {
+                            setUser("");
+                            setPassword("");
+                            setIsGuest(true);
+                            
+                            throw new InvalidCredentialsException(er.toString());
+                        }
                         Debug.log(er);
                         isGuest = true;
                         return connect();
@@ -426,6 +436,9 @@ public class Haber {
 
             return true;
         }
+        catch (InvalidCredentialsException er) {
+            throw er;
+        }
         catch (Exception e) {
             lastError = e.toString();
             Debug.log(e);
@@ -434,7 +447,7 @@ public class Haber {
     }
 
 
-    public static boolean Initialize(HaberListener statusListener, Context context) {
+    public static boolean Initialize(HaberListener statusListener, Context context) throws InvalidCredentialsException {
         cachedLobbyMessages = new ArrayList<>();
 
         if ( instance != null ) {
@@ -443,11 +456,13 @@ public class Haber {
 
         try {
             instance = new Haber(statusListener, context);
+        } catch ( InvalidCredentialsException er) {
+            throw er;
         } catch ( Exception er ) {
-            return true;
+            return false;
         }
 
-        return false;
+        return true;
     }
 
 

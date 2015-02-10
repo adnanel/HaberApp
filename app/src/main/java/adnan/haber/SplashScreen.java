@@ -1,6 +1,7 @@
 package adnan.haber;
 
 import android.app.AlertDialog;
+import android.content.ComponentName;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.Bundle;
@@ -131,7 +132,7 @@ public class SplashScreen extends ActionBarActivity implements Haber.HaberListen
 
     @Override
     public void onSoftDisconnect() {
-
+        finish();
     }
 
 }

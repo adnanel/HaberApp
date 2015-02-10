@@ -11,6 +11,7 @@ import android.os.Looper;
 import android.support.v4.app.NotificationCompat;
 import android.widget.Toast;
 
+import org.apache.http.auth.InvalidCredentialsException;
 import org.jivesoftware.smack.Chat;
 import org.jivesoftware.smack.packet.Message;
 import org.jivesoftware.smackx.muc.MultiUserChat;
@@ -175,7 +176,22 @@ public class HaberService extends Service implements Haber.HaberListener {
             public void run() {
                 Looper.prepare();
 
-                if (Haber.Initialize(HaberService.this, HaberService.this)) {
+                try {
+                    if (!Haber.Initialize(HaberService.this, HaberService.this)) {
+                        stopSelf();
+                        return;
+                    }
+                } catch ( InvalidCredentialsException er ) {
+                    Debug.log("Invalid user/pass");
+                    Debug.log(er);
+
+                    Intent intent = new Intent(HaberService.this, WrongCredentials.class);
+                    intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+                    startActivity(intent);
+
+                    for (Haber.HaberListener listener : getHaberListeners() )
+                        listener.onSoftDisconnect();
+
                     stopSelf();
                     return;
                 }

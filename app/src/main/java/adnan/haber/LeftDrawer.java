@@ -7,6 +7,7 @@ import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.graphics.Color;
+import android.graphics.drawable.ColorDrawable;
 import android.os.Bundle;
 import android.preference.Preference;
 import android.preference.PreferenceCategory;
@@ -88,6 +89,7 @@ public class LeftDrawer extends PreferenceFragment {
             prefcat = new PreferenceCategory(getActivity());
             prefcat.setOrder(0);
             prefcat.setTitle("Online korisnici:");
+
             getPreferenceScreen().addPreference(prefcat);
         }
 
@@ -129,8 +131,7 @@ public class LeftDrawer extends PreferenceFragment {
             Preference pref = new Preference(getActivity());
 
             pref.setKey(user);
-
-
+            pref.setLayoutResource(R.layout.online_user_list_item);
             Spannable span = RankIconManager.getSpanned(getActivity(), user);
 
             pref.setTitle( span );

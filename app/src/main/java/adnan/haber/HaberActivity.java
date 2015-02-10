@@ -324,6 +324,7 @@ public class HaberActivity extends ActionBarActivity implements Haber.HaberListe
             }
 
             thread.chatAdapter.notifyDataSetChanged();
+            thread.setState(State.Normal);
             chatThreads.put(chats, thread);
         }
 

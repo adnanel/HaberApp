@@ -21,6 +21,7 @@ Lamija Lemeš<br/><br/>
 <b>Programming</b><br/>
 Adnan Elezović]]>
 </Data></string>
+
     <string name="title_activity_advanced_preferences">AdvancedPreferences</string>
     <string name="title_activity_advanced_prefs">AdvancedPrefsActivity</string>
     <string name="title_activity_theme_chooser">ThemeChooser</string>
@@ -38,5 +39,5 @@ Adnan Elezović]]>
         <item>10</item>
     </string-array>
 
-    <string name="kicked_message">%s vas kickuje, razlog: %s</string>
+    <string name="kicked_message" formatted="false">%s vas kickuje, razlog: %s</string>
 </resources>

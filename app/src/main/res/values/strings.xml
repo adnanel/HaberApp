@@ -38,4 +38,5 @@ Adnan Elezović]]>
         <item>10</item>
     </string-array>
 
+    <string name="kicked_message">%s vas kickuje, razlog: %s</string>
 </resources>

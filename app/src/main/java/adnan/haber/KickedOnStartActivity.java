@@ -8,6 +8,7 @@ import android.os.Bundle;
 import android.view.View;
 import android.widget.CheckBox;
 import android.widget.EditText;
+import android.widget.TextView;
 
 import adnan.haber.util.CredentialManager;
 import adnan.haber.util.Debug;
@@ -22,7 +23,15 @@ public class KickedOnStartActivity extends ActionBarActivity {
 
         if ( !Haber.IsGuest() ) {
             findViewById(R.id.btLogin).setVisibility(View.GONE);
-            findViewById(R.id.tvGuestMessage).setVisibility(View.GONE);
+        }
+
+        TextView tvMessage = (TextView)findViewById(R.id.tvGuestMessage);
+        if ( getIntent().hasExtra("user") ) {
+            tvMessage.setText(String.format(getString(R.string.kicked_message), getIntent().getStringExtra("user"), getIntent().getStringExtra("reason")));
+        } else {
+            if ( !Haber.IsGuest() ) {
+                tvMessage.setVisibility(View.GONE);
+            }
         }
     }
 
@@ -45,7 +54,7 @@ public class KickedOnStartActivity extends ActionBarActivity {
                 String username;
 
                 username = ((EditText)view.findViewById(R.id.editText2)).getText().toString();
-               password = ((EditText) view.findViewById(R.id.editText3)).getText().toString();
+                password = ((EditText) view.findViewById(R.id.editText3)).getText().toString();
 
                 if ( ((CheckBox)view.findViewById(R.id.cbRememberMe)).isChecked())
                     CredentialManager.Save(KickedOnStartActivity.this, username, password);

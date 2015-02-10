@@ -62,7 +62,12 @@ public class AdvancedPreferences extends PreferenceFragment {
     }
 
     public static int GetStatusChangeTimeout(Context context) {
-        return 1000 * Integer.parseInt(PreferenceManager.getDefaultSharedPreferences(context).getString("notificationTimeout", "1"));
+        try {
+            return 1000 * Integer.parseInt(PreferenceManager.getDefaultSharedPreferences(context).getString("notificationTimeout", "1"));
+        } catch ( Exception er ) {
+            Debug.log(er);
+            return 1000;
+        }
     }
 
     public static boolean ShouldVibrate(Context context) {

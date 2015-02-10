@@ -48,6 +48,7 @@ public class HaberActivity extends ActionBarActivity implements Haber.HaberListe
     private AlertDialog smileyDialog;
 
     private boolean vibrationLock = true;
+    private static HaberActivity instance = null;
 
     private ChatAdapter.CommandBarListener cmdListener = new ChatAdapter.CommandBarListener() {
 
@@ -285,9 +286,15 @@ public class HaberActivity extends ActionBarActivity implements Haber.HaberListe
         super.onDestroy();
     }
 
+    public static boolean InstanceExists() {
+        return instance != null;
+    }
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        instance = this;
+
         setContentView(R.layout.activity_haber);
         Updater.CheckForUpdates(this);
 

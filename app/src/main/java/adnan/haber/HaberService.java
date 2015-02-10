@@ -35,6 +35,7 @@ public class HaberService extends Service implements Haber.HaberListener {
 
     private NotificationManager notificationManager;
     private int NOTIF_ID = 125125;
+    private int NOTIF_EVENT_ID = NOTIF_ID + 1;
 
     synchronized Runnable popRunnable() {
         Runnable run = runnables.get(runnables.size() - 1);
@@ -179,11 +180,32 @@ public class HaberService extends Service implements Haber.HaberListener {
                     return;
                 }
                 if ( !haberChat.isJoined() ) {
-                    Intent kickOnStart = new Intent(HaberService.this, KickedOnStartActivity.class);
-                    kickOnStart.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-                    HaberService.this.startActivity(kickOnStart);
+                    if ( HaberActivity.InstanceExists() ) {
+                        Intent kickOnStart = new Intent(HaberService.this, KickedOnStartActivity.class);
+                        kickOnStart.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+                        HaberService.this.startActivity(kickOnStart);
 
-                    stopSelf();
+                        stopSelf();
+                    } else {
+                        NotificationCompat.Builder builder = new NotificationCompat.Builder(HaberService.this);
+                        builder.setContentTitle("Haber");
+                        builder.setContentText("Izbačeni ste iz sobe!");
+                        builder.setSmallIcon(R.drawable.ic_launcher);
+                        builder.setLargeIcon(BitmapFactory.decodeResource(getResources(), R.drawable.ic_launcher));
+
+                        Intent kickedIntent = new Intent(HaberService.this, KickedOnStartActivity.class);
+                        PendingIntent intent = PendingIntent.getActivity(
+                                HaberService.this,
+                                1,
+                                kickedIntent,
+                                PendingIntent.FLAG_UPDATE_CURRENT
+                        );
+
+                        builder.setContentIntent(intent);
+                        notificationManager.notify(NOTIF_EVENT_ID, builder.build());
+
+                        stopSelf();
+                    }
                     return;
                 }
 
@@ -299,9 +321,39 @@ public class HaberService extends Service implements Haber.HaberListener {
             removeHaberListener(listener);
 
         if ( params.length == 2 && (event == Haber.ChatEvent.Banned || event == Haber.ChatEvent.Kicked)) {
-            Intent kickOnStart = new Intent(HaberService.this, KickedOnStartActivity.class);
-            kickOnStart.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-            HaberService.this.startActivity(kickOnStart);
+            if ( HaberActivity.InstanceExists() ) {
+                Intent kickOnStart = new Intent(HaberService.this, KickedOnStartActivity.class);
+                kickOnStart.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+
+                kickOnStart.putExtra("reason", params[1]);
+                kickOnStart.putExtra("user", params[0]);
+
+                HaberService.this.startActivity(kickOnStart);
+
+                stopSelf();
+            } else {
+                NotificationCompat.Builder builder = new NotificationCompat.Builder(HaberService.this);
+                builder.setContentTitle("Haber");
+                builder.setContentText("Izbačeni ste iz sobe!");
+                builder.setSmallIcon(R.drawable.ic_launcher);
+                builder.setLargeIcon(BitmapFactory.decodeResource(getResources(), R.drawable.ic_launcher));
+
+                Intent kickedIntent = new Intent(HaberService.this, KickedOnStartActivity.class);
+                kickedIntent.putExtra("reason", params[1]);
+                kickedIntent.putExtra("user", params[0]);
+
+                PendingIntent intent = PendingIntent.getActivity(
+                        HaberService.this,
+                        1,
+                        kickedIntent,
+                        PendingIntent.FLAG_UPDATE_CURRENT
+                );
+
+                builder.setContentIntent(intent);
+                notificationManager.notify(NOTIF_EVENT_ID, builder.build());
+
+                stopSelf();
+            }
         }
     }
 

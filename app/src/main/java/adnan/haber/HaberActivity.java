@@ -430,7 +430,7 @@ public class HaberActivity extends ActionBarActivity implements Haber.HaberListe
             @SuppressLint("NewApi")
             public void onDrawerSlide(View drawerView, float slideOffset)
             {
-                float moveFactor = (Util.DpiToPixel(HaberActivity.this, 250) * slideOffset);
+                float moveFactor = (Util.DpiToPixel(HaberActivity.this, 240) * slideOffset);
 
                 if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.HONEYCOMB)
                 {

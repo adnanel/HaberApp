@@ -171,5 +171,40 @@
                 android:layout_column="4"
                 android:layout_weight="1" />
         </TableRow>
+
+        <TableRow
+            android:layout_width="fill_parent"
+            android:layout_height="fill_parent" >
+
+            <ImageView
+                android:layout_width="65dp"
+                android:layout_height="65dp"
+                android:id="@+id/thumbsup"
+                android:onClick="onSmileyClick"
+                android:src="@drawable/thumbsup"
+                android:scaleType="center"
+                android:layout_weight="1" />
+
+            <ImageView
+                android:layout_width="65dp"
+                android:layout_height="65dp"
+                android:id="@+id/thumbsdown"
+                android:src="@drawable/thumbsdown"
+                android:scaleType="center"
+                android:layout_column="1"
+                android:onClick="onSmileyClick"
+                android:layout_weight="1" />
+
+            <ImageView
+                android:layout_width="65dp"
+                android:layout_height="65dp"
+                android:id="@+id/angel"
+                android:src="@drawable/angel"
+                android:scaleType="center"
+                android:onClick="onSmileyClick"
+                android:layout_column="2"
+                android:layout_weight="1" />
+
+        </TableRow>
     </TableLayout>
 </RelativeLayout>

@@ -23,6 +23,18 @@ public class SmileyChooser extends Fragment {
         String smiley = "";
 
         switch ( v.getId() ) {
+            case R.id.thumbsdown:
+                smiley = "(n)";
+                break;
+
+            case R.id.thumbsup:
+                smiley = "(y)";
+                break;
+
+            case R.id.angel:
+                smiley = "O:)";
+                break;
+
             case R.id.ambivalent:
                 smiley = "-.-";
                 break;

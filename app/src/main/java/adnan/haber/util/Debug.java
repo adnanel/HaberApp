@@ -18,6 +18,7 @@ public class Debug {
     private static Context context;
 
     public static void Initialize(Context context) {
+        Debug.context = context;
         // todo old method was too heavy. find something else
     }
 

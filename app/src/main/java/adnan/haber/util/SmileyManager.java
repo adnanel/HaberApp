@@ -21,6 +21,11 @@ public class SmileyManager {
     private static final Map<Pattern, Integer> emoticons = new HashMap<Pattern, Integer>();
 
     static {
+        addPattern(emoticons, "o:)", R.drawable.angel);
+        addPattern(emoticons, "O:)", R.drawable.angel);
+        addPattern(emoticons, "o:-)", R.drawable.angel);
+        addPattern(emoticons, "O:-)", R.drawable.angel);
+
         addPattern(emoticons, "-.-", R.drawable.ambivalent);
 
         addPattern(emoticons, ";)", R.drawable.wink);

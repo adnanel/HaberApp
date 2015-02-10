@@ -24,7 +24,6 @@
             android:summary="U većini slučajeva je bolje da ovo bude off."/>
 
         <Preference android:title="Očisti keš" android:key="clearCache"/>
-        <Preference android:title="Report bug" android:key="reportbug"/>
 
         <Preference android:title="Git" android:key="git" />
 

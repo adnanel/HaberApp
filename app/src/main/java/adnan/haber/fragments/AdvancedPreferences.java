@@ -65,7 +65,6 @@ public class AdvancedPreferences extends PreferenceFragment {
         try {
             return 1000 * Integer.parseInt(PreferenceManager.getDefaultSharedPreferences(context).getString("notificationTimeout", "1"));
         } catch ( Exception er ) {
-            Debug.log(er);
             return 1000;
         }
     }

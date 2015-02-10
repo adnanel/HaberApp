@@ -183,7 +183,6 @@ public class HaberActivity extends ActionBarActivity implements Haber.HaberListe
             }
         }
 
-
         final LinearLayout scrollView = (LinearLayout)findViewById(R.id.tabCarry);
 
 
@@ -199,6 +198,7 @@ public class HaberActivity extends ActionBarActivity implements Haber.HaberListe
                         scrollView.addView(v);
                     }
                 }
+                tabs.clear();
             }
         });
     }

@@ -18,8 +18,7 @@ import adnan.haber.HaberService;
  * Created by Adnan on 24.1.2015..
  */
 public class ChatSaver implements Haber.HaberListener {
-    private static SharedPreferences sharedPreferences;
-
+    private static Context context;
 
     private final static String PREFS = "chat_cache";
     private final static String PREF_COUNT = "count";
@@ -38,8 +37,12 @@ public class ChatSaver implements Haber.HaberListener {
         instance = this;
     }
 
+    private static SharedPreferences getSharedPreferences() {
+        return context.getSharedPreferences(PREFS, Context.MODE_PRIVATE);
+    }
+
     public static void Initialize(Context context) {
-        sharedPreferences = context.getSharedPreferences(PREFS, Context.MODE_PRIVATE);
+        ChatSaver.context = context;
 
         if ( instance == null ) {
             instance = new ChatSaver();
@@ -57,22 +60,22 @@ public class ChatSaver implements Haber.HaberListener {
     }
 
     public static int getSavedMessagesCount() {
-        return sharedPreferences.getInt(PREF_COUNT, 0);
+        return getSharedPreferences().getInt(PREF_COUNT, 0);
     }
 
     public static ArrayList<Message> getSavedMessages() {
         ArrayList<Message> result = new ArrayList<>();
 
-        int count = sharedPreferences.getInt(PREF_COUNT, 0);
+        int count = getSharedPreferences().getInt(PREF_COUNT, 0);
         int start = count - 30;
         if ( start < 0 ) start = 0;
 
         for ( int i = start; i < count; i ++ ) {
             Message msg = new Message();
-            msg.setBody(sharedPreferences.getString(PREF_BODY + i, ""));
-            msg.setFrom(sharedPreferences.getString(PREF_FROM + i, ""));
-            msg.setTo(sharedPreferences.getString(PREF_TO + i, ""));
-            msg.setPacketID(sharedPreferences.getString(PREF_ID + i, "1"));
+            msg.setBody(getSharedPreferences().getString(PREF_BODY + i, ""));
+            msg.setFrom(getSharedPreferences().getString(PREF_FROM + i, ""));
+            msg.setTo(getSharedPreferences().getString(PREF_TO + i, ""));
+            msg.setPacketID(getSharedPreferences().getString(PREF_ID + i, "1"));
 
             boolean existing = false;
             for ( Message message : result )
@@ -90,21 +93,21 @@ public class ChatSaver implements Haber.HaberListener {
     }
 
     public static int getSavedLobbyMessagesCount() {
-        return sharedPreferences.getInt(PREF_LOBBY_COUNT, 0);
+        return getSharedPreferences().getInt(PREF_LOBBY_COUNT, 0);
     }
 
     public static ArrayList<Message> getSavedLobbyMessages() {
         ArrayList<Message> result = new ArrayList<>();
 
-        int count = sharedPreferences.getInt(PREF_LOBBY_COUNT, 0);
+        int count = getSharedPreferences().getInt(PREF_LOBBY_COUNT, 0);
         int start = count - 30;
         if ( start < 0 ) start = 0;
 
         for ( int i = start; i < count; i ++ ) {
             Message msg = new Message();
-            msg.setBody(sharedPreferences.getString(PREF_LOBBY_BODY + i, ""));
-            msg.setFrom(sharedPreferences.getString(PREF_LOBBY_FROM + i, ""));
-            msg.setPacketID(sharedPreferences.getString(PREF_LOBBY_ID + i, "1"));
+            msg.setBody(getSharedPreferences().getString(PREF_LOBBY_BODY + i, ""));
+            msg.setFrom(getSharedPreferences().getString(PREF_LOBBY_FROM + i, ""));
+            msg.setPacketID(getSharedPreferences().getString(PREF_LOBBY_ID + i, "1"));
 
             boolean existing = false;
             for ( Message message : result )
@@ -121,13 +124,13 @@ public class ChatSaver implements Haber.HaberListener {
     }
 
     public static void ClearCache() {
-        SharedPreferences.Editor editor = sharedPreferences.edit();
+        SharedPreferences.Editor editor = getSharedPreferences().edit();
         editor.clear();
         editor.commit();
     }
 
     static void saveMessages(ArrayList<Message> messages) {
-        SharedPreferences.Editor editor = sharedPreferences.edit();
+        SharedPreferences.Editor editor = getSharedPreferences().edit();
         editor.putInt(PREF_COUNT, messages.size());
         int i = 0;
         for ( Message message : messages ) {
@@ -142,7 +145,7 @@ public class ChatSaver implements Haber.HaberListener {
     }
 
     static void saveLobbyMessages(ArrayList<Message> messages) {
-        SharedPreferences.Editor editor = sharedPreferences.edit();
+        SharedPreferences.Editor editor = getSharedPreferences().edit();
         editor.putInt(PREF_LOBBY_COUNT, messages.size());
         int i = 0;
         for ( Message message : messages ) {

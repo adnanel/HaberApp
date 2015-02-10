@@ -35,16 +35,18 @@ import adnan.haber.util.Debug;
 import adnan.haber.util.RankIconManager;
 
 public class LeftDrawer extends PreferenceFragment {
-    private static SharedPreferences preferences;
+    private static Context context;
 
     private ArrayList<Preference> onlineUsers = new ArrayList<Preference>();
     private PreferenceCategory prefcat;
 
 
-    public static void initialize(Context context) {
-        String preference = context.getPackageName() + "_preferences";
+    private static SharedPreferences getSharedPreferences() {
+        return context.getSharedPreferences(context.getPackageName() + "_preferences", Context.MODE_PRIVATE);
+    }
 
-        preferences = context.getSharedPreferences(preference, Context.MODE_PRIVATE);
+    public static void initialize(Context context) {
+        LeftDrawer.context = context;
     }
 
     @Override
@@ -182,7 +184,7 @@ public class LeftDrawer extends PreferenceFragment {
                 thread = this;
                 while ( !this.isInterrupted() ) {
                     try {
-                        Thread.sleep(1000);
+                        Thread.sleep(3500);
                         getActivity().runOnUiThread(new Runnable() {
                             @Override
                             public void run() {

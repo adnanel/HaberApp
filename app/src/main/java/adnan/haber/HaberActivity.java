@@ -15,6 +15,8 @@ import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewTreeObserver;
 import android.view.Window;
+import android.view.animation.Animation;
+import android.view.animation.AnimationUtils;
 import android.webkit.WebView;
 import android.widget.EditText;
 import android.widget.LinearLayout;
@@ -840,22 +842,36 @@ public class HaberActivity extends ActionBarActivity implements Haber.HaberListe
                     btClose.setOnClickListener(new View.OnClickListener() {
                         @Override
                         public void onClick(View v) {
-                            for (Object o : chatThreads.entrySet()) {
-                                Map.Entry pairs = (Map.Entry) o;
-                                if (thisThread == pairs.getValue()) {
-                                    chatThreads.remove(pairs.getKey());
-                                    HaberService.chatRooms.remove(pairs.getKey());
-                                    break;
-                                }
-                            }
-
-                            runOnUiThread(new Runnable() {
+                            Animation anim = AnimationUtils.loadAnimation(HaberActivity.this, R.anim.tab_anim);
+                            anim.setAnimationListener(new Animation.AnimationListener() {
                                 @Override
-                                public void run() {
-                                    scrollView.removeView(tabView);
-                                    mainChatThread.tabView.performClick();
+                                public void onAnimationStart(Animation animation) { }
+                                @Override
+                                public void onAnimationRepeat(Animation animation) { }
+
+                                @Override
+                                public void onAnimationEnd(Animation animation) {
+                                    for (Object o : chatThreads.entrySet()) {
+                                        Map.Entry pairs = (Map.Entry) o;
+                                        if (thisThread == pairs.getValue()) {
+                                            chatThreads.remove(pairs.getKey());
+                                            HaberService.chatRooms.remove(pairs.getKey());
+                                            break;
+                                        }
+                                    }
+
+                                    runOnUiThread(new Runnable() {
+                                        @Override
+                                        public void run() {
+                                            scrollView.removeView(tabView);
+                                            mainChatThread.tabView.performClick();
+                                        }
+                                    });
                                 }
+
                             });
+
+                            tabView.startAnimation(anim);
                         }
                     });
                     scrollView.addView(tabView);

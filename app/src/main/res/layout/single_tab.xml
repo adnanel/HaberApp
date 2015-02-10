@@ -29,7 +29,7 @@
 
             <TextView
                 android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
+                android:layout_height="fill_parent"
                 android:textAppearance="?android:attr/textAppearanceMedium"
                 android:text="X"
                 android:id="@+id/tvClose"
@@ -38,7 +38,8 @@
                 android:layout_alignParentEnd="true"
                 android:paddingLeft="10dp"
                 android:paddingRight="10dp"
-                android:visibility="visible" />
+                android:visibility="visible"
+                android:gravity="center_vertical" />
 
             <RelativeLayout
                 android:layout_width="20dp"

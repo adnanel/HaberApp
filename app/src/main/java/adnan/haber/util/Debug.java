@@ -11,25 +11,18 @@ import android.util.Log;
 import java.io.File;
 import java.io.PrintWriter;
 
+import adnan.haber.fragments.AdvancedPreferences;
+
 public class Debug {
-    private static boolean DebugBuild = true;
     private static String TAG = "Adnan";
+    private static Context context;
 
     public static void Initialize(Context context) {
         // todo old method was too heavy. find something else
     }
 
-    public static synchronized void SetDebugMode(boolean isDebug) {
-        log("Logging disabled!");
-
-        DebugBuild = isDebug;
-
-        log("Logging enabled!");
-    }
-
-
     public static void log(String msg) {
-        if ( DebugBuild ) {
+        if (AdvancedPreferences.IsDebug(context) ) {
             Log.i(TAG, msg);
         }
     }

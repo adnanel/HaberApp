@@ -94,7 +94,7 @@ public class AdvancedPreferences extends PreferenceFragment {
     }
 
 
-    private static boolean IsDebug(Context context) {
+    public static boolean IsDebug(Context context) {
         return PreferenceManager.getDefaultSharedPreferences(context).getBoolean("debugMode", true);
     }
 
@@ -146,8 +146,6 @@ public class AdvancedPreferences extends PreferenceFragment {
             });
             builder.setNegativeButton("Prekid", null);
             builder.create().show();
-        } else if ( preference.getKey().equals("debugMode")) {
-            Debug.SetDebugMode(IsDebug(getActivity()));
         } else if ( preference.getKey().equals("version") ) {
             getActivity().runOnUiThread(new Runnable() {
                 @Override

@@ -10,8 +10,8 @@ https://dl.dropboxusercontent.com/u/67764496/haber/haberapp-debug.apk
 ------------------
 Verzija 0.5b
 ------------------
-- A lot of bugfixes
-- A lot of small visual tweaks
+- Jako puno ispravljenih bugova
+- Dosta sitnih vizuelnih ispravkih
 
 Verzija 0.5
 ------------------

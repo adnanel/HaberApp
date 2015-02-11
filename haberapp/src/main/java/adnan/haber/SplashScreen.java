@@ -40,7 +40,6 @@ public class SplashScreen extends ActionBarActivity implements Haber.HaberListen
         setContentView(R.layout.activity_splash_screen);
 
         Debug.Initialize(this); // <- must be first
-        LeftDrawer.initialize(this);
         ChatSaver.Initialize(this);
 
         if ( Haber.isConnected() ) {

@@ -331,7 +331,7 @@ public class HaberActivity extends ActionBarActivity implements Haber.HaberListe
         super.onCreate(savedInstanceState);
         instance = this;
 
-        LeftDrawer leftDrawer = (LeftDrawer)getSupportFragmentManager().findFragmentById(R.id.leftDrawerFragment);
+        LeftDrawer leftDrawer = (LeftDrawer)getSupportFragmentManager().findFragmentByTag(LeftDrawer.TAG);
         if ( leftDrawer != null ) {
             FragmentTransaction transaction = getSupportFragmentManager().beginTransaction();
             transaction.remove(leftDrawer);
@@ -339,6 +339,11 @@ public class HaberActivity extends ActionBarActivity implements Haber.HaberListe
         }
 
         setContentView(R.layout.activity_haber);
+        //attach left drawer
+        FragmentTransaction transaction = getSupportFragmentManager().beginTransaction();
+        transaction.add(R.id.rlLeftDrawer, LeftDrawer.newInstance(this), LeftDrawer.TAG);
+        transaction.commit();
+
         Updater.CheckForUpdates(this);
 
         chatListView = (ListView)findViewById(R.id.chatListView);

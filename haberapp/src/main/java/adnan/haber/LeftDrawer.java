@@ -36,13 +36,17 @@ import adnan.haber.util.Debug;
 import adnan.haber.util.RankIconManager;
 
 public class LeftDrawer extends PreferenceFragment {
-    private static Context context;
+    public static final String TAG  = "Left_drawer_fragment";
+
+    private Context context;
 
     private ArrayList<Preference> onlineUsers = new ArrayList<Preference>();
     private PreferenceCategory prefcat;
 
-    public static void initialize(Context context) {
-        LeftDrawer.context = context;
+    public static LeftDrawer newInstance(Context context) {
+        LeftDrawer instance = new LeftDrawer();
+        instance.context = context;
+        return instance;
     }
 
     @Override
@@ -174,6 +178,7 @@ public class LeftDrawer extends PreferenceFragment {
     @Override
     public void onCreate(Bundle saved) {
         super.onCreate(saved);
+
 
         this.addPreferencesFromResource(R.xml.left_drawer);
 

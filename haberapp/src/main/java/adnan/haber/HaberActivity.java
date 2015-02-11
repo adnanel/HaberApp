@@ -314,6 +314,15 @@ public class HaberActivity extends ActionBarActivity implements Haber.HaberListe
 
         Intent intent = new Intent(this, HaberService.class);
         startService(intent);
+
+        HaberService.resetCounters();
+    }
+
+
+    @Override
+    public void onPause() {
+        instance = null;
+        super.onPause();
     }
 
     @Override

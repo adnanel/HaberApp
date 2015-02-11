@@ -38,6 +38,19 @@ public class HaberService extends Service implements Haber.HaberListener {
     private int NOTIF_ID = 125125;
     private int NOTIF_EVENT_ID = NOTIF_ID + 1;
 
+    private static int mentionCount = 0;
+    private static int pmCount = 0;
+
+    private static HaberService instance = null;
+
+    public static void resetCounters() {
+        mentionCount = 0;
+        pmCount = 0;
+
+        if ( instance != null )
+            instance.refreshNotification();
+    }
+
     synchronized Runnable popRunnable() {
         Runnable run = runnables.get(runnables.size() - 1);
         runnables.remove(runnables.size() - 1);
@@ -145,14 +158,10 @@ public class HaberService extends Service implements Haber.HaberListener {
 
     }
 
-
-
-    @Override
-    public void onCreate() {
-        notificationManager = (NotificationManager)getSystemService(NOTIFICATION_SERVICE);
+    public void refreshNotification() {
         NotificationCompat.Builder builder = new NotificationCompat.Builder(this);
-        builder.setContentTitle("Haber");
-        builder.setContentText("Servis za konekciju pokrenut u pozadini...");
+        builder.setContentTitle("Haber Servis");
+        builder.setContentText(getServiceStatus());
         builder.setOngoing(true);
         builder.setSmallIcon(R.drawable.ic_launcher);
         builder.setLargeIcon(BitmapFactory.decodeResource(getResources(), R.drawable.ic_launcher));
@@ -163,6 +172,7 @@ public class HaberService extends Service implements Haber.HaberListener {
                 PendingIntent.FLAG_CANCEL_CURRENT
         ));
 
+
         PendingIntent intent = PendingIntent.getActivity(
                 this,
                 0,
@@ -172,6 +182,31 @@ public class HaberService extends Service implements Haber.HaberListener {
 
         builder.setContentIntent(intent);
         notificationManager.notify(NOTIF_ID, builder.build());
+    }
+
+
+
+    String getServiceStatus() {
+        if ( pmCount == 0 && mentionCount == 0 ) {
+            return "Nema novih poruka/spominjanja";
+        } else if ( pmCount != 0 && mentionCount == 0 ) {
+            return String.format("Privatne poruke (%d)", pmCount);
+        } else if ( pmCount != 0 && mentionCount != 0 ) {
+            return String.format("Privatne poruke (%d), Spominjanja (%d)", pmCount, mentionCount);
+        } else if ( pmCount == 0 && mentionCount != 0 ) {
+            return String.format("Spominjanja (%d)", mentionCount);
+        }
+
+        return "UNKNOWN STATE!";
+    }
+
+    @Override
+    public void onCreate() {
+        instance = this;
+
+        notificationManager = (NotificationManager)getSystemService(NOTIFICATION_SERVICE);
+        refreshNotification();
+
 
         new Thread() {
             @Override
@@ -306,6 +341,26 @@ public class HaberService extends Service implements Haber.HaberListener {
 
         if ( !chatRooms.contains( chat ) && chat != null )
             chatRooms.add(chat);
+
+        //if activity isn't shown => haber is in background
+        if ( HaberActivity.getInstance() == null ) {
+            if ( chat != null ) {
+                pmCount++;
+                refreshNotification();
+            } else {
+                if ( !Haber.IsGuest() ) {
+                    if (message.getBody().toUpperCase().contains(Haber.getUsername().toUpperCase())) {
+                        mentionCount++;
+                        refreshNotification();
+                    }
+                } else {
+                    if (message.getBody().toUpperCase().contains(Haber.getUsername().substring(1).toUpperCase())) {
+                        mentionCount++;
+                        refreshNotification();
+                    }
+                }
+            }
+        }
     }
 
     @Override

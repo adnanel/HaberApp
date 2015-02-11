@@ -285,7 +285,7 @@ public class ChatAdapter extends ArrayAdapter<ListChatItem> {
             tvMessage.setIncludeFontPadding(false);
 
             TextView tvTime = (TextView) rowView.findViewById(R.id.tvTime);
-            (tvTime).setText(DateFormat.format("hh:mm", items.get(position).time));
+            (tvTime).setText(DateFormat.format("HH:mm", items.get(position).time));
 
             if ( items.get(position).author.equals(Haber.getShortUsername(Haber.getUsername()))) {
                 try {

@@ -3,11 +3,15 @@
 # Download
 ---------------------------------------------------
 Zadnja verzija APK-a:
-https://drive.google.com/uc?export=download&id=0B310dhQuX3QdMlZtbXozMFA5ejg
+https://dl.dropboxusercontent.com/u/67764496/haber/haberapp-debug.apk
 
 
 # Change log
 ------------------
+Verzija 0.5b
+------------------
+- A lot of bugfixes
+- A lot of small visual tweaks
 
 Verzija 0.5
 ------------------

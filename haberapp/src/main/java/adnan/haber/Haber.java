@@ -264,12 +264,12 @@ public class Haber {
                 chat.addParticipantStatusListener(new ParticipantStatusListener() {
                     @Override
                     public void joined(String s) {
-
+                        statusListener.onChatEvent(ChatEvent.Joined, s);
                     }
 
                     @Override
                     public void left(String s) {
-
+                        statusListener.onChatEvent(ChatEvent.Left, s);
                     }
 
                     @Override
@@ -545,7 +545,9 @@ public class Haber {
 
     public enum ChatEvent {
         Banned,
-        Kicked
+        Kicked,
+        Joined,
+        Left
     }
 
     public static class PacketTimeStamp implements PacketExtension {

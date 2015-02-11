@@ -58,67 +58,55 @@
                 android:layout_alignParentStart="true"
                 android:smoothScrollbar="true"
                 android:stackFromBottom="true"
-                android:layout_above="@+id/relativeLayout" />
+                android:layout_above="@+id/editText"
+                />
 
-            <RelativeLayout
-                android:layout_width="fill_parent"
-                android:layout_height="50dp"
+            <ImageButton
+                style="?android:attr/buttonStyleSmall"
+                android:layout_width="50dp"
+                android:layout_height="wrap_content"
+                android:text=":)"
+                android:id="@+id/btSmile"
                 android:layout_alignParentBottom="true"
-                android:layout_alignParentLeft="true"
-                android:layout_alignParentStart="true"
+                android:src="@drawable/btsmileys"
+                android:scaleType="fitCenter"
+                android:layout_alignTop="@+id/editText"
+                android:background="#00ffffff"
+                android:padding="2dp" />
+
+            <ImageButton
+                style="?android:attr/buttonStyleSmall"
+                android:layout_width="50dp"
+                android:layout_height="wrap_content"
+                android:text="Pošalji"
+                android:id="@+id/btSend"
+                android:layout_alignParentBottom="true"
                 android:layout_alignParentRight="true"
                 android:layout_alignParentEnd="true"
-                android:id="@+id/relativeLayout"
-                android:padding="3dp">
+                android:layout_alignTop="@+id/editText"
+                android:src="@drawable/btsend"
+                android:scaleType="fitCenter"
+                android:background="#00ffffff"
+                android:padding="2dp" />
 
-                <ImageButton
-                    style="?android:attr/buttonStyleSmall"
-                    android:layout_width="50dp"
-                    android:layout_height="wrap_content"
-                    android:text=":)"
-                    android:id="@+id/btSmile"
-                    android:layout_alignParentBottom="true"
-                    android:src="@drawable/btsmileys"
-                    android:scaleType="fitCenter"
-                    android:layout_alignParentTop="true"
-                    android:background="#00ffffff"
-                    android:padding="2dp" />
-
-                <EditText
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:id="@+id/editText"
-                    android:layout_alignParentBottom="true"
-                    android:layout_toLeftOf="@+id/btSend"
-                    android:layout_toRightOf="@+id/btSmile"
-                    android:layout_toEndOf="@+id/btSmile" />
-
-                <ImageButton
-                    style="?android:attr/buttonStyleSmall"
-                    android:layout_width="50dp"
-                    android:layout_height="wrap_content"
-                    android:text="Pošalji"
-                    android:id="@+id/btSend"
-                    android:layout_alignParentBottom="true"
-                    android:layout_alignParentRight="true"
-                    android:layout_alignParentEnd="true"
-                    android:layout_alignParentTop="true"
-                    android:src="@drawable/btsend"
-                    android:scaleType="fitCenter"
-                    android:background="#00ffffff"
-                    android:padding="2dp" />
-
-                <ImageView
-                    android:layout_width="fill_parent"
-                    android:layout_height="1px"
-                    android:id="@+id/imageView2"
-                    android:layout_alignParentTop="true"
-                    android:layout_alignParentLeft="true"
-                    android:layout_alignParentStart="true"
-                    android:background="#80cbc4" />
+            <EditText
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:id="@+id/editText"
+                android:layout_alignParentBottom="true"
+                android:layout_toLeftOf="@+id/btSend"
+                android:layout_toRightOf="@+id/btSmile"
+                android:layout_toEndOf="@+id/btSmile" />
 
 
-            </RelativeLayout>
+            <ImageView
+                android:layout_width="fill_parent"
+                android:layout_height="1px"
+                android:id="@+id/imageView2"
+                android:layout_alignTop="@+id/editText"
+                android:layout_alignParentLeft="true"
+                android:layout_alignParentStart="true"
+                android:background="#80cbc4" />
 
         </RelativeLayout>
 

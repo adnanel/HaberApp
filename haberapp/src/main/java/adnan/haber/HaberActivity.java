@@ -753,6 +753,16 @@ public class HaberActivity extends ActionBarActivity implements Haber.HaberListe
                         message = params[1] + " banuje " + params[0] + ", razlog: " + params[2];
 
                     }
+                } else if ( event == Haber.ChatEvent.Joined ) {
+                    if ( AdvancedPreferences.ShowJoinedLeftNotifications(HaberActivity.this) )
+                        message = Haber.getShortUsername(params[0] + " je zapoceo haber");
+                    else
+                        return;
+                } else if ( event == Haber.ChatEvent.Left ) {
+                    if ( AdvancedPreferences.ShowJoinedLeftNotifications(HaberActivity.this) )
+                        message = Haber.getShortUsername(params[0] + " je napustio haber");
+                    else
+                        return;
                 }
                final ListChatItem item = mainChatThread.chatAdapter.putDivider(message);
 

@@ -17,7 +17,8 @@ Berina Cocalić<br/><br/>
 <b>Suggestions and constant testing</b><br/>
 Enil Pajić<br/>
 Alma Hodžić<br/>
-Lamija Lemeš<br/><br/>
+Lamija Lemeš<br/>
+Merima Hadžiabdić<br/><br/>
 <b>Programming</b><br/>
 Adnan Elezović]]>
 </Data></string>
@@ -43,4 +44,5 @@ Adnan Elezović]]>
     <string name="acc_drawer_open">Otvori listu korisnika</string>
     <string name="acc_drawer_close">Zatvori listu korisnika</string>
     <string name="title_activity_wrong_credentials">WrongCredentials</string>
+    <string name="title_activity_confirm_leave">ConfirmLeaveActivity</string>
 </resources>

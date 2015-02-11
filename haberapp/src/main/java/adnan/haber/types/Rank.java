@@ -16,7 +16,8 @@ public enum Rank {
     Memi,
     User,
     Alma,
-    Lamija;
+    Lamija,
+    Merima;
 
     public static Rank fromString(String role) {
         if ( role.equals("moderator") ) return Moderator;
@@ -29,6 +30,7 @@ public enum Rank {
     public int toInt() {
         if ( this == Guest ) return 0;
         if ( this == User ) return 100;
+        if ( this == Merima ) return 105;
         if ( this == Alma ) return 110;
         if ( this == Berina ) return 135;
         if ( this == Lamija ) return 140;

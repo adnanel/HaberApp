@@ -2,19 +2,21 @@
 <PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android">
 
     <PreferenceCategory android:title="Pristupačnost">
-        <SwitchPreference android:title="Vibriraj kada dođe poruka" android:key="vibrate" android:defaultValue="true"/>
-        <SwitchPreference android:title="Vibriraj za poruke na aktivnom tabu" android:dependency="vibrate" android:key="vibrateonactive" android:defaultValue="true"/>
-        <SwitchPreference android:title="Vibriraj za poruke na javnom chatu" android:dependency="vibrate" android:key="vibrateonpublic" android:defaultValue="true"/>
-        <SwitchPreference android:title="Vibriraj za @Reply poruke" android:dependency="vibrate" android:key="vibrateonreply" android:defaultValue="true"/>
+        <CheckBoxPreference android:title="Vibriraj kada dođe poruka" android:key="vibrate" android:defaultValue="true"/>
+        <CheckBoxPreference android:title="Vibriraj za poruke na aktivnom tabu" android:dependency="vibrate" android:key="vibrateonactive" android:defaultValue="true"/>
+        <CheckBoxPreference android:title="Vibriraj za poruke na javnom chatu" android:dependency="vibrate" android:key="vibrateonpublic" android:defaultValue="true"/>
+        <CheckBoxPreference android:title="Vibriraj za @Reply poruke" android:dependency="vibrate" android:key="vibrateonreply" android:defaultValue="true"/>
 
-        <SwitchPreference android:title="Prebaci na tab kada neko zapocne private" android:key="switchToNewChat" android:defaultValue="true"/>
+        <CheckBoxPreference android:title="Prebaci na tab kada neko zapocne private" android:key="switchToNewChat" android:defaultValue="true"/>
 
-        <SwitchPreference android:title="Obrisi ban/kick notifikacije" android:key="deleteNotificationsEnabled" android:defaultValue="true"/>
+        <CheckBoxPreference android:title="Brisi chat notifikacije" android:key="deleteNotificationsEnabled" android:defaultValue="true"/>
         <ListPreference android:title="Vrijeme zivljenja notifikacija" android:entries="@array/notificationTimeouts" android:entryValues="@array/notificationTimeoutsValues" android:dependency="deleteNotificationsEnabled" android:key="notificationTimeout" android:defaultValue="true"/>
+
+        <CheckBoxPreference android:title="Prikazuj notifikaciju ulaska/izlaska" android:key="showJoinedLeft" android:defaultValue="false"/>
     </PreferenceCategory>
 
     <PreferenceCategory android:title="Izgled">
-        <SwitchPreference android:title="Svoje poruke poravnaj desno" android:key="ownMessageAlignRight" android:defaultValue="true"/>
+        <CheckBoxPreference android:title="Svoje poruke poravnaj desno" android:key="ownMessageAlignRight" android:defaultValue="true"/>
     </PreferenceCategory>
 
     <PreferenceCategory android:title="Misc.">

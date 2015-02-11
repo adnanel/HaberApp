@@ -159,6 +159,11 @@ public class LeftDrawer extends PreferenceFragment {
                     }
 
                     Haber.StartChat(preference.getKey());
+                    try {
+                        HaberActivity.getInstance().closeLeftDrawer();
+                    } catch ( Exception er ) {
+                        Debug.log(er);
+                    }
                     return false;
                 }
             });

@@ -23,6 +23,7 @@ import java.util.Formatter;
 import java.util.Random;
 
 import adnan.haber.Haber;
+import adnan.haber.fragments.AdvancedPreferences;
 
 /**
  * Created by Adnan on 26.1.2015..
@@ -108,6 +109,7 @@ public class Util {
 
     public static String GeneratePacketId(Packet packet) {
         String res = _GeneratePacketId(packet);
+
         Debug.log("dump: " + packet.toXML().toString() + " - " + res);
         return res;
     }

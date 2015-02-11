@@ -5,6 +5,7 @@ import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.net.Uri;
+import android.preference.CheckBoxPreference;
 import android.preference.Preference;
 import android.preference.PreferenceManager;
 import android.preference.PreferenceScreen;
@@ -47,7 +48,7 @@ public class AdvancedPreferences extends PreferenceFragment {
         super.onCreate(savedInstanceState);
         this.addPreferencesFromResource(R.xml.advanced_prefs);
 
-        SwitchPreference pref = (SwitchPreference)this.getPreferenceScreen().findPreference("ownMessageAlignRight");
+        CheckBoxPreference pref = (CheckBoxPreference)this.getPreferenceScreen().findPreference("ownMessageAlignRight");
         pref.setOnPreferenceChangeListener(new Preference.OnPreferenceChangeListener() {
             @Override
             public boolean onPreferenceChange(Preference preference, Object newValue) {
@@ -57,6 +58,9 @@ public class AdvancedPreferences extends PreferenceFragment {
         });
     }
 
+    public static boolean ShowJoinedLeftNotifications(Context context) {
+        return PreferenceManager.getDefaultSharedPreferences(context).getBoolean("showJoinedLeft", false);
+    }
     public static boolean ShouldClearNotifications(Context context) {
         return PreferenceManager.getDefaultSharedPreferences(context).getBoolean("deleteNotificationsEnabled", true);
     }

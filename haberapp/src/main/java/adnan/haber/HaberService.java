@@ -97,6 +97,8 @@ public class HaberService extends Service implements Haber.HaberListener {
             return Rank.Memi;
         if ( Haber.getShortUsername(user).toUpperCase().equals("ZAPHOD") )
             return Rank.Lamija;
+        if ( Haber.getShortUsername(user).toUpperCase().equals("KOKI") )
+            return Rank.Merima;
 
         if ( Haber.getShortUsername(user).charAt(0) == 'ǂ')
             return Rank.Guest;

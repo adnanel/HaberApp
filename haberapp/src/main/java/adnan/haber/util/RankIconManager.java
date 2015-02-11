@@ -46,6 +46,8 @@ public class RankIconManager {
             span = "</memi>";
         } else if ( rank == Rank.Lamija ) {
             span = "</lamija>";
+        } else if ( rank == Rank.Merima ) {
+            span = "</merima>";
         }
 
         return _getSpanned(context, span + "  " + altString);
@@ -73,6 +75,8 @@ public class RankIconManager {
             span = "</memi>";
         } else if ( rank == Rank.Lamija ) {
             span = "</lamija>";
+        } else if ( rank == Rank.Merima ) {
+            span = "</merima>";
         }
 
         return _getSpanned(context, span + "  " + Haber.getShortUsername(username));
@@ -89,6 +93,7 @@ public class RankIconManager {
         addPattern(emoticons, "</alma>", R.drawable.alma);
         addPattern(emoticons, "</memi>", R.drawable.memi);
         addPattern(emoticons, "</lamija>", R.drawable.lamija);
+        addPattern(emoticons, "</merima>", R.drawable.merima);
     }
 
     private static void addPattern(Map<Pattern, Integer> map, String smile,

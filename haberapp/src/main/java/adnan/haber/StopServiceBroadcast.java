@@ -10,7 +10,11 @@ public class StopServiceBroadcast extends BroadcastReceiver {
 
     @Override
     public void onReceive(Context context, Intent intent) {
-        Intent service = new Intent(context, HaberService.class);
-        context.stopService(service);
+        context.sendBroadcast(new Intent(Intent.ACTION_CLOSE_SYSTEM_DIALOGS));
+
+        Intent activity = new Intent(context, ConfirmLeaveActivity.class);
+        activity.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+        context.startActivity(activity);
+
     }
 }

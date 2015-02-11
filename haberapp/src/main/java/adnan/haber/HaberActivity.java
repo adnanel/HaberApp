@@ -632,16 +632,14 @@ public class HaberActivity extends ActionBarActivity implements Haber.HaberListe
                     public void run() {
                         if ( chatListView.getChildCount() < 1 ) return;
 
-                        if (chatListView.getLastVisiblePosition() >= chatListView.getAdapter().getCount() - 4 )
-                        {
-                            //It is scrolled all the way down here
-
-                            if ( smooth )
+                        if ( smooth ) {
+                            if (chatListView.getLastVisiblePosition() >= chatListView.getAdapter().getCount() - 4) {
+                                //It is scrolled all the way down here
                                 chatListView.smoothScrollToPosition(chatListView.getCount() - 1);
-                            else
-                                chatListView.setSelection(chatListView.getCount() - 1);
-                        }
 
+                            }
+                        } else
+                            chatListView.setSelection(chatListView.getCount() - 1);
                     }});
             }
         });

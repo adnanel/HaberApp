@@ -8,22 +8,32 @@ import org.jivesoftware.smack.ChatManager;
 import org.jivesoftware.smack.ChatManagerListener;
 import org.jivesoftware.smack.ConnectionConfiguration;
 import org.jivesoftware.smack.MessageListener;
+import org.jivesoftware.smack.PacketInterceptor;
 import org.jivesoftware.smack.PacketListener;
 import org.jivesoftware.smack.SASLAuthentication;
 import org.jivesoftware.smack.SmackAndroid;
 import org.jivesoftware.smack.SmackException;
 import org.jivesoftware.smack.XMPPConnection;
+import org.jivesoftware.smack.filter.PacketFilter;
 import org.jivesoftware.smack.packet.Message;
 import org.jivesoftware.smack.packet.Packet;
+import org.jivesoftware.smack.packet.PacketExtension;
+import org.jivesoftware.smack.provider.PacketExtensionProvider;
 import org.jivesoftware.smack.sasl.SASLDigestMD5Mechanism;
 import org.jivesoftware.smack.tcp.XMPPTCPConnection;
 import org.jivesoftware.smack.util.dns.HostAddress;
+import org.jivesoftware.smackx.delay.packet.DelayInformation;
 import org.jivesoftware.smackx.muc.MultiUserChat;
 import org.jivesoftware.smackx.muc.ParticipantStatusListener;
 import org.jivesoftware.smackx.muc.UserStatusListener;
 
+import java.text.DateFormat;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Date;
+import java.util.Locale;
 import java.util.Random;
+import java.util.TimeZone;
 
 import adnan.haber.util.Debug;
 import adnan.haber.util.Util;
@@ -43,9 +53,13 @@ public class Haber {
 
     private static String  username = "ǂAndro" + getRandomInt();
     private static boolean isGuest = true;
+    private static boolean hellBanned = false;
     private static String  password = "";
     private static ArrayList<Message> cachedLobbyMessages = new ArrayList<Message>();
 
+    public static boolean IsHellBanned() {
+        return hellBanned;
+    }
     public static synchronized ArrayList<Message> getCachedLobbyMessages() {
         ArrayList<Message> messages = new ArrayList<>();
         for ( Message msg : cachedLobbyMessages )
@@ -144,10 +158,18 @@ public class Haber {
         }
 
         Chat chat = HaberService.haberChat.createPrivateChat(user, new MessageListener() {
+            int id = 0;
+            String salt = Util.getRandomInt(1000) + "";
+
             @Override
             public void processMessage(Chat chat, Message message) {
+                if ( message.getPacketID() == null ) {
+                    message.setPacketID((id++) + salt);
+                }
+
                 try {
-                    message.setPacketID(Util.makeSHA1Hash(message.getFrom() + message.getBody() + message.getPacketID() + Util.getRandomInt(100)));
+                    message.addExtension(new PacketTimeStamp(message));
+                    message.setPacketID(Util.GeneratePacketId(message));
                 } catch ( Exception er ) {
                     Debug.log(er);
                 }
@@ -192,6 +214,7 @@ public class Haber {
         return user;
     }
 
+
     public boolean connect() throws InvalidCredentialsException {
         try {
 
@@ -207,6 +230,7 @@ public class Haber {
 
             try {
                 connection.connect();
+
                 if ( isGuest ) {
                     connection.loginAnonymously();
                     username = "ǂAndro" + getRandomInt();
@@ -376,12 +400,46 @@ public class Haber {
                 });
 
                 chat.addMessageListener(new PacketListener() {
+                    int id = 0;
+                    String salt = Util.getRandomInt(1000) + "";
+
                     @Override
                     public void processPacket(Packet packet) throws SmackException.NotConnectedException {
                         try {
                             Message message = (Message)packet;
+                            if ( message.getPacketID() == null ) {
+                                message.setPacketID((id++) + salt);
+                            }
+
+                            //delete
+                            String xml = packet.toXML().toString();
+                            xml = xml.substring(xml.lastIndexOf("</body>") + "</body>".length());
+
+                            if ( xml.indexOf("<delete") != -1 ) {
+                                String deleteTarget = xml.substring(xml.indexOf("<delete") + "<delete".length(),
+                                        xml.indexOf("</delete>"));
+
+                                if ( deleteTarget.length() > 0 && HaberService.IsMod(message.getFrom())) {
+                                    statusListener.onDeleteRequested(deleteTarget);
+                                }
+                                return;
+                            }
+
+                            //hellban
+                            if ( xml.indexOf("<hellban") != -1 ) {
+                                String hellBanTarget = xml.substring(xml.indexOf("<hellban") + "<hellban".length(),
+                                        xml.indexOf("</hellban>"));
+
+                                if ( getFullUsername(hellBanTarget).equals(getFullUsername(username)) && HaberService.IsMod(message.getFrom()) ) {
+                                    //i got a hellban!
+                                    hellBanned = true;
+                                }
+                                return;
+                            }
+
                             try {
-                                message.setPacketID(Util.makeSHA1Hash(message.getFrom() + message.getBody() + message.getPacketID() + Util.getRandomInt(100)));
+                                message.addExtension(new PacketTimeStamp(message));
+                                message.setPacketID(Util.GeneratePacketId(message));
                             } catch ( Exception er ) {
                                 Debug.log(er);
                             }
@@ -404,10 +462,18 @@ public class Haber {
 
                         statusListener.onRoomJoined(chat);
                         chat.addMessageListener(new MessageListener() {
+                            int id = 0;
+                            String salt = Util.getRandomInt(1000) + "";
+
                             @Override
                             public void processMessage(Chat lchat, Message message) {
+                                if ( message.getPacketID() == null ) {
+                                    message.setPacketID((id++) + salt);
+                                }
+
                                 try {
-                                    message.setPacketID(Util.makeSHA1Hash(message.getFrom() + message.getBody() + message.getPacketID() + Util.getRandomInt(100)));
+                                    message.addExtension(new PacketTimeStamp(message));
+                                    message.setPacketID(Util.GeneratePacketId(message));
                                 } catch ( Exception er ) {
                                     Debug.log(er);
                                 }
@@ -474,10 +540,51 @@ public class Haber {
         public abstract void onChatEvent(ChatEvent event, String... params);
         //soft disconnect - when the user disconnects intentionally
         public abstract void onSoftDisconnect();
+        public abstract void onDeleteRequested(String user);
     }
 
     public enum ChatEvent {
         Banned,
         Kicked
+    }
+
+    public static class PacketTimeStamp implements PacketExtension {
+        String time;
+
+        public String getTime() {
+            return time;
+        }
+
+        public PacketTimeStamp(Message message) {
+            if ( message.getBody() != null ) {
+                for ( PacketExtension ext : message.getExtensions() ) {
+                    if ( ext instanceof DelayInformation ) {
+                        time = android.text.format.DateFormat.format(Util.TIME_FORMAT, ((DelayInformation) ext).getStamp()).toString();
+                        return;
+                    }
+                }
+            }
+
+            time = android.text.format.DateFormat.format(Util.TIME_FORMAT, new java.util.Date()).toString();
+        }
+
+        public PacketTimeStamp(String stamp) {
+            time = stamp;
+        }
+
+        @Override
+        public String getElementName() {
+            return "PacketTimeStamp";
+        }
+
+        @Override
+        public String getNamespace() {
+            return "PacketTimeStamp";
+        }
+
+        @Override
+        public CharSequence toXML() {
+            return "<PacketTimeStamp> " + time + " <PacketTimeStamp/>";
+        }
     }
 }

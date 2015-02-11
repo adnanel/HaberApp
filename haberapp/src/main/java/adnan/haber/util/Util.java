@@ -4,6 +4,10 @@ import android.content.Context;
 import android.content.res.Resources;
 import android.util.TypedValue;
 
+import org.jivesoftware.smack.packet.Message;
+import org.jivesoftware.smack.packet.Packet;
+import org.jivesoftware.smack.packet.PacketExtension;
+
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStream;
@@ -13,8 +17,12 @@ import java.net.MalformedURLException;
 import java.net.URL;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
+import java.text.SimpleDateFormat;
+import java.util.Date;
 import java.util.Formatter;
 import java.util.Random;
+
+import adnan.haber.Haber;
 
 /**
  * Created by Adnan on 26.1.2015..
@@ -94,6 +102,39 @@ public class Util {
         String result = formatter.toString();
         formatter.close();
         return result;
+    }
+
+    public static String TIME_FORMAT = "hh:mm yyyy-MM-dd";
+
+    public static String GeneratePacketId(Packet packet) {
+        String res = _GeneratePacketId(packet);
+        Debug.log("dump: " + packet.toXML().toString() + " - " + res);
+        return res;
+    }
+
+    public static String _GeneratePacketId(Packet packet) {
+        try {
+            for (PacketExtension ext : packet.getExtensions() ) {
+                if ( ext instanceof Haber.PacketTimeStamp ) {
+                    Haber.PacketTimeStamp stamp = (Haber.PacketTimeStamp) ext;
+                    Message message = (Message) packet;
+                    SimpleDateFormat df = new SimpleDateFormat(TIME_FORMAT);
+                    Date date = df.parse(stamp.getTime());
+
+                    String id = (message.getPacketID() == null) ? "" : message.getPacketID();
+                    return makeSHA1Hash(date.toString() + message.getBody() + message.getFrom() + id);
+                }
+            }
+            throw new Exception("Couldn't find timestamp!");
+        } catch (Exception er) {
+            Debug.log("GeneratePacketId - " + er.toString());
+
+            try {
+                return makeSHA1Hash(packet.toString());
+            } catch (NoSuchAlgorithmException e) {
+                return "";
+            }
+        }
     }
 
     public static String DownloadString(String _url) {

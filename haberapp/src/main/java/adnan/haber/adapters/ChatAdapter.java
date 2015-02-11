@@ -20,8 +20,16 @@ import android.widget.Toast;
 import android.widget.ViewSwitcher;
 
 import org.jivesoftware.smack.packet.Message;
+import org.jivesoftware.smack.packet.PacketExtension;
 
+import java.lang.reflect.Array;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.Comparator;
+import java.util.Date;
 import java.util.List;
 import java.util.regex.Matcher;
 
@@ -33,6 +41,7 @@ import adnan.haber.fragments.AdvancedPreferences;
 import adnan.haber.types.ListChatItem;
 import adnan.haber.util.Debug;
 import adnan.haber.util.SmileyManager;
+import adnan.haber.util.Util;
 
 /**
  * Created by Adnan on 23.1.2015..
@@ -124,7 +133,21 @@ public class ChatAdapter extends ArrayAdapter<ListChatItem> {
         notifyDataSetChanged();
     }
 
+    public void removeMessagesFromUser(String user) {
+        ArrayList<ListChatItem> queue = new ArrayList<>();
+        for ( ListChatItem item : items ) {
+            if ( item.author.equals(user) ) {
+                queue.add(item);
+            }
+        }
+        for (ListChatItem item : queue)
+            items.remove(item);
+
+        notifyDataSetChanged();
+    }
+
     public void addItem(Message msg, boolean shouldNotifyDataSetChanged) {
+
         ListChatItem item = new ListChatItem();
         item.rank = HaberService.GetRankForUser(msg.getFrom());
 
@@ -155,10 +178,35 @@ public class ChatAdapter extends ArrayAdapter<ListChatItem> {
             }
         }
 
-        item.time = "";
+        for (PacketExtension ex : msg.getExtensions() ) {
+            if ( ex instanceof Haber.PacketTimeStamp ) {
+                SimpleDateFormat df = new SimpleDateFormat(Util.TIME_FORMAT);
+
+                try {
+                    item.time = df.parse(((Haber.PacketTimeStamp) ex).getTime());
+
+                } catch ( Exception er ) {
+                    Debug.log(er);
+                    item.time = new Date();
+                }
+                break;
+            }
+        }
         items.add(item);
-        if ( shouldNotifyDataSetChanged )
+
+        if ( shouldNotifyDataSetChanged ) {
+            Collections.sort(items, new Comparator<ListChatItem>() {
+                @Override
+                public int compare(ListChatItem lhs, ListChatItem rhs) {
+                    if ( lhs.time == null || rhs.time == null ) return 1;
+
+                    if ( lhs.time.getTime() < rhs.time.getTime() ) return -1;
+                    if ( lhs.time.getTime() > rhs.time.getTime() ) return 1;
+                    return 0;
+                }
+            });
             notifyDataSetChanged();
+        }
     }
 
     private static ViewSwitcher lastSwitcher = null;
@@ -225,7 +273,7 @@ public class ChatAdapter extends ArrayAdapter<ListChatItem> {
             tvMessage.setText(strBuilder);
             tvMessage.setIncludeFontPadding(false);
 
-            ((TextView) rowView.findViewById(R.id.tvTime)).setText(items.get(position).time);
+            ((TextView) rowView.findViewById(R.id.tvTime)).setText(""); //todo
 
             if ( items.get(position).author.equals(Haber.getShortUsername(Haber.getUsername()))) {
                 try {

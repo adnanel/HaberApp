@@ -5,6 +5,7 @@ import android.app.AlertDialog;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.Vibrator;
@@ -126,7 +127,26 @@ public class HaberActivity extends ActionBarActivity implements Haber.HaberListe
 
             if ( chat == null ) {
                 try {
-                    HaberService.haberChat.sendMessage(editText.getText().toString());
+                    if ( !Haber.IsHellBanned() ) {
+                        HaberService.haberChat.sendMessage(editText.getText().toString());
+                    } else {
+                        Message msg = new Message();
+                        msg.setBody(editText.getText().toString());
+                        msg.setFrom(Haber.getFullUsername(Haber.getUsername()));
+                        msg.setTo(chat.getParticipant());
+
+                        try {
+                            msg.addExtension(new Haber.PacketTimeStamp(msg));
+                            msg.setPacketID(Util.GeneratePacketId(msg));
+                        } catch ( Exception er ) {
+                            Debug.log(er);
+                        }
+                        ChatSaver.OnMessageReceived(chat, msg);
+
+                        mainChatThread.chatAdapter.addItem(msg);
+
+                        scrollToBottom(true);
+                    }
                 } catch (Exception e) {
                     Debug.log(e);
                 }
@@ -141,7 +161,8 @@ public class HaberActivity extends ActionBarActivity implements Haber.HaberListe
                     msg.setTo(chat.getParticipant());
 
                     try {
-                        msg.setPacketID(Util.makeSHA1Hash(msg.getFrom() + msg.getBody() + Util.getRandomInt(100)));
+                        msg.addExtension(new Haber.PacketTimeStamp(msg));
+                        msg.setPacketID(Util.GeneratePacketId(msg));
                     } catch ( Exception er ) {
                         Debug.log(er);
                     }
@@ -149,15 +170,7 @@ public class HaberActivity extends ActionBarActivity implements Haber.HaberListe
 
                     chatThreads.get(chat).chatAdapter.addItem(msg);
 
-                    runOnUiThread(new Runnable() {
-                        @Override
-                        public void run() {
-                            chatListView.post(new Runnable(){
-                                public void run() {
-                                    chatListView.smoothScrollToPosition(chatListView.getCount() - 1);
-                                }});
-                        }
-                    });
+                    scrollToBottom(true);
                 } catch (Exception e) {
                     Debug.log(e);
                 }
@@ -224,7 +237,14 @@ public class HaberActivity extends ActionBarActivity implements Haber.HaberListe
                         dialog.cancel();
                     }
                 });
-
+                builder.setNeutralButton("Otvori u browseru", new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialog, int which) {
+                        Intent i = new Intent(Intent.ACTION_VIEW);
+                        i.setData(Uri.parse(url));
+                        startActivity(i);
+                    }
+                });
                 View view = getLayoutInflater().inflate(R.layout.urlviewer, null);
 
                 WebView webView = (WebView)view.findViewById(R.id.webView);
@@ -306,6 +326,13 @@ public class HaberActivity extends ActionBarActivity implements Haber.HaberListe
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         instance = this;
+
+        LeftDrawer leftDrawer = (LeftDrawer)getSupportFragmentManager().findFragmentById(R.id.leftDrawerFragment);
+        if ( leftDrawer != null ) {
+            FragmentTransaction transaction = getSupportFragmentManager().beginTransaction();
+            transaction.remove(leftDrawer);
+            transaction.commit();
+        }
 
         setContentView(R.layout.activity_haber);
         Updater.CheckForUpdates(this);
@@ -549,10 +576,7 @@ public class HaberActivity extends ActionBarActivity implements Haber.HaberListe
                     }
                 }
 
-                chatListView.post(new Runnable(){
-                    public void run() {
-                        chatListView.smoothScrollToPosition(chatListView.getCount() - 1);
-                    }});
+                scrollToBottom(true);
 
 
                 sortTabs();
@@ -606,10 +630,18 @@ public class HaberActivity extends ActionBarActivity implements Haber.HaberListe
             public void run() {
                 chatListView.post(new Runnable(){
                     public void run() {
-                        if ( smooth )
-                            chatListView.smoothScrollToPosition(chatListView.getCount() - 1);
-                        else
-                            chatListView.setSelection(chatListView.getCount() - 1);
+                        if ( chatListView.getChildCount() < 1 ) return;
+
+                        if (chatListView.getLastVisiblePosition() >= chatListView.getAdapter().getCount() - 4 )
+                        {
+                            //It is scrolled all the way down here
+
+                            if ( smooth )
+                                chatListView.smoothScrollToPosition(chatListView.getCount() - 1);
+                            else
+                                chatListView.setSelection(chatListView.getCount() - 1);
+                        }
+
                     }});
             }
         });
@@ -754,6 +786,16 @@ public class HaberActivity extends ActionBarActivity implements Haber.HaberListe
         finish();
     }
 
+    @Override
+    public void onDeleteRequested(final String user) {
+        runOnUiThread(new Runnable() {
+            @Override
+            public void run() {
+                mainChatThread.chatAdapter.removeMessagesFromUser(user);
+            }
+        });
+    }
+
 
     enum State {
         Marked,
@@ -866,10 +908,7 @@ public class HaberActivity extends ActionBarActivity implements Haber.HaberListe
                                     setState(State.Active);
 
                                     chatListView.setAdapter(chatAdapter);
-                                    chatListView.post(new Runnable(){
-                                        public void run() {
-                                            chatListView.smoothScrollToPosition(chatListView.getCount() - 1);
-                                        }});
+                                    scrollToBottom(true);
 
                                     closeLeftDrawer();
                                 }
@@ -918,6 +957,7 @@ public class HaberActivity extends ActionBarActivity implements Haber.HaberListe
                             tabView.startAnimation(anim);
                         }
                     });
+                    tabView.startAnimation(AnimationUtils.loadAnimation(HaberActivity.this, R.anim.abc_slide_in_top));
                     scrollView.addView(tabView);
                 }
             });

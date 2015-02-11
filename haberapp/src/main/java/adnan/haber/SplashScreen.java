@@ -110,10 +110,11 @@ public class SplashScreen extends ActionBarActivity implements Haber.HaberListen
     @Override
     public void onMessageReceived(Chat chat, Message message) {
         counter++;
-        if ( counter >= 26 ) {
+
+        if ( counter >= 25 ) {
             start();
         }
-        Debug.log(counter + "");
+
     }
 
     @Override
@@ -133,6 +134,11 @@ public class SplashScreen extends ActionBarActivity implements Haber.HaberListen
     @Override
     public void onSoftDisconnect() {
         finish();
+    }
+
+    @Override
+    public void onDeleteRequested(String user) {
+
     }
 
 }

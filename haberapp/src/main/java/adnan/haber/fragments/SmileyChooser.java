@@ -52,7 +52,7 @@ public class SmileyChooser extends Fragment {
                 break;
 
             case R.id.naughty:
-                smiley = "3:)";
+                smiley = ":666:";
                 break;
 
             case R.id.halo:

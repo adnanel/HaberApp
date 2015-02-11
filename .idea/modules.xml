@@ -4,8 +4,7 @@
     <modules>
       <module fileurl="file://$PROJECT_DIR$/HaberApp.iml" filepath="$PROJECT_DIR$/HaberApp.iml" />
       <module fileurl="file://$PROJECT_DIR$/android-support-v4-preferencefragment-master/android-support-v4-preferencefragment-master.iml" filepath="$PROJECT_DIR$/android-support-v4-preferencefragment-master/android-support-v4-preferencefragment-master.iml" />
-      <module fileurl="file://$PROJECT_DIR$/android-support-v4-preferencefragment-master/android-support-v4-preferencefragment-master.iml" filepath="$PROJECT_DIR$/android-support-v4-preferencefragment-master/android-support-v4-preferencefragment-master.iml" />
-      <module fileurl="file://$PROJECT_DIR$/app/app.iml" filepath="$PROJECT_DIR$/app/app.iml" />
+      <module fileurl="file://$PROJECT_DIR$/haberapp/haberapp.iml" filepath="$PROJECT_DIR$/haberapp/haberapp.iml" />
     </modules>
   </component>
 </project>

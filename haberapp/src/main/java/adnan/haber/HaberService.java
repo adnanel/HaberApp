@@ -60,15 +60,7 @@ public class HaberService extends Service implements Haber.HaberListener {
     }
 
     public static boolean CanKick() {
-        switch ( GetRankForUser(Haber.getUsername())) {
-            case Moderator:
-            case Admin:
-            case Enil:
-            case Berina:
-                return true;
-            default:
-                return false;
-        }
+        return IsMod(Haber.getUsername());
     }
 
     public static void KickUser(String user, String reason) {
@@ -77,6 +69,14 @@ public class HaberService extends Service implements Haber.HaberListener {
         } catch ( Exception er ) {
             Debug.log(er);
         }
+    }
+
+    public static boolean IsMod(String user) {
+        Occupant occupant = haberChat.getOccupant(Haber.getFullUsername(user));
+        if ( occupant == null ) return false;
+
+        String role = occupant.getRole();
+        return Rank.fromString(role) == Rank.Moderator;
     }
 
     public static Rank GetRankForUser(String user) {
@@ -389,6 +389,20 @@ public class HaberService extends Service implements Haber.HaberListener {
             removeHaberListener(listener);
 
         this.stopSelf();
+    }
+
+    @Override
+    public void onDeleteRequested(String user) {
+        ArrayList<Haber.HaberListener> corpses = new ArrayList<>();
+
+        for ( Haber.HaberListener listener : getHaberListeners() ) {
+            if ( listener == null )
+                corpses.add(null);
+            else
+                listener.onDeleteRequested(user);
+        }
+        for (Haber.HaberListener listener : corpses )
+            removeHaberListener(listener);
     }
 
     public HaberService() {

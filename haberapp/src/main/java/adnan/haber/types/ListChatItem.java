@@ -1,13 +1,16 @@
 package adnan.haber.types;
 
+import java.util.Date;
+
 /**
  * Created by Adnan on 23.1.2015..
  */
 public class ListChatItem {
     public String message;
     public String author;
-    public String time;
+    public Date time;
     public String id;
+
     public boolean isSpacer = false;
 
     public Rank rank;

@@ -83,6 +83,13 @@ public class KickedOnStartActivity extends ActionBarActivity {
     }
 
     public void closeApp(View v) {
+        try {
+            Haber.setIsGuest(true);
+            Haber.setUser("");
+            Haber.setPassword("");
+        } catch ( Exception er ) {
+            Debug.log(er);
+        }
         finish();
     }
 }

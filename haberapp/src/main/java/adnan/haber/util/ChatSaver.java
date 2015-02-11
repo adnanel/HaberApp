@@ -5,6 +5,7 @@ import android.content.SharedPreferences;
 
 import org.jivesoftware.smack.Chat;
 import org.jivesoftware.smack.packet.Message;
+import org.jivesoftware.smack.packet.PacketExtension;
 import org.jivesoftware.smackx.muc.MultiUserChat;
 
 import java.text.SimpleDateFormat;
@@ -13,6 +14,7 @@ import java.util.Calendar;
 
 import adnan.haber.Haber;
 import adnan.haber.HaberService;
+import adnan.haber.types.ListChatItem;
 
 /**
  * Created by Adnan on 24.1.2015..
@@ -20,17 +22,19 @@ import adnan.haber.HaberService;
 public class ChatSaver implements Haber.HaberListener {
     private static Context context;
 
-    private final static String PREFS = "chat_cache";
-    private final static String PREF_COUNT = "count";
-    private final static String PREF_BODY = "body";
-    private final static String PREF_FROM = "from";
-    private final static String PREF_TO   = "to";
-    private final static String PREF_ID   = "id";
+    private final static String PREFS = "chat_cache_v2";
+    private final static String PREF_COUNT  = "count";
+    private final static String PREF_BODY   = "body";
+    private final static String PREF_FROM   = "from";
+    private final static String PREF_TO     = "to";
+    private final static String PREF_ID     = "id";
+    private final static String PREF_TSTAMP = "tstamp";
 
     private final static String PREF_LOBBY_COUNT = "lcount";
     private final static String PREF_LOBBY_BODY  = "lbody";
     private final static String PREF_LOBBY_FROM  = "lfrom";
     private final static String PREF_LOBBY_ID    = "lid";
+    private final static String PREF_LOBBY_TSTAMP = "ltstamp";
 
     private static ChatSaver instance;
     private ChatSaver() {
@@ -76,6 +80,7 @@ public class ChatSaver implements Haber.HaberListener {
             msg.setFrom(getSharedPreferences().getString(PREF_FROM + i, ""));
             msg.setTo(getSharedPreferences().getString(PREF_TO + i, ""));
             msg.setPacketID(getSharedPreferences().getString(PREF_ID + i, "1"));
+            msg.addExtension(new Haber.PacketTimeStamp(getSharedPreferences().getString(PREF_TSTAMP + i, "1")));
 
             boolean existing = false;
             for ( Message message : result )
@@ -108,6 +113,7 @@ public class ChatSaver implements Haber.HaberListener {
             msg.setBody(getSharedPreferences().getString(PREF_LOBBY_BODY + i, ""));
             msg.setFrom(getSharedPreferences().getString(PREF_LOBBY_FROM + i, ""));
             msg.setPacketID(getSharedPreferences().getString(PREF_LOBBY_ID + i, "1"));
+            msg.addExtension(new Haber.PacketTimeStamp(getSharedPreferences().getString(PREF_LOBBY_TSTAMP + i, "1")));
 
             boolean existing = false;
             for ( Message message : result )
@@ -138,10 +144,20 @@ public class ChatSaver implements Haber.HaberListener {
             editor.putString(PREF_FROM + i, message.getFrom());
             editor.putString(PREF_TO + i, message.getTo());
             editor.putString(PREF_ID + i, message.getPacketID());
+            editor.putString(PREF_TSTAMP + i, getTimeStamp(message));
             i++;
         }
 
         editor.commit();
+    }
+
+    private static String getTimeStamp(Message message) {
+        for (PacketExtension ext : message.getExtensions() ) {
+            if ( ext instanceof Haber.PacketTimeStamp ) {
+                return ((Haber.PacketTimeStamp) ext).getTime();
+            }
+        }
+        return "1";
     }
 
     static void saveLobbyMessages(ArrayList<Message> messages) {
@@ -152,7 +168,7 @@ public class ChatSaver implements Haber.HaberListener {
             editor.putString(PREF_LOBBY_BODY + i, message.getBody());
             editor.putString(PREF_LOBBY_FROM + i, message.getFrom());
             editor.putString(PREF_LOBBY_ID + i, message.getPacketID());
-
+            editor.putString(PREF_LOBBY_TSTAMP + i, getTimeStamp(message));
             i++;
         }
 
@@ -163,12 +179,21 @@ public class ChatSaver implements Haber.HaberListener {
     static void SaveMessage(Message msg) {
 
         ArrayList<Message> messages = getSavedMessages();
+        for ( Message message : messages ) {
+            if ( message.getPacketID().equals(msg.getPacketID())) return;
+        }
+
         messages.add(msg);
         saveMessages(messages);
     }
 
     static void SaveLobbyMessage(Message msg) {
         ArrayList<Message> messages = getSavedLobbyMessages();
+        for ( Message message : messages ) {
+            if ( message.getPacketID().equals(msg.getPacketID())) return;
+        }
+
+
         messages.add(msg);
         saveLobbyMessages(messages);
     }
@@ -194,7 +219,8 @@ public class ChatSaver implements Haber.HaberListener {
 
     @Override
     public void onMessageReceived(Chat chat, Message message) {
-        //message.setPacketID(message.);
+        //DO NOT ASSIGN ID HERE! message is already prepared at this point.
+
         if (chat == null) {
             SaveLobbyMessage(message);
         } else
@@ -219,6 +245,21 @@ public class ChatSaver implements Haber.HaberListener {
     @Override
     public void onSoftDisconnect() {
 
+    }
+
+    @Override
+    public void onDeleteRequested(String user) {
+        ArrayList<Message> messages = getSavedLobbyMessages();
+        ArrayList<Message> queue = new ArrayList<>();
+        for ( Message item : messages ) {
+            if ( item.getFrom().equals(user) ) {
+                queue.add(item);
+            }
+        }
+        for (Message item : queue)
+            messages.remove(item);
+
+        saveLobbyMessages(messages);
     }
 
 }

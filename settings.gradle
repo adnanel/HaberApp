@@ -1,1 +1,2 @@
-include ':app', ':android-support-v4-preferencefragment-master'
+include ':haberapp'
+include ':android-support-v4-preferencefragment-master'

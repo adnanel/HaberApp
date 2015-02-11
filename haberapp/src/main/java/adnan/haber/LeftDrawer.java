@@ -1,6 +1,7 @@
 package adnan.haber;
 
 
+import android.app.Activity;
 import android.app.AlertDialog;
 import android.content.Context;
 import android.content.DialogInterface;
@@ -39,11 +40,6 @@ public class LeftDrawer extends PreferenceFragment {
 
     private ArrayList<Preference> onlineUsers = new ArrayList<Preference>();
     private PreferenceCategory prefcat;
-
-
-    private static SharedPreferences getSharedPreferences() {
-        return context.getSharedPreferences(context.getPackageName() + "_preferences", Context.MODE_PRIVATE);
-    }
 
     public static void initialize(Context context) {
         LeftDrawer.context = context;
@@ -148,12 +144,11 @@ public class LeftDrawer extends PreferenceFragment {
             pref.setOnPreferenceClickListener(new Preference.OnPreferenceClickListener() {
                 @Override
                 public boolean onPreferenceClick(Preference preference) {
-                    HaberActivity activity = (HaberActivity) getActivity();
 
-                    for (Object o : activity.chatThreads.entrySet()) {
+                    for (Object o : HaberActivity.getInstance().chatThreads.entrySet()) {
                         Map.Entry pairs = (Map.Entry) o;
                         if (((HaberActivity.ChatThread) pairs.getValue()).getUser().equals(preference.getKey())) {
-                            activity.onRoomJoined((Chat) pairs.getKey());
+                            HaberActivity.getInstance().onRoomJoined((Chat) pairs.getKey());
                             return false;
                         }
 

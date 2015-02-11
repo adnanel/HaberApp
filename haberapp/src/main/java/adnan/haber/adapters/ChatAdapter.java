@@ -6,12 +6,14 @@ import android.graphics.Color;
 import android.text.Html;
 import android.text.Spannable;
 import android.text.SpannableStringBuilder;
+import android.text.format.DateFormat;
 import android.text.method.LinkMovementMethod;
 import android.text.style.BackgroundColorSpan;
 import android.text.style.ClickableSpan;
 import android.text.style.URLSpan;
 import android.util.Patterns;
 import android.view.LayoutInflater;
+import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
@@ -62,7 +64,9 @@ public class ChatAdapter extends ArrayAdapter<ListChatItem> {
         this.context = context;
         this.commandBarListener = cmdListener;
         this.isPrivate = isPrivate;
+
         addAdapter(this);
+
     }
 
     public static synchronized void invalidateAll(Activity activity) {
@@ -101,8 +105,11 @@ public class ChatAdapter extends ArrayAdapter<ListChatItem> {
     }
 
     public ListChatItem putDivider(String msg) {
-        ListChatItem item;
-        items.add(item = new ListChatItem(msg));
+        ListChatItem item = new ListChatItem(msg);
+        if ( items.size() > 0 )
+            item.time = items.get(items.size() - 1).time;
+
+        items.add(item);
         notifyDataSetChanged();
         return item;
     }
@@ -195,22 +202,26 @@ public class ChatAdapter extends ArrayAdapter<ListChatItem> {
         items.add(item);
 
         if ( shouldNotifyDataSetChanged ) {
-            Collections.sort(items, new Comparator<ListChatItem>() {
-                @Override
-                public int compare(ListChatItem lhs, ListChatItem rhs) {
-                    if ( lhs.time == null || rhs.time == null ) return 1;
-
-                    if ( lhs.time.getTime() < rhs.time.getTime() ) return -1;
-                    if ( lhs.time.getTime() > rhs.time.getTime() ) return 1;
-                    return 0;
-                }
-            });
             notifyDataSetChanged();
         }
     }
 
     private static ViewSwitcher lastSwitcher = null;
 
+    @Override
+    public void notifyDataSetChanged() {
+        Collections.sort(items, new Comparator<ListChatItem>() {
+            @Override
+            public int compare(ListChatItem lhs, ListChatItem rhs) {
+                if ( lhs.time == null || rhs.time == null ) return 1;
+
+                if ( lhs.time.getTime() < rhs.time.getTime() ) return -1;
+                if ( lhs.time.getTime() > rhs.time.getTime() ) return 1;
+                return 0;
+            }
+        });
+        super.notifyDataSetChanged();
+    }
 
     @Override
     public View getView(final int position, View convertView, ViewGroup parent) {
@@ -273,7 +284,8 @@ public class ChatAdapter extends ArrayAdapter<ListChatItem> {
             tvMessage.setText(strBuilder);
             tvMessage.setIncludeFontPadding(false);
 
-            ((TextView) rowView.findViewById(R.id.tvTime)).setText(""); //todo
+            TextView tvTime = (TextView) rowView.findViewById(R.id.tvTime);
+            (tvTime).setText(DateFormat.format("hh:mm", items.get(position).time));
 
             if ( items.get(position).author.equals(Haber.getShortUsername(Haber.getUsername()))) {
                 try {
@@ -354,6 +366,7 @@ public class ChatAdapter extends ArrayAdapter<ListChatItem> {
                     }
                 });
             }
+
         }
 
         return rowView;
@@ -382,4 +395,5 @@ public class ChatAdapter extends ArrayAdapter<ListChatItem> {
         public abstract void onReply(String user);
         public abstract void onPrivateMessage(String user);
     }
+
 }

@@ -52,14 +52,6 @@ public class ChatSaver implements Haber.HaberListener {
             instance = new ChatSaver();
 
             HaberService.addHaberListener(instance);
-
-            //divider na lobby-u
-            Message msg = new Message();
-            msg.setFrom("haber");
-            msg.setTo("haber");
-            msg.setBody(new SimpleDateFormat("dd-MM-yyyy HH:mm").format(Calendar.getInstance().getTime()));
-            msg.setPacketID("divider");
-            instance.onMessageReceived(null, msg);
         }
     }
 

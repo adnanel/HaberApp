@@ -63,6 +63,10 @@ public class HaberActivity extends ActionBarActivity implements Haber.HaberListe
 
     private RelativeLayout rlContent;
 
+    public static HaberActivity getInstance() {
+        return instance;
+    }
+
     private ChatAdapter.CommandBarListener cmdListener = new ChatAdapter.CommandBarListener() {
 
         @Override
@@ -338,6 +342,7 @@ public class HaberActivity extends ActionBarActivity implements Haber.HaberListe
         Updater.CheckForUpdates(this);
 
         chatListView = (ListView)findViewById(R.id.chatListView);
+
         setListenerToRootView();
 
         //glavni Haber chat
@@ -944,7 +949,17 @@ public class HaberActivity extends ActionBarActivity implements Haber.HaberListe
                                     runOnUiThread(new Runnable() {
                                         @Override
                                         public void run() {
-                                            scrollView.removeView(tabView);
+                                            scrollView.post(new Runnable() {
+                                                @Override
+                                                public void run() {
+                                                    runOnUiThread(new Runnable() {
+                                                        @Override
+                                                        public void run() {
+                                                            scrollView.removeView(tabView);
+                                                        }
+                                                    });
+                                                }
+                                            });
                                             mainChatThread.tabView.performClick();
                                         }
                                     });

@@ -95,7 +95,11 @@ public class AdvancedPreferences extends PreferenceFragment {
 
 
     public static boolean IsDebug(Context context) {
-        return PreferenceManager.getDefaultSharedPreferences(context).getBoolean("debugMode", true);
+        try {
+            return PreferenceManager.getDefaultSharedPreferences(context).getBoolean("debugMode", true);
+        } catch ( Exception er ) {
+            return true;
+        }
     }
 
     @Override

@@ -311,11 +311,13 @@ public class HaberActivity extends ActionBarActivity implements Haber.HaberListe
     @Override
     public void onResume() {
         super.onResume();
+        instance = this;
 
         Intent intent = new Intent(this, HaberService.class);
         startService(intent);
 
         HaberService.resetCounters();
+
     }
 
 
@@ -364,7 +366,7 @@ public class HaberActivity extends ActionBarActivity implements Haber.HaberListe
         mainChatThread.chatAdapter = new ChatAdapter(this, new ArrayList<ListChatItem>(), cmdListener, false);
         //load old messages
         mainChatThread.chatAdapter.putDivider("Stare poruke");
-        for ( Message msg : ChatSaver.getSavedLobbyMessages() ) {
+        for ( Message msg : ChatSaver.getSavedLobbyMessages(30) ) {
             if ( msg.getPacketID().equals("divider") )
                 mainChatThread.chatAdapter.putDivider(msg.getBody());
             else
@@ -382,15 +384,22 @@ public class HaberActivity extends ActionBarActivity implements Haber.HaberListe
             thread.chatAdapter = new ChatAdapter(this, new ArrayList<ListChatItem>(), cmdListener, true);
 
 
+            int counter = 0;
             for ( Message msg : ChatSaver.getSavedMessages() ) {
                 if ( msg.getFrom().equals(chats.getParticipant()) || msg.getTo().equals(chats.getParticipant())) {
-                    thread.chatAdapter.addItem(msg, false);
+                    thread.chatAdapter.addItem(msg);
+                    counter++;
+                    if ( counter >= 30 ) break;
                 }
             }
 
             thread.chatAdapter.notifyDataSetChanged();
             thread.setState(State.Normal);
             chatThreads.put(chats, thread);
+
+            if ( HaberService.haberCounter.getPms().containsKey(chats.getParticipant()) ) {
+                thread.setUnreadMessagesCount(HaberService.haberCounter.getPms().get(chats.getParticipant()));
+            }
         }
 
         HaberService.addHaberListener(this);
@@ -678,7 +687,7 @@ public class HaberActivity extends ActionBarActivity implements Haber.HaberListe
     }
 
     @Override
-    public void onRoomJoined(final Chat chat) {
+    public void onRoomJoined(final Chat chat, final boolean selfStarted) {
 
         runOnUiThread(new Runnable() {
             @Override
@@ -687,20 +696,28 @@ public class HaberActivity extends ActionBarActivity implements Haber.HaberListe
                 if ( !chatThreads.containsKey(chat) ) {
                     ChatThread thread = new ChatThread(chat.getParticipant());
                     thread.chatAdapter = new ChatAdapter(HaberActivity.this, new ArrayList<ListChatItem>(), cmdListener, true);
+                    int counter = 0;
                     for ( Message msg : ChatSaver.getSavedMessages() ) {
                         if ( msg.getFrom().equals(chat.getParticipant()) || msg.getTo().equals(chat.getParticipant())) {
                             thread.chatAdapter.addItem(msg);
+                            counter++;
+                            if ( counter >= 30 ) break;
                         }
                     }
 
-                    if ( AdvancedPreferences.ShouldSwitchToNewTab(HaberActivity.this))
+                    if ( AdvancedPreferences.ShouldSwitchToNewTab(HaberActivity.this) || selfStarted)
                         thread.tabView.performClick();
+                    else {
+                        thread.setState(State.Normal);
+                    }
 
                     chatThreads.put(chat, thread);
                 } else {
-                    if ( AdvancedPreferences.ShouldSwitchToNewTab(HaberActivity.this))
+                    if ( AdvancedPreferences.ShouldSwitchToNewTab(HaberActivity.this) || selfStarted)
                         chatThreads.get(chat).tabView.performClick();
-
+                    else {
+                        chatThreads.get(chat).setState(State.Normal);
+                    }
                 }
             }
         });
@@ -899,6 +916,18 @@ public class HaberActivity extends ActionBarActivity implements Haber.HaberListe
 
         }
 
+        public void setUnreadMessagesCount(final int counter) {
+            if ( counter == 0 ) return;
+
+            setState(State.Marked);
+            runOnUiThread(new Runnable() {
+                @Override
+                public void run() {
+                    tvMsgCounter.setText(counter + "");
+                }
+            });
+        }
+
         public ChatThread(String other) {
             thisThread = this;
             user = other;
@@ -928,10 +957,15 @@ public class HaberActivity extends ActionBarActivity implements Haber.HaberListe
                                 public void run() {
                                     for (Object o : chatThreads.entrySet()) {
                                         Map.Entry pairs = (Map.Entry) o;
+                                        int counter = ((ChatThread)pairs.getValue()).getUnreadMessagesCount();
                                         ((ChatThread)pairs.getValue()).setState(State.Normal);
+                                        ((ChatThread)pairs.getValue()).setUnreadMessagesCount(counter);
                                     }
 
+                                    int counter = mainChatThread.getUnreadMessagesCount();
                                     mainChatThread.setState(State.Normal);
+                                    mainChatThread.setUnreadMessagesCount(counter);
+
                                     setState(State.Active);
 
                                     chatListView.setAdapter(chatAdapter);

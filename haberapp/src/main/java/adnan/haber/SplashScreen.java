@@ -117,7 +117,7 @@ public class SplashScreen extends ActionBarActivity implements Haber.HaberListen
     }
 
     @Override
-    public void onRoomJoined(Chat chat) {
+    public void onRoomJoined(Chat chat, boolean selfStarted) {
 
     }
 

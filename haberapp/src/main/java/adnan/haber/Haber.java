@@ -35,6 +35,7 @@ import java.util.Locale;
 import java.util.Random;
 import java.util.TimeZone;
 
+import adnan.haber.util.CredentialManager;
 import adnan.haber.util.Debug;
 import adnan.haber.util.Util;
 
@@ -186,7 +187,7 @@ public class Haber {
         });
 
 
-        statusListener.onRoomJoined(chat);
+        statusListener.onRoomJoined(chat, true);
         return chat;
     }
 
@@ -460,7 +461,7 @@ public class Haber {
 
                         if ( isLocal ) return;
 
-                        statusListener.onRoomJoined(chat);
+                        statusListener.onRoomJoined(chat, false);
                         chat.addMessageListener(new MessageListener() {
                             int id = 0;
                             String salt = Util.getRandomInt(1000) + "";
@@ -520,6 +521,16 @@ public class Haber {
             instance.Disconnect();
         }
 
+        if (CredentialManager.ShouldLoginOnStartup(context) && (CredentialManager.GetSavedPassword(context).length() > 0) && (CredentialManager.GetSavedUsername(context).length() > 0)) {
+            isGuest = false;
+            try {
+                setUser(CredentialManager.GetSavedUsername(context));
+                setPassword(CredentialManager.GetSavedPassword(context));
+            } catch ( Exception er ) {
+                Debug.log(er);
+            }
+        }
+
         try {
             instance = new Haber(statusListener, context);
         } catch ( InvalidCredentialsException er) {
@@ -536,7 +547,7 @@ public class Haber {
         public abstract void onStatusChanged(String status);
         public abstract void onLoggedIn(MultiUserChat haberChat);
         public abstract void onMessageReceived(Chat chat, Message message);
-        public abstract void onRoomJoined(Chat chat);
+        public abstract void onRoomJoined(Chat chat, boolean selfStarted);
         public abstract void onChatEvent(ChatEvent event, String... params);
         //soft disconnect - when the user disconnects intentionally
         public abstract void onSoftDisconnect();

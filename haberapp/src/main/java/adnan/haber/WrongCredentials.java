@@ -46,9 +46,9 @@ public class WrongCredentials extends ActionBarActivity {
                 password = ((EditText) view.findViewById(R.id.editText3)).getText().toString();
 
                 if ( ((CheckBox)view.findViewById(R.id.cbRememberMe)).isChecked())
-                    CredentialManager.Save(WrongCredentials.this, username, password);
+                    CredentialManager.Save(WrongCredentials.this, username, password, ((CheckBox)view.findViewById(R.id.cbLoginOnStartup)).isChecked());
                 else
-                    CredentialManager.Save(WrongCredentials.this, "", "");
+                    CredentialManager.Save(WrongCredentials.this, "", "", false);
 
                 try {
                     Haber.Disconnect();

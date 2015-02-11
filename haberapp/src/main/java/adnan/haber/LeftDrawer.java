@@ -152,7 +152,7 @@ public class LeftDrawer extends PreferenceFragment {
                     for (Object o : HaberActivity.getInstance().chatThreads.entrySet()) {
                         Map.Entry pairs = (Map.Entry) o;
                         if (((HaberActivity.ChatThread) pairs.getValue()).getUser().equals(preference.getKey())) {
-                            HaberActivity.getInstance().onRoomJoined((Chat) pairs.getKey());
+                            HaberActivity.getInstance().onRoomJoined((Chat) pairs.getKey(), true);
                             return false;
                         }
 
@@ -244,9 +244,11 @@ public class LeftDrawer extends PreferenceFragment {
 
 
                     if ( ((CheckBox)view.findViewById(R.id.cbRememberMe)).isChecked())
-                        CredentialManager.Save(getActivity(), username, password);
+                        CredentialManager.Save(getActivity(), username, password, ((CheckBox)view.findViewById(R.id.cbLoginOnStartup)).isChecked());
                     else
-                        CredentialManager.Save(getActivity(), "", "");
+                        CredentialManager.Save(getActivity(), "", "", false);
+
+
 
                     new Thread() {
                         @Override

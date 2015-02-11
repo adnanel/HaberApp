@@ -65,11 +65,12 @@ public class AdvancedPreferences extends PreferenceFragment {
         return PreferenceManager.getDefaultSharedPreferences(context).getBoolean("deleteNotificationsEnabled", true);
     }
 
+
     public static int GetStatusChangeTimeout(Context context) {
         try {
             return 1000 * Integer.parseInt(PreferenceManager.getDefaultSharedPreferences(context).getString("notificationTimeout", "1"));
         } catch ( Exception er ) {
-            return 1000;
+            return 5000;
         }
     }
 

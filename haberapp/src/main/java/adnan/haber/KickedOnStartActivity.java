@@ -57,9 +57,9 @@ public class KickedOnStartActivity extends ActionBarActivity {
                 password = ((EditText) view.findViewById(R.id.editText3)).getText().toString();
 
                 if ( ((CheckBox)view.findViewById(R.id.cbRememberMe)).isChecked())
-                    CredentialManager.Save(KickedOnStartActivity.this, username, password);
+                    CredentialManager.Save(KickedOnStartActivity.this, username, password, ((CheckBox)view.findViewById(R.id.cbLoginOnStartup)).isChecked());
                 else
-                    CredentialManager.Save(KickedOnStartActivity.this, "", "");
+                    CredentialManager.Save(KickedOnStartActivity.this, "", "", false);
 
                 try {
                     Haber.Disconnect();

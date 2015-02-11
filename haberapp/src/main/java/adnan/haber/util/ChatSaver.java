@@ -59,11 +59,16 @@ public class ChatSaver implements Haber.HaberListener {
         return getSharedPreferences().getInt(PREF_COUNT, 0);
     }
 
+
     public static ArrayList<Message> getSavedMessages() {
+        return getSavedMessages(30);
+    }
+
+    public static ArrayList<Message> getSavedMessages(int limit) {
         ArrayList<Message> result = new ArrayList<>();
 
         int count = getSharedPreferences().getInt(PREF_COUNT, 0);
-        int start = count - 30;
+        int start = count - limit;
         if ( start < 0 ) start = 0;
 
         for ( int i = start; i < count; i ++ ) {
@@ -94,10 +99,14 @@ public class ChatSaver implements Haber.HaberListener {
     }
 
     public static ArrayList<Message> getSavedLobbyMessages() {
+        return getSavedLobbyMessages(30);
+    }
+
+    public static ArrayList<Message> getSavedLobbyMessages(int limit) {
         ArrayList<Message> result = new ArrayList<>();
 
         int count = getSharedPreferences().getInt(PREF_LOBBY_COUNT, 0);
-        int start = count - 30;
+        int start = count - limit;
         if ( start < 0 ) start = 0;
 
         for ( int i = start; i < count; i ++ ) {
@@ -220,7 +229,7 @@ public class ChatSaver implements Haber.HaberListener {
     }
 
     @Override
-    public void onRoomJoined(Chat chat) {
+    public void onRoomJoined(Chat chat, boolean selfStarted) {
         Message msg = new Message();
         msg.setFrom("haber");
         msg.setTo("haber");

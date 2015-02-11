@@ -33,6 +33,7 @@ import java.util.Collections;
 import java.util.Comparator;
 import java.util.Date;
 import java.util.List;
+import java.util.Locale;
 import java.util.regex.Matcher;
 
 import adnan.haber.Haber;
@@ -187,7 +188,7 @@ public class ChatAdapter extends ArrayAdapter<ListChatItem> {
 
         for (PacketExtension ex : msg.getExtensions() ) {
             if ( ex instanceof Haber.PacketTimeStamp ) {
-                SimpleDateFormat df = new SimpleDateFormat(Util.TIME_FORMAT);
+                SimpleDateFormat df = new SimpleDateFormat(Util.TIME_FORMAT, Locale.US);
 
                 try {
                     item.time = df.parse(((Haber.PacketTimeStamp) ex).getTime());

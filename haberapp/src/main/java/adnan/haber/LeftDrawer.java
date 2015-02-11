@@ -9,12 +9,14 @@ import android.content.Intent;
 import android.content.SharedPreferences;
 import android.graphics.Color;
 import android.graphics.drawable.ColorDrawable;
+import android.net.Uri;
 import android.os.Bundle;
 import android.preference.Preference;
 import android.preference.PreferenceCategory;
 import android.preference.PreferenceScreen;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.app.ActivityOptionsCompat;
+import android.support.v4.app.FragmentTransaction;
 import android.support.v4.preference.PreferenceFragment;
 import android.text.Spannable;
 import android.view.LayoutInflater;
@@ -22,14 +24,17 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.CheckBox;
 import android.widget.EditText;
+import android.widget.Toast;
 
 import org.jivesoftware.smack.Chat;
 
+import java.io.File;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Comparator;
 import java.util.Map;
 
+import adnan.haber.fragments.ReportFragment;
 import adnan.haber.types.Rank;
 import adnan.haber.util.CredentialManager;
 import adnan.haber.util.Debug;
@@ -286,6 +291,67 @@ public class LeftDrawer extends PreferenceFragment {
             Intent intent = new Intent(getActivity(), AdvancedPrefsActivity.class);
             ActivityOptionsCompat activityOps = ActivityOptionsCompat.makeCustomAnimation(getActivity(), R.anim.slide_in_right, R.anim.slide_out_left);
             ActivityCompat.startActivity(getActivity(), intent, activityOps.toBundle());
+        } else if (preference.getKey().equals("reportbug") ) {
+            final AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
+
+
+            getActivity().runOnUiThread(new Runnable() {
+                @Override
+                public void run() {
+                    View view = getActivity().getLayoutInflater().inflate(R.layout.report, null);
+                    final ReportFragment frag = (ReportFragment)getActivity().getSupportFragmentManager().findFragmentById(R.id.fragReport);
+
+                    builder.setTitle("Prijavi bug");
+                    builder.setNegativeButton("Prekid", new DialogInterface.OnClickListener() {
+                        @Override
+                        public void onClick(DialogInterface dialog, int which) {
+                            FragmentTransaction transaction = getActivity().getSupportFragmentManager().beginTransaction();
+                            transaction.remove(frag);
+                            transaction.commit();
+                        }
+                    });
+
+                    builder.setPositiveButton("Posalji", new DialogInterface.OnClickListener() {
+                        @Override
+                        public void onClick(DialogInterface dialog, int which) {
+                            String bug = ((EditText)frag.getView().findViewById(R.id.editText5)).getText().toString();
+                            String report = ((EditText)frag.getView().findViewById(R.id.editText4)).getText().toString();;
+
+                            Intent i = new Intent(Intent.ACTION_SEND);
+                            i.setType("message/rfc822");
+                            i.putExtra(Intent.EXTRA_EMAIL, new String[]{"adnanel94@gmail.com"});
+                            i.putExtra(Intent.EXTRA_SUBJECT, "Bug report!");
+                            i.putExtra(Intent.EXTRA_TEXT   , "Username: " + Haber.getUsername() +
+                                    "\nBug: " + bug +
+                                    "\nKako rekonstruisati: " + report);
+
+                            File file = Debug.getFile();
+                            if (!file.exists() || !file.canRead()) {
+                                Toast.makeText(getActivity(), "Attachment Error", Toast.LENGTH_SHORT).show();
+                                return;
+                            }
+                            Uri uri = Uri.parse("file://" + file);
+                            i.putExtra(Intent.EXTRA_STREAM, uri);
+
+                            try {
+                                startActivity(Intent.createChooser(i, "Izaberi mail app..."));
+                            } catch (android.content.ActivityNotFoundException ex) {
+                                getActivity().runOnUiThread(new Runnable() {
+                                    @Override
+                                    public void run() {
+                                        Toast.makeText(getActivity(), "Nije nadjen ni jedan mail klijent!", Toast.LENGTH_SHORT).show();
+                                    }
+
+                                });
+                            }
+                        }
+                    });
+
+                    builder.setCancelable(false);
+                    builder.setView(view);
+                    builder.create().show();
+                }
+            });
         }
 
         return true;

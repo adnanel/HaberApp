@@ -29,6 +29,7 @@
 
         <Preference android:title="Git" android:key="git" />
 
+        <Preference android:title="Report bug" android:key="reportbug"/>
         <Preference android:title="O aplikaciji..." android:key="about"/>
         <Preference android:title="Verzija" android:key="version" android:summary="0.5b"/>
     </PreferenceCategory>

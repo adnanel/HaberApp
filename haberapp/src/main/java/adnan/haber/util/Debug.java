@@ -8,7 +8,9 @@ import android.content.SharedPreferences;
 import android.os.Environment;
 import android.util.Log;
 
+import java.io.BufferedOutputStream;
 import java.io.File;
+import java.io.FileOutputStream;
 import java.io.PrintWriter;
 
 import adnan.haber.fragments.AdvancedPreferences;
@@ -17,13 +19,46 @@ public class Debug {
     private static String TAG = "Adnan";
     private static Context context;
 
+    private static PrintWriter outputFile;
+    private static File cFile;
+
     public static void Initialize(Context context) {
         Debug.context = context;
-        // todo old method was too heavy. find something else
+
+        try {
+            outputFile = new PrintWriter(new FileOutputStream(makeNewFile()));
+        } catch ( Exception er ) {
+            log(er.toString());
+        }
+    }
+
+    private static File makeNewFile() {
+        String dir = Environment.getExternalStorageDirectory() + "/haber";
+        (new File(dir)).mkdirs();
+
+        cFile = new File(dir, "log" + Util.getRandomInt(100) + ".log");
+        return cFile;
+    }
+
+    public static File getFile() {
+        try {
+            outputFile.flush();
+            outputFile.close();
+
+            File f = cFile;
+
+            makeNewFile();
+
+            return f;
+        } catch ( Exception er ) {
+            Debug.log(er);
+            return null;
+        }
     }
 
     public static void log(String msg) {
         if (AdvancedPreferences.IsDebug(context) ) {
+            outputFile.println(msg);
             Log.i(TAG, msg);
         }
     }

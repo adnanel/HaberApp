@@ -20,6 +20,7 @@ import java.security.NoSuchAlgorithmException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.Formatter;
+import java.util.Locale;
 import java.util.Random;
 
 import adnan.haber.Haber;
@@ -120,7 +121,7 @@ public class Util {
                 if ( ext instanceof Haber.PacketTimeStamp ) {
                     Haber.PacketTimeStamp stamp = (Haber.PacketTimeStamp) ext;
                     Message message = (Message) packet;
-                    SimpleDateFormat df = new SimpleDateFormat(TIME_FORMAT);
+                    SimpleDateFormat df = new SimpleDateFormat(TIME_FORMAT, Locale.US);
                     Date date = df.parse(stamp.getTime());
 
                     String id = (message.getPacketID() == null) ? "" : message.getPacketID();

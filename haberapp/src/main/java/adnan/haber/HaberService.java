@@ -351,9 +351,11 @@ public class HaberService extends Service implements Haber.HaberListener {
         //if activity isn't shown => haber is in background
         if ( HaberActivity.getInstance() == null ) {
             if ( chat != null ) {
-                haberCounter.addPm(message.getFrom());
-                refreshNotification();
-            } else {
+                if ( message.getFrom() != null ) {
+                    haberCounter.addPm(message.getFrom());
+                    refreshNotification();
+                }
+            } else if ( message.getBody() != null ) {
                 if ( !Haber.IsGuest() ) {
                     if (message.getBody().toUpperCase().contains(Haber.getUsername().toUpperCase())) {
                         haberCounter.mentionCounter++;

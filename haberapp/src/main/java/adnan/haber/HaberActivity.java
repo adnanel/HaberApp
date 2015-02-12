@@ -865,7 +865,7 @@ public class HaberActivity extends ActionBarActivity implements Haber.HaberListe
 
         TabState currentState;
 
-        Thread blinker = null;
+
         public void setState(final TabState state) {
             runOnUiThread(new Runnable() {
                 @Override

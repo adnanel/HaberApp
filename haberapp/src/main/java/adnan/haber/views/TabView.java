@@ -2,6 +2,7 @@ package adnan.haber.views;
 
 import android.content.Context;
 import android.content.res.TypedArray;
+import android.graphics.Canvas;
 import android.util.AttributeSet;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -63,23 +64,68 @@ public class TabView extends FrameLayout {
     }
 
 
+    Thread blinker = null;
+    HaberActivity.TabState currentState = HaberActivity.TabState.Normal;
+
+
+    @Override
+    protected void onDraw(Canvas canvas) {
+        if ( currentState == HaberActivity.TabState.Active ) {
+            tabBackground.setBackgroundResource(R.drawable.tab_background_active);
+        } else if ( currentState == HaberActivity.TabState.Normal ) {
+            tabBackground.setBackgroundResource(R.drawable.tab_background);
+        } else if ( currentState == HaberActivity.TabState.Marked ) {
+            tabBackground.setBackgroundResource(R.drawable.tab_background_selected);
+        }
+
+        super.onDraw(canvas);
+    }
 
     public void setState(HaberActivity.TabState state) {
-        if ( state == HaberActivity.TabState.Active ) {
-            tabBackground.setBackgroundResource(R.drawable.tab_background_active);
+        currentState = state;
+        if ( blinker != null ) {
+            blinker.interrupt();
+        }
 
+        if ( state == HaberActivity.TabState.Active ) {
             rlMsgCounter.setVisibility(View.INVISIBLE);
             tvMsgCounter.setText("0");
         } else if ( state == HaberActivity.TabState.Normal ) {
-            tabBackground.setBackgroundResource(R.drawable.tab_background);
-
             rlMsgCounter.setVisibility(View.INVISIBLE);
             tvMsgCounter.setText("0");
         } else if ( state == HaberActivity.TabState.Marked ) {
-            tabBackground.setBackgroundResource(R.drawable.tab_background_selected);
+            blinker = new Thread() {
+                @Override
+                public void run() {
+                    while ( !this.isInterrupted() ) {
+                        currentState = HaberActivity.TabState.Normal;
+                        postInvalidate ();
+
+                        try {
+                            Thread.sleep(200);
+                        } catch ( Exception er ) {
+                            /* probably interrupted */
+                            break;
+                        }
+
+                        currentState = HaberActivity.TabState.Marked;
+                        postInvalidate ();
+
+                        try {
+                            Thread.sleep(500);
+                        } catch ( Exception er ) {
+                            /* probably interrupted */
+                            break;
+                        }
+                    }
+                }
+            };
+            blinker.start();
 
             rlMsgCounter.setVisibility(View.VISIBLE);
         }
+
+        invalidate();
     }
 
     public int getUnreadMessagesCount() {
@@ -91,6 +137,8 @@ public class TabView extends FrameLayout {
     }
 
     void init(AttributeSet attrs) {
+        this.setWillNotDraw(false);
+
         if ( attrs != null ) {
             TypedArray a = context.getTheme().obtainStyledAttributes(
                     attrs,

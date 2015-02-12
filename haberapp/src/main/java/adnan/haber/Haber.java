@@ -281,7 +281,7 @@ public class Haber {
                 chat.addParticipantStatusListener(new ParticipantStatusListener() {
                     @Override
                     public void joined(String s) {
-                        statusListener.onChatEvent(ChatEvent.Joined, s);
+
                     }
 
                     @Override

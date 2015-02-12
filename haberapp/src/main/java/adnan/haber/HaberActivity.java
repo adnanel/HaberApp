@@ -427,7 +427,15 @@ public class HaberActivity extends ActionBarActivity implements Haber.HaberListe
                             }
                         });
 
-                        builder.setCancelable(false);
+                        builder.setOnCancelListener(new DialogInterface.OnCancelListener() {
+                            @Override
+                            public void onCancel(DialogInterface dialog) {
+                                FragmentTransaction transaction = getSupportFragmentManager().beginTransaction();
+                                transaction.remove(frag);
+                                transaction.commit();
+                            }
+                        });
+
                         builder.setView(view);
                         smileyDialog = builder.create();
                         smileyDialog.getWindow().requestFeature(Window.FEATURE_NO_TITLE);

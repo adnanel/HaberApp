@@ -44,6 +44,7 @@ import adnan.haber.fragments.AdvancedPreferences;
 import adnan.haber.fragments.SmileyChooser;
 import adnan.haber.packets.PacketTimeStamp;
 import adnan.haber.types.ListChatItem;
+import adnan.haber.types.MessageDirection;
 import adnan.haber.util.ChatSaver;
 import adnan.haber.util.Debug;
 import adnan.haber.util.Updater;
@@ -140,6 +141,7 @@ public class HaberActivity extends ActionBarActivity implements Haber.HaberListe
                         msg.setBody(editText.getText().toString());
                         msg.setFrom(Haber.getFullUsername(Haber.getUsername()));
                         msg.setTo(chat.getParticipant());
+                        msg.setSubject(MessageDirection.OUTGOING);
 
                         try {
                             msg.addExtension(new PacketTimeStamp(msg));
@@ -165,6 +167,7 @@ public class HaberActivity extends ActionBarActivity implements Haber.HaberListe
                     msg.setBody(body);
                     msg.setFrom(Haber.getFullUsername(Haber.getUsername()));
                     msg.setTo(chat.getParticipant());
+                    msg.setSubject(MessageDirection.OUTGOING);
 
                     try {
                         msg.addExtension(new PacketTimeStamp(msg));

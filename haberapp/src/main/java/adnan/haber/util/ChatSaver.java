@@ -23,19 +23,21 @@ import adnan.haber.types.ListChatItem;
 public class ChatSaver implements Haber.HaberListener {
     private static Context context;
 
-    private final static String PREFS = "chat_cache_v3";
+    private final static String PREFS = "chat_cache_v4";
     private final static String PREF_COUNT  = "count";
     private final static String PREF_BODY   = "body";
     private final static String PREF_FROM   = "from";
     private final static String PREF_TO     = "to";
     private final static String PREF_ID     = "id";
     private final static String PREF_TSTAMP = "tstamp";
+    private final static String PREF_DIR    = "direction";
 
-    private final static String PREF_LOBBY_COUNT = "lcount";
-    private final static String PREF_LOBBY_BODY  = "lbody";
-    private final static String PREF_LOBBY_FROM  = "lfrom";
-    private final static String PREF_LOBBY_ID    = "lid";
+    private final static String PREF_LOBBY_COUNT  = "lcount";
+    private final static String PREF_LOBBY_BODY   = "lbody";
+    private final static String PREF_LOBBY_FROM   = "lfrom";
+    private final static String PREF_LOBBY_ID     = "lid";
     private final static String PREF_LOBBY_TSTAMP = "ltstamp";
+    private final static String PREF_LOBBY_DIR    = "ldirection";
 
     private static ChatSaver instance;
     private ChatSaver() {
@@ -79,6 +81,7 @@ public class ChatSaver implements Haber.HaberListener {
             msg.setTo(getSharedPreferences().getString(PREF_TO + i, ""));
             msg.setPacketID(getSharedPreferences().getString(PREF_ID + i, "1"));
             msg.addExtension(new PacketTimeStamp(getSharedPreferences().getString(PREF_TSTAMP + i, "1")));
+            msg.setSubject(getSharedPreferences().getString(PREF_DIR + i, ""));
 
             boolean existing = false;
             for ( Message message : result )
@@ -116,6 +119,7 @@ public class ChatSaver implements Haber.HaberListener {
             msg.setFrom(getSharedPreferences().getString(PREF_LOBBY_FROM + i, ""));
             msg.setPacketID(getSharedPreferences().getString(PREF_LOBBY_ID + i, "1"));
             msg.addExtension(new PacketTimeStamp(getSharedPreferences().getString(PREF_LOBBY_TSTAMP + i, "1")));
+            msg.setSubject(getSharedPreferences().getString(PREF_LOBBY_DIR + i, ""));
 
             boolean existing = false;
             for ( Message message : result )
@@ -147,6 +151,8 @@ public class ChatSaver implements Haber.HaberListener {
             editor.putString(PREF_TO + i, message.getTo());
             editor.putString(PREF_ID + i, message.getPacketID());
             editor.putString(PREF_TSTAMP + i, getTimeStamp(message));
+            editor.putString(PREF_DIR + i, message.getSubject());
+
             i++;
         }
 
@@ -171,6 +177,8 @@ public class ChatSaver implements Haber.HaberListener {
             editor.putString(PREF_LOBBY_FROM + i, message.getFrom());
             editor.putString(PREF_LOBBY_ID + i, message.getPacketID());
             editor.putString(PREF_LOBBY_TSTAMP + i, getTimeStamp(message));
+            editor.putString(PREF_LOBBY_DIR + i, message.getSubject());
+
             i++;
         }
 

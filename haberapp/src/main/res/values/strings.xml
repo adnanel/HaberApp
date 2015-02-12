@@ -4,7 +4,7 @@
     <string name="app_name">Haber</string>
     <string name="hello_world">Hello world!</string>
     <string name="action_settings">Settings</string>
-    <string name="title_activity_haber">HaberActivity</string>
+    <string name="title_activity_haber">Haber</string>
     <string name="hello_blank_fragment">Hello blank fragment</string>
 
     <color name="NickMarkColor">#ff9c3d65</color>
@@ -50,4 +50,5 @@ Adnan Elezović]]>
     <string name="title_activity_confirm_leave">ConfirmLeaveActivity</string>
 
     <string name="crash_toast_text">Aplikacija se krahirala! Hocu poslati error report developeru? (nakon ok izaberi neki mail kijent)</string>
+    <string name="title_activity_archive">Arhiva</string>
 </resources>

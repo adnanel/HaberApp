@@ -24,6 +24,7 @@ import java.util.HashMap;
 import java.util.List;
 
 import adnan.haber.fragments.AdvancedPreferences;
+import adnan.haber.types.MessageDirection;
 import adnan.haber.types.Rank;
 import adnan.haber.util.Debug;
 
@@ -342,6 +343,8 @@ public class HaberService extends Service implements Haber.HaberListener {
 
     @Override
     public void onMessageReceived(Chat chat, Message message) {
+        message.setSubject(MessageDirection.INCOMING);
+
         ArrayList<Haber.HaberListener> corpses = new ArrayList<>();
 
         for ( Haber.HaberListener listener : getHaberListeners() ) {

@@ -5,6 +5,10 @@
         <item name="android:listPreferredItemHeight">20dp</item>
     </style>
 
+    <style name="ArchiveTheme" parent="Theme.AppCompat">
+        <item name="android:listPreferredItemHeight">20dp</item>
+    </style>
+
     <style name="PreferencesTheme" parent="AppTheme">
         <item name="android:listPreferredItemHeight">50dp</item>
     </style>

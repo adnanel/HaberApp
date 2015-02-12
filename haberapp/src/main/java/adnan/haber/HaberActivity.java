@@ -368,7 +368,7 @@ public class HaberActivity extends ActionBarActivity implements Haber.HaberListe
         transaction.add(R.id.rlLeftDrawer, LeftDrawer.newInstance(this), LeftDrawer.TAG);
         transaction.commit();
 
-        Updater.CheckForUpdates(this);
+        Updater.CheckForUpdates(this, false);
 
         chatListView = (ListView)findViewById(R.id.chatListView);
 

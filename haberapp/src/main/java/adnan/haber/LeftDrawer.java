@@ -94,7 +94,7 @@ public class LeftDrawer extends PreferenceFragment {
             getPreferenceScreen().addPreference(btLogin);
 
             prefcat = new PreferenceCategory(getActivity());
-            prefcat.setOrder(0);
+            prefcat.setOrder(2);
             prefcat.setTitle("Online korisnici:");
 
             getPreferenceScreen().addPreference(prefcat);

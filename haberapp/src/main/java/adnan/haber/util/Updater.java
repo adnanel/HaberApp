@@ -33,7 +33,7 @@ public class Updater {
     private static AlertDialog dialog;
 
 
-    public static void CheckForUpdates(final Activity activity) {
+    public static void CheckForUpdates(final Activity activity, final boolean shouldToast ) {
         new Thread() {
             @Override
             public void run() {
@@ -137,12 +137,13 @@ public class Updater {
                         });
 
                     } else {
-                        activity.runOnUiThread(new Runnable() {
-                            @Override
-                            public void run() {
-                                Toast.makeText(activity, "Nema nove verzije!", Toast.LENGTH_SHORT).show();
-                            }
-                        });
+                        if ( shouldToast )
+                            activity.runOnUiThread(new Runnable() {
+                                @Override
+                                public void run() {
+                                    Toast.makeText(activity, "Nema nove verzije!", Toast.LENGTH_SHORT).show();
+                                }
+                            });
                     }
                 } catch ( Exception e ) {
                     Debug.log(e);

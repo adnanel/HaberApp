@@ -174,7 +174,7 @@ public class AdvancedPreferences extends PreferenceFragment {
                     Toast.makeText(getActivity(), "Provjeravam verziju...", Toast.LENGTH_SHORT).show();
                 }
             });
-            Updater.CheckForUpdates(getActivity());
+            Updater.CheckForUpdates(getActivity(), true);
         } else if (preference.getKey().equals("reportbug") ) {
             final AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
 

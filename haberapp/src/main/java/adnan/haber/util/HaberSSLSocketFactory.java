@@ -1,4 +1,9 @@
 package adnan.haber.util;
+import android.net.http.SslError;
+import android.webkit.SslErrorHandler;
+import android.webkit.WebView;
+import android.webkit.WebViewClient;
+
 import java.io.IOException;
 import java.net.Socket;
 import java.net.UnknownHostException;
@@ -19,34 +24,10 @@ import org.apache.http.conn.ssl.SSLSocketFactory;
 /**
  * Created by Adnan on 2.2.2015..
  */
-public class HaberSSLSocketFactory extends SSLSocketFactory {
-    SSLContext sslContext = SSLContext.getInstance("TLS");
-
-    public HaberSSLSocketFactory(KeyStore truststore) throws NoSuchAlgorithmException, KeyManagementException, KeyStoreException, UnrecoverableKeyException {
-        super(truststore);
-
-        TrustManager tm = new X509TrustManager() {
-            public void checkClientTrusted(X509Certificate[] chain, String authType) throws CertificateException {
-            }
-
-            public void checkServerTrusted(X509Certificate[] chain, String authType) throws CertificateException {
-            }
-
-            public X509Certificate[] getAcceptedIssuers() {
-                return null;
-            }
-        };
-
-        sslContext.init(null, new TrustManager[] { tm }, null);
-    }
-
+public class HaberSSLSocketFactory extends WebViewClient {
     @Override
-    public Socket createSocket(Socket socket, String host, int port, boolean autoClose) throws IOException, UnknownHostException {
-        return sslContext.getSocketFactory().createSocket(socket, host, port, autoClose);
+    public void onReceivedSslError(WebView view, SslErrorHandler handler, SslError error) {
+        handler.proceed(); // Ignore SSL certificate errors
     }
 
-    @Override
-    public Socket createSocket() throws IOException {
-        return sslContext.getSocketFactory().createSocket();
-    }
 }

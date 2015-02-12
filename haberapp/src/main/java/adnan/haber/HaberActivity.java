@@ -47,6 +47,7 @@ import adnan.haber.types.ListChatItem;
 import adnan.haber.types.MessageDirection;
 import adnan.haber.util.ChatSaver;
 import adnan.haber.util.Debug;
+import adnan.haber.util.HaberSSLSocketFactory;
 import adnan.haber.util.Updater;
 import adnan.haber.util.Util;
 import adnan.haber.views.TabView;
@@ -257,7 +258,7 @@ public class HaberActivity extends ActionBarActivity implements Haber.HaberListe
                 View view = getLayoutInflater().inflate(R.layout.urlviewer, null);
 
                 WebView webView = (WebView)view.findViewById(R.id.webView);
-
+                webView.setWebViewClient(new HaberSSLSocketFactory());
 
                 webView.getSettings().setJavaScriptEnabled(true);
                 if ( url.endsWith(".jpg") && url.startsWith("http://pokit.org/get/?")) {

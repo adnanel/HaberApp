@@ -30,6 +30,7 @@ import adnan.haber.types.ArchiveItem;
 import adnan.haber.types.ListChatItem;
 import adnan.haber.types.MessageDirection;
 import adnan.haber.util.ChatSaver;
+import adnan.haber.util.HaberSSLSocketFactory;
 
 
 public class Archive extends ActionBarActivity {
@@ -133,6 +134,8 @@ public class Archive extends ActionBarActivity {
 
                 WebView webView = (WebView)view.findViewById(R.id.webView);
                 webView.getSettings().setJavaScriptEnabled(true);
+                webView.setWebViewClient(new HaberSSLSocketFactory());
+
                 if ( url.endsWith(".jpg") && url.startsWith("http://pokit.org/get/?")) {
                     String nUrl = url.replace("get/?", "get/img/");
                     webView.loadUrl(nUrl);

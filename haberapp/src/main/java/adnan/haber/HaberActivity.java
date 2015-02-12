@@ -153,8 +153,13 @@ public class HaberActivity extends ActionBarActivity implements Haber.HaberListe
                         ChatSaver.OnMessageReceived(chat, msg);
 
                         mainChatThread.chatAdapter.addItem(msg);
-
-                        scrollToBottom(true);
+                        runOnUiThread(new Runnable() {
+                            @Override
+                            public void run() {
+                                mainChatThread.chatAdapter.notifyDataSetChanged();
+                                scrollToBottom(true);
+                            }
+                        });
                     }
                 } catch (Exception e) {
                     Debug.log(e);

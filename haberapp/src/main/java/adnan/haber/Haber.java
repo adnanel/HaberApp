@@ -248,6 +248,8 @@ public class Haber {
             ProviderManager.addExtensionProvider("delete", "haber:delete", new DeletePacketProvider());
             ProviderManager.addExtensionProvider("hellban", "haber:hellban", new HellbanPacketProvider());
 
+            hellBanned = false;
+
             try {
                 connection.connect();
 

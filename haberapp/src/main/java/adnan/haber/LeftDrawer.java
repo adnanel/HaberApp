@@ -286,6 +286,8 @@ public class LeftDrawer extends PreferenceFragment {
         } else if ( preference.getKey().equals("logout") ) {
             Haber.setIsGuest(true);
             Haber.setPassword("");
+            CredentialManager.Save(getActivity(), CredentialManager.GetSavedUsername(getActivity()),
+                    CredentialManager.GetSavedPassword(getActivity()), false);
 
             HaberService.RestartService(getActivity());
             Intent intent = new Intent(getActivity(), SplashScreen.class);

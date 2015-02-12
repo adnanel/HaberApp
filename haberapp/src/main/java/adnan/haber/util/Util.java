@@ -122,8 +122,20 @@ public class Util {
                     Haber.PacketTimeStamp stamp = (Haber.PacketTimeStamp) ext;
                     Message message = (Message) packet;
                     SimpleDateFormat df = new SimpleDateFormat(TIME_FORMAT, Locale.US);
-                    Date date = df.parse(stamp.getTime());
+                    Date date;
+                    try {
+                        date = df.parse(stamp.getTime());
+                    } catch ( Exception ex ) {
+                        Debug.log("Failing to parse time, known bug, trying with kk in time format");
+                        try {
+                            df = new SimpleDateFormat(Util.TIME_FORMAT.replace("HH", "kk"), Locale.US);
 
+                            date = df.parse(((Haber.PacketTimeStamp) ext).getTime());
+                        } catch ( Exception e ) {
+                            Debug.log(e);
+                            date = new Date();
+                        }
+                    }
                     String id = (message.getPacketID() == null) ? "" : message.getPacketID();
                     return makeSHA1Hash(date.toString() + message.getBody() + message.getFrom() + id);
                 }

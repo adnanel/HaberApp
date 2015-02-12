@@ -194,8 +194,15 @@ public class ChatAdapter extends ArrayAdapter<ListChatItem> {
                     item.time = df.parse(((Haber.PacketTimeStamp) ex).getTime());
 
                 } catch ( Exception er ) {
-                    Debug.log(er);
-                    item.time = new Date();
+                    Debug.log("Failing to parse time, known bug, trying with kk in time format");
+                    try {
+                        df = new SimpleDateFormat(Util.TIME_FORMAT.replace("HH", "kk"), Locale.US);
+
+                        item.time = df.parse(((Haber.PacketTimeStamp) ex).getTime());
+                    } catch ( Exception e ) {
+                        Debug.log(e);
+                        item.time = new Date();
+                    }
                 }
                 break;
             }

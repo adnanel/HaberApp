@@ -45,4 +45,6 @@ Adnan Elezović]]>
     <string name="acc_drawer_close">Zatvori listu korisnika</string>
     <string name="title_activity_wrong_credentials">WrongCredentials</string>
     <string name="title_activity_confirm_leave">ConfirmLeaveActivity</string>
+
+    <string name="crash_toast_text">Aplikacija se krahirala! Hocu poslati error report developeru? (nakon ok izaberi neki mail kijent)</string>
 </resources>

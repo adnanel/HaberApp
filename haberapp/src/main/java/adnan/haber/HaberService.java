@@ -258,6 +258,7 @@ public class HaberService extends Service implements Haber.HaberListener {
                         builder.setContentText("Izbačeni ste iz sobe!");
                         builder.setSmallIcon(R.drawable.ic_launcher);
                         builder.setLargeIcon(BitmapFactory.decodeResource(getResources(), R.drawable.ic_launcher));
+                        builder.setAutoCancel(true);
 
                         Intent kickedIntent = new Intent(HaberService.this, KickedOnStartActivity.class);
                         PendingIntent intent = PendingIntent.getActivity(
@@ -266,6 +267,7 @@ public class HaberService extends Service implements Haber.HaberListener {
                                 kickedIntent,
                                 PendingIntent.FLAG_UPDATE_CURRENT
                         );
+
 
                         builder.setContentIntent(intent);
                         notificationManager.notify(NOTIF_EVENT_ID, builder.build());
@@ -429,6 +431,7 @@ public class HaberService extends Service implements Haber.HaberListener {
                 builder.setContentText("Izbačeni ste iz sobe!");
                 builder.setSmallIcon(R.drawable.ic_launcher);
                 builder.setLargeIcon(BitmapFactory.decodeResource(getResources(), R.drawable.ic_launcher));
+                builder.setAutoCancel(true);
 
                 Intent kickedIntent = new Intent(HaberService.this, KickedOnStartActivity.class);
                 kickedIntent.putExtra("reason", params[1]);

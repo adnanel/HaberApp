@@ -3,9 +3,7 @@
 
     <!-- -1 = btLogin, 2 = online list -->
 
-    <PreferenceCategory android:title="" android:order="0">
 
-    </PreferenceCategory>
 
 
     <PreferenceCategory android:title="Opcije" android:order="1">

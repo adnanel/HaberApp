@@ -859,6 +859,7 @@ public class HaberActivity extends ActionBarActivity implements Haber.HaberListe
             @Override
             public void run() {
                 mainChatThread.chatAdapter.removeMessagesFromUser(user);
+                mainChatThread.chatAdapter.removeMessagesFromUser("ǂ" + user);
             }
         });
     }

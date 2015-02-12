@@ -125,6 +125,7 @@ public class LeftDrawer extends PreferenceFragment {
 
         prefcat.removeAll();
         onlineUsers.clear();
+        prefcat.setTitle(String.format("Online korisnici (%d)", users.length));
 
         for ( Object obj : users ) {
             String user = (String)obj;

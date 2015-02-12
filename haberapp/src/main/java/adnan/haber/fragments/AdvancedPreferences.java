@@ -136,7 +136,14 @@ public class AdvancedPreferences extends PreferenceFragment {
                         }
                     });
 
-                    builder.setCancelable(false);
+                    builder.setOnCancelListener(new DialogInterface.OnCancelListener() {
+                        @Override
+                        public void onCancel(DialogInterface dialog) {
+                            FragmentTransaction transaction = getActivity().getSupportFragmentManager().beginTransaction();
+                            transaction.remove(frag);
+                            transaction.commit();
+                        }
+                    });
                     builder.setView(view);
                     builder.create().show();
                 }
@@ -218,10 +225,21 @@ public class AdvancedPreferences extends PreferenceFragment {
 
                                 });
                             }
+
+                            FragmentTransaction transaction = getActivity().getSupportFragmentManager().beginTransaction();
+                            transaction.remove(frag);
+                            transaction.commit();
                         }
                     });
 
-                    builder.setCancelable(false);
+                    builder.setOnCancelListener(new DialogInterface.OnCancelListener() {
+                        @Override
+                        public void onCancel(DialogInterface dialog) {
+                            FragmentTransaction transaction = getActivity().getSupportFragmentManager().beginTransaction();
+                            transaction.remove(frag);
+                            transaction.commit();
+                        }
+                    });
                     builder.setView(view);
                     builder.create().show();
                 }

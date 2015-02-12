@@ -30,7 +30,7 @@ public class HaberService extends Service implements Haber.HaberListener {
     private static List<Haber.HaberListener> haberListeners = new ArrayList<>();
 
     static List<Chat> chatRooms = new ArrayList<>();
-    static MultiUserChat haberChat;
+    private static MultiUserChat haberChat;
 
     public static synchronized void runOnHaberThread(Runnable runnable) {
         runnables.add(runnable);
@@ -44,6 +44,11 @@ public class HaberService extends Service implements Haber.HaberListener {
 
     private static HaberService instance = null;
 
+    public static MultiUserChat getHaberChat() {
+        if ( haberChat == null )
+            haberChat = Haber.getHaberChat();
+        return haberChat;
+    }
 
     public static void resetCounters() {
         haberCounter.resetCounters();

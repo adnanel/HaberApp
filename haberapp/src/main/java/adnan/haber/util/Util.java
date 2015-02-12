@@ -7,6 +7,10 @@ import android.util.TypedValue;
 import org.jivesoftware.smack.packet.Message;
 import org.jivesoftware.smack.packet.Packet;
 import org.jivesoftware.smack.packet.PacketExtension;
+import org.joda.time.DateTime;
+import org.joda.time.DateTimeZone;
+import org.joda.time.format.DateTimeFormat;
+import org.joda.time.format.DateTimeFormatter;
 
 import java.io.BufferedReader;
 import java.io.IOException;
@@ -17,7 +21,6 @@ import java.net.MalformedURLException;
 import java.net.URL;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
-import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.Formatter;
 import java.util.Locale;
@@ -115,27 +118,36 @@ public class Util {
         return res;
     }
 
+    public static String dateToFormat(Date date) {
+        return dateToFormat(TIME_FORMAT, date);
+    }
+
+    public static String dateToFormat(String format, Date date) {
+        return DateTimeFormat.forPattern(format).print(new DateTime(date.getTime()));
+    }
+
+    public static Date getDate(String date) {
+        Date res;
+        try {
+            DateTimeFormatter sdf = DateTimeFormat.forPattern(TIME_FORMAT);
+
+            res = sdf.parseDateTime(date).toDate();
+        } catch ( Exception e ) {
+            Debug.log(e);
+            res = new Date();
+        }
+
+        return res;
+    }
+
     public static String _GeneratePacketId(Packet packet) {
         try {
             for (PacketExtension ext : packet.getExtensions() ) {
                 if ( ext instanceof Haber.PacketTimeStamp ) {
                     Haber.PacketTimeStamp stamp = (Haber.PacketTimeStamp) ext;
                     Message message = (Message) packet;
-                    SimpleDateFormat df = new SimpleDateFormat(TIME_FORMAT, Locale.US);
-                    Date date;
-                    try {
-                        date = df.parse(stamp.getTime());
-                    } catch ( Exception ex ) {
-                        Debug.log("Failing to parse time, known bug, trying with kk in time format");
-                        try {
-                            df = new SimpleDateFormat(Util.TIME_FORMAT.replace("HH", "kk"), Locale.US);
+                    Date date = getDate(stamp.getTime());
 
-                            date = df.parse(((Haber.PacketTimeStamp) ext).getTime());
-                        } catch ( Exception e ) {
-                            Debug.log(e);
-                            date = new Date();
-                        }
-                    }
                     String id = (message.getPacketID() == null) ? "" : message.getPacketID();
                     return makeSHA1Hash(date.toString() + message.getBody() + message.getFrom() + id);
                 }

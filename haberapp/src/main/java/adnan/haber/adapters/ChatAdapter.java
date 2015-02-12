@@ -24,10 +24,11 @@ import android.widget.ViewSwitcher;
 import org.jivesoftware.smack.packet.Message;
 import org.jivesoftware.smack.packet.PacketExtension;
 
-import java.lang.reflect.Array;
+
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Calendar;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.Comparator;
@@ -188,22 +189,7 @@ public class ChatAdapter extends ArrayAdapter<ListChatItem> {
 
         for (PacketExtension ex : msg.getExtensions() ) {
             if ( ex instanceof Haber.PacketTimeStamp ) {
-                SimpleDateFormat df = new SimpleDateFormat(Util.TIME_FORMAT, Locale.US);
-
-                try {
-                    item.time = df.parse(((Haber.PacketTimeStamp) ex).getTime());
-
-                } catch ( Exception er ) {
-                    Debug.log("Failing to parse time, known bug, trying with kk in time format");
-                    try {
-                        df = new SimpleDateFormat(Util.TIME_FORMAT.replace("HH", "kk"), Locale.US);
-
-                        item.time = df.parse(((Haber.PacketTimeStamp) ex).getTime());
-                    } catch ( Exception e ) {
-                        Debug.log(e);
-                        item.time = new Date();
-                    }
-                }
+                item.time = Util.getDate(((Haber.PacketTimeStamp) ex).getTime());
                 break;
             }
         }
@@ -293,7 +279,7 @@ public class ChatAdapter extends ArrayAdapter<ListChatItem> {
             tvMessage.setIncludeFontPadding(false);
 
             TextView tvTime = (TextView) rowView.findViewById(R.id.tvTime);
-            (tvTime).setText(DateFormat.format("HH:mm", items.get(position).time));
+            (tvTime).setText(Util.dateToFormat("HH:mm", items.get(position).time));
 
             if ( items.get(position).author.equals(Haber.getShortUsername(Haber.getUsername()))) {
                 try {

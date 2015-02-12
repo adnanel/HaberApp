@@ -233,7 +233,12 @@ public class ChatSaver implements Haber.HaberListener {
         Message msg = new Message();
         msg.setFrom("haber");
         msg.setTo("haber");
-        msg.setBody(new SimpleDateFormat("dd-MM-yyyy HH:mm").format(Calendar.getInstance().getTime()));
+        try {
+            msg.setBody(new SimpleDateFormat("dd-MM-yyyy HH:mm").format(Calendar.getInstance().getTime()));
+        } catch ( Exception er ) {
+            Debug.log(er);
+            msg.setBody("You shouldn't see this.");
+        }
         msg.setPacketID("divider");
         instance.onMessageReceived(chat, msg);
     }

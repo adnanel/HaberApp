@@ -20,7 +20,7 @@
     </PreferenceCategory>
 
     <PreferenceCategory android:title="Misc.">
-        <SwitchPreference
+        <CheckBoxPreference
             android:title="Debug Mode"
             android:key="debugMode"
             android:summary="U većini slučajeva je bolje da ovo bude off."/>

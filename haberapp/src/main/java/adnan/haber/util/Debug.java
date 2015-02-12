@@ -58,7 +58,11 @@ public class Debug {
 
     public static void log(String msg) {
         if (AdvancedPreferences.IsDebug(context) ) {
-            outputFile.println(msg);
+            try {
+                outputFile.println(msg);
+            } catch ( Exception er ) {
+                //
+            }
             Log.i(TAG, msg);
         }
     }

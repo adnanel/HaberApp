@@ -26,8 +26,10 @@ import org.jivesoftware.smackx.delay.packet.DelayInformation;
 import org.jivesoftware.smackx.muc.MultiUserChat;
 import org.jivesoftware.smackx.muc.ParticipantStatusListener;
 import org.jivesoftware.smackx.muc.UserStatusListener;
+import org.joda.time.format.DateTimeFormat;
+import org.joda.time.format.DateTimeFormatter;
 
-import java.text.DateFormat;
+
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
@@ -50,7 +52,7 @@ public class Haber {
     HaberListener statusListener;
     Context context;
     XMPPConnection connection;
-    MultiUserChat haberChat;
+    private static MultiUserChat haberChat;
 
     private static String  username = "ǂAndro" + getRandomInt();
     private static boolean isGuest = true;
@@ -70,7 +72,7 @@ public class Haber {
     }
 
     public static boolean IsOnline(String user) {
-        for ( String str : HaberService.haberChat.getOccupants() )
+        for ( String str : haberChat.getOccupants() )
             if ( str.equals(user) ) return true;
         return false;
     }
@@ -158,7 +160,7 @@ public class Haber {
             return null;
         }
 
-        Chat chat = HaberService.haberChat.createPrivateChat(user, new MessageListener() {
+        Chat chat = haberChat.createPrivateChat(user, new MessageListener() {
             int id = 0;
             String salt = Util.getRandomInt(1000) + "";
 
@@ -202,7 +204,7 @@ public class Haber {
     }
 
     public static String getFullUsername(String user) {
-        for ( String str : HaberService.haberChat.getOccupants() ) {
+        for ( String str : haberChat.getOccupants() ) {
             if ( getShortUsername(str).equals(user) )
                 return str;
         }
@@ -215,6 +217,9 @@ public class Haber {
         return user;
     }
 
+    public static MultiUserChat getHaberChat() {
+        return haberChat;
+    }
 
     public boolean connect() throws InvalidCredentialsException {
         try {
@@ -572,13 +577,14 @@ public class Haber {
             if ( message.getBody() != null ) {
                 for ( PacketExtension ext : message.getExtensions() ) {
                     if ( ext instanceof DelayInformation ) {
-                        time = android.text.format.DateFormat.format(Util.TIME_FORMAT, ((DelayInformation) ext).getStamp()).toString();
+
+                        time = Util.dateToFormat(((DelayInformation) ext).getStamp());
                         return;
                     }
                 }
             }
 
-            time = android.text.format.DateFormat.format(Util.TIME_FORMAT, new java.util.Date()).toString();
+            time = Util.dateToFormat(new Date());
         }
 
         public PacketTimeStamp(String stamp) {

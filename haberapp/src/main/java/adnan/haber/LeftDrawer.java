@@ -106,12 +106,12 @@ public class LeftDrawer extends PreferenceFragment {
     }
 
     void refreshOnlineList() {
-        if ( HaberService.haberChat == null ) {
+        if ( HaberService.getHaberChat() == null ) {
             Debug.log("HaberService isn't running...");
             return;
         }
 
-        Object[] users = HaberService.haberChat.getOccupants().toArray();
+        Object[] users = HaberService.getHaberChat().getOccupants().toArray();
         Arrays.sort(users, new Comparator<Object>() {
             @Override
             public int compare(Object lhs, Object rhs) {

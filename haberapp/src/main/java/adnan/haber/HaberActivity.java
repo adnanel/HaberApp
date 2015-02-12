@@ -132,7 +132,7 @@ public class HaberActivity extends ActionBarActivity implements Haber.HaberListe
             if ( chat == null ) {
                 try {
                     if ( !Haber.IsHellBanned() ) {
-                        HaberService.haberChat.sendMessage(editText.getText().toString());
+                        HaberService.getHaberChat().sendMessage(editText.getText().toString());
                     } else {
                         Message msg = new Message();
                         msg.setBody(editText.getText().toString());

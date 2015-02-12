@@ -42,6 +42,7 @@ import adnan.haber.HaberActivity;
 import adnan.haber.HaberService;
 import adnan.haber.R;
 import adnan.haber.fragments.AdvancedPreferences;
+import adnan.haber.packets.PacketTimeStamp;
 import adnan.haber.types.ListChatItem;
 import adnan.haber.util.Debug;
 import adnan.haber.util.SmileyManager;
@@ -145,6 +146,8 @@ public class ChatAdapter extends ArrayAdapter<ListChatItem> {
     public void removeMessagesFromUser(String user) {
         ArrayList<ListChatItem> queue = new ArrayList<>();
         for ( ListChatItem item : items ) {
+            if ( item.author == null ) continue;
+
             if ( item.author.equals(user) ) {
                 queue.add(item);
             }
@@ -188,8 +191,8 @@ public class ChatAdapter extends ArrayAdapter<ListChatItem> {
         }
 
         for (PacketExtension ex : msg.getExtensions() ) {
-            if ( ex instanceof Haber.PacketTimeStamp ) {
-                item.time = Util.getDate(((Haber.PacketTimeStamp) ex).getTime());
+            if ( ex instanceof PacketTimeStamp ) {
+                item.time = Util.getDate(((PacketTimeStamp) ex).getTime());
                 break;
             }
         }

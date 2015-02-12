@@ -19,6 +19,7 @@ import org.jivesoftware.smack.packet.Message;
 import org.jivesoftware.smack.packet.Packet;
 import org.jivesoftware.smack.packet.PacketExtension;
 import org.jivesoftware.smack.provider.PacketExtensionProvider;
+import org.jivesoftware.smack.provider.ProviderManager;
 import org.jivesoftware.smack.sasl.SASLDigestMD5Mechanism;
 import org.jivesoftware.smack.tcp.XMPPTCPConnection;
 import org.jivesoftware.smack.util.dns.HostAddress;
@@ -28,6 +29,7 @@ import org.jivesoftware.smackx.muc.ParticipantStatusListener;
 import org.jivesoftware.smackx.muc.UserStatusListener;
 import org.joda.time.format.DateTimeFormat;
 import org.joda.time.format.DateTimeFormatter;
+import org.xmlpull.v1.XmlPullParser;
 
 
 import java.text.SimpleDateFormat;
@@ -37,6 +39,11 @@ import java.util.Locale;
 import java.util.Random;
 import java.util.TimeZone;
 
+import adnan.haber.packets.DeletePacket;
+import adnan.haber.packets.DeletePacketProvider;
+import adnan.haber.packets.HellbanPacket;
+import adnan.haber.packets.HellbanPacketProvider;
+import adnan.haber.packets.PacketTimeStamp;
 import adnan.haber.util.CredentialManager;
 import adnan.haber.util.Debug;
 import adnan.haber.util.Util;
@@ -234,6 +241,9 @@ public class Haber {
 
             connection = new XMPPTCPConnection(config);
 
+            ProviderManager.addExtensionProvider("delete", "haber:delete", new DeletePacketProvider());
+            ProviderManager.addExtensionProvider("hellban", "haber:hellban", new HellbanPacketProvider());
+
             try {
                 connection.connect();
 
@@ -266,6 +276,7 @@ public class Haber {
 
                 statusListener.onLoggedIn(chat);
                 haberChat = chat;
+
 
                 chat.addParticipantStatusListener(new ParticipantStatusListener() {
                     @Override
@@ -417,31 +428,22 @@ public class Haber {
                                 message.setPacketID((id++) + salt);
                             }
 
-                            //delete
-                            String xml = packet.toXML().toString();
-                            xml = xml.substring(xml.lastIndexOf("</body>") + "</body>".length());
-
-                            if ( xml.indexOf("<delete") != -1 ) {
-                                String deleteTarget = xml.substring(xml.indexOf("<delete") + "<delete".length(),
-                                        xml.indexOf("</delete>"));
-
-                                if ( deleteTarget.length() > 0 && HaberService.IsMod(message.getFrom())) {
-                                    statusListener.onDeleteRequested(deleteTarget);
+                            try {
+                                if (HaberService.IsMod(message.getFrom())) {
+                                    for (PacketExtension ex : packet.getExtensions()) {
+                                        if (ex instanceof DeletePacket) {
+                                            statusListener.onDeleteRequested(((DeletePacket) ex).target);
+                                            return;
+                                        } else if (ex instanceof HellbanPacket) {
+                                            hellBanned = true;
+                                            return;
+                                        }
+                                    }
                                 }
-                                return;
+                            } catch ( Exception er ) {
+                                Debug.log(er);
                             }
 
-                            //hellban
-                            if ( xml.indexOf("<hellban") != -1 ) {
-                                String hellBanTarget = xml.substring(xml.indexOf("<hellban") + "<hellban".length(),
-                                        xml.indexOf("</hellban>"));
-
-                                if ( getFullUsername(hellBanTarget).equals(getFullUsername(username)) && HaberService.IsMod(message.getFrom()) ) {
-                                    //i got a hellban!
-                                    hellBanned = true;
-                                }
-                                return;
-                            }
 
                             try {
                                 message.addExtension(new PacketTimeStamp(message));
@@ -566,44 +568,5 @@ public class Haber {
         Left
     }
 
-    public static class PacketTimeStamp implements PacketExtension {
-        String time;
 
-        public String getTime() {
-            return time;
-        }
-
-        public PacketTimeStamp(Message message) {
-            if ( message.getBody() != null ) {
-                for ( PacketExtension ext : message.getExtensions() ) {
-                    if ( ext instanceof DelayInformation ) {
-
-                        time = Util.dateToFormat(((DelayInformation) ext).getStamp());
-                        return;
-                    }
-                }
-            }
-
-            time = Util.dateToFormat(new Date());
-        }
-
-        public PacketTimeStamp(String stamp) {
-            time = stamp;
-        }
-
-        @Override
-        public String getElementName() {
-            return "PacketTimeStamp";
-        }
-
-        @Override
-        public String getNamespace() {
-            return "PacketTimeStamp";
-        }
-
-        @Override
-        public CharSequence toXML() {
-            return "<PacketTimeStamp> " + time + " <PacketTimeStamp/>";
-        }
-    }
 }

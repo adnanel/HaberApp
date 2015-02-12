@@ -28,6 +28,7 @@ import java.util.Random;
 
 import adnan.haber.Haber;
 import adnan.haber.fragments.AdvancedPreferences;
+import adnan.haber.packets.PacketTimeStamp;
 
 /**
  * Created by Adnan on 26.1.2015..
@@ -143,8 +144,8 @@ public class Util {
     public static String _GeneratePacketId(Packet packet) {
         try {
             for (PacketExtension ext : packet.getExtensions() ) {
-                if ( ext instanceof Haber.PacketTimeStamp ) {
-                    Haber.PacketTimeStamp stamp = (Haber.PacketTimeStamp) ext;
+                if ( ext instanceof PacketTimeStamp ) {
+                    PacketTimeStamp stamp = (PacketTimeStamp) ext;
                     Message message = (Message) packet;
                     Date date = getDate(stamp.getTime());
 

@@ -14,6 +14,7 @@ import java.util.Calendar;
 
 import adnan.haber.Haber;
 import adnan.haber.HaberService;
+import adnan.haber.packets.PacketTimeStamp;
 import adnan.haber.types.ListChatItem;
 
 /**
@@ -77,7 +78,7 @@ public class ChatSaver implements Haber.HaberListener {
             msg.setFrom(getSharedPreferences().getString(PREF_FROM + i, ""));
             msg.setTo(getSharedPreferences().getString(PREF_TO + i, ""));
             msg.setPacketID(getSharedPreferences().getString(PREF_ID + i, "1"));
-            msg.addExtension(new Haber.PacketTimeStamp(getSharedPreferences().getString(PREF_TSTAMP + i, "1")));
+            msg.addExtension(new PacketTimeStamp(getSharedPreferences().getString(PREF_TSTAMP + i, "1")));
 
             boolean existing = false;
             for ( Message message : result )
@@ -114,7 +115,7 @@ public class ChatSaver implements Haber.HaberListener {
             msg.setBody(getSharedPreferences().getString(PREF_LOBBY_BODY + i, ""));
             msg.setFrom(getSharedPreferences().getString(PREF_LOBBY_FROM + i, ""));
             msg.setPacketID(getSharedPreferences().getString(PREF_LOBBY_ID + i, "1"));
-            msg.addExtension(new Haber.PacketTimeStamp(getSharedPreferences().getString(PREF_LOBBY_TSTAMP + i, "1")));
+            msg.addExtension(new PacketTimeStamp(getSharedPreferences().getString(PREF_LOBBY_TSTAMP + i, "1")));
 
             boolean existing = false;
             for ( Message message : result )
@@ -154,8 +155,8 @@ public class ChatSaver implements Haber.HaberListener {
 
     private static String getTimeStamp(Message message) {
         for (PacketExtension ext : message.getExtensions() ) {
-            if ( ext instanceof Haber.PacketTimeStamp ) {
-                return ((Haber.PacketTimeStamp) ext).getTime();
+            if ( ext instanceof PacketTimeStamp ) {
+                return ((PacketTimeStamp) ext).getTime();
             }
         }
         return "1";

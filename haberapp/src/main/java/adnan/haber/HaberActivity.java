@@ -42,6 +42,7 @@ import java.util.TreeMap;
 import adnan.haber.adapters.ChatAdapter;
 import adnan.haber.fragments.AdvancedPreferences;
 import adnan.haber.fragments.SmileyChooser;
+import adnan.haber.packets.PacketTimeStamp;
 import adnan.haber.types.ListChatItem;
 import adnan.haber.util.ChatSaver;
 import adnan.haber.util.Debug;
@@ -140,7 +141,7 @@ public class HaberActivity extends ActionBarActivity implements Haber.HaberListe
                         msg.setTo(chat.getParticipant());
 
                         try {
-                            msg.addExtension(new Haber.PacketTimeStamp(msg));
+                            msg.addExtension(new PacketTimeStamp(msg));
                             msg.setPacketID(Util.GeneratePacketId(msg));
                         } catch ( Exception er ) {
                             Debug.log(er);
@@ -165,7 +166,7 @@ public class HaberActivity extends ActionBarActivity implements Haber.HaberListe
                     msg.setTo(chat.getParticipant());
 
                     try {
-                        msg.addExtension(new Haber.PacketTimeStamp(msg));
+                        msg.addExtension(new PacketTimeStamp(msg));
                         msg.setPacketID(Util.GeneratePacketId(msg));
                     } catch ( Exception er ) {
                         Debug.log(er);

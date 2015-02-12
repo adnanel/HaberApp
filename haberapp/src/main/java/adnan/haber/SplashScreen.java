@@ -128,6 +128,9 @@ public class SplashScreen extends ActionBarActivity implements Haber.HaberListen
         if ( params.length == 2 && ( event == Haber.ChatEvent.Banned || event == Haber.ChatEvent.Kicked ) ) {
             canStart = false;
         }
+        if ( event == Haber.ChatEvent.Hellbanned ) {
+            counter++;
+        }
     }
 
     @Override
@@ -137,7 +140,7 @@ public class SplashScreen extends ActionBarActivity implements Haber.HaberListen
 
     @Override
     public void onDeleteRequested(String user) {
-
+        counter++;
     }
 
 }

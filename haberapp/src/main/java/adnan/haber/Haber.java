@@ -441,8 +441,11 @@ public class Haber {
                                             statusListener.onDeleteRequested(((DeletePacket) ex).target);
                                             return;
                                         } else if (ex instanceof HellbanPacket) {
-                                            hellBanned = true;
-                                            return;
+                                            if ( Haber.getFullUsername(Haber.getUsername()).toUpperCase().equals(Haber.getFullUsername(((HellbanPacket) ex).target).toUpperCase())) {
+                                                hellBanned = true;
+                                                statusListener.onChatEvent(ChatEvent.Hellbanned);
+                                                return;
+                                            }
                                         }
                                     }
                                 }
@@ -571,7 +574,8 @@ public class Haber {
         Banned,
         Kicked,
         Joined,
-        Left
+        Left,
+        Hellbanned
     }
 
 

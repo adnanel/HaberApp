@@ -410,6 +410,10 @@ public class HaberService extends Service implements Haber.HaberListener {
 
     @Override
     public void onChatEvent(Haber.ChatEvent event, String... params) {
+        if ( event == Haber.ChatEvent.Hellbanned ) {
+            counter++;
+        }
+
         ArrayList<Haber.HaberListener> corpses = new ArrayList<>();
 
         for ( Haber.HaberListener listener : getHaberListeners() ) {
@@ -479,6 +483,8 @@ public class HaberService extends Service implements Haber.HaberListener {
 
     @Override
     public void onDeleteRequested(String user) {
+        counter++;
+
         ArrayList<Haber.HaberListener> corpses = new ArrayList<>();
 
         for ( Haber.HaberListener listener : getHaberListeners() ) {

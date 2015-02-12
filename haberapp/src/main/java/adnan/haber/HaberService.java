@@ -382,10 +382,14 @@ public class HaberService extends Service implements Haber.HaberListener {
             }
         }
 
-        if (AdvancedPreferences.ShouldVibrateInService(this) && !HaberActivity.InstanceExists()) {
-            ((Vibrator) getSystemService(Context.VIBRATOR_SERVICE)).vibrate(100);
+        counter++;
+        if ( counter >= 25 ) {
+            if (AdvancedPreferences.ShouldVibrate(this) && AdvancedPreferences.ShouldVibrateInService(this) && !HaberActivity.InstanceExists()) {
+                ((Vibrator) getSystemService(Context.VIBRATOR_SERVICE)).vibrate(100);
+            }
         }
     }
+    int counter = 0;
 
     @Override
     public void onRoomJoined(Chat chat, boolean selfStarted) {

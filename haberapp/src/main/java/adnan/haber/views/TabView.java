@@ -11,6 +11,7 @@ import android.widget.TextView;
 
 import adnan.haber.HaberActivity;
 import adnan.haber.R;
+import adnan.haber.fragments.AdvancedPreferences;
 
 /**
  * Created by prg01 on 12.2.2015.
@@ -94,33 +95,37 @@ public class TabView extends FrameLayout {
             rlMsgCounter.setVisibility(View.INVISIBLE);
             tvMsgCounter.setText("0");
         } else if ( state == HaberActivity.TabState.Marked ) {
-            blinker = new Thread() {
-                @Override
-                public void run() {
-                    while ( !this.isInterrupted() ) {
-                        currentState = HaberActivity.TabState.Normal;
-                        postInvalidate ();
+            if (!AdvancedPreferences.ShouldBlink(context) ) {
+                currentState = HaberActivity.TabState.Marked;
+            } else {
+                blinker = new Thread() {
+                    @Override
+                    public void run() {
+                        while (!this.isInterrupted()) {
+                            currentState = HaberActivity.TabState.Normal;
+                            postInvalidate();
 
-                        try {
-                            Thread.sleep(200);
-                        } catch ( Exception er ) {
+                            try {
+                                Thread.sleep(200);
+                            } catch (Exception er) {
                             /* probably interrupted */
-                            break;
-                        }
+                                break;
+                            }
 
-                        currentState = HaberActivity.TabState.Marked;
-                        postInvalidate ();
+                            currentState = HaberActivity.TabState.Marked;
+                            postInvalidate();
 
-                        try {
-                            Thread.sleep(500);
-                        } catch ( Exception er ) {
+                            try {
+                                Thread.sleep(500);
+                            } catch (Exception er) {
                             /* probably interrupted */
-                            break;
+                                break;
+                            }
                         }
                     }
-                }
-            };
-            blinker.start();
+                };
+                blinker.start();
+            }
 
             rlMsgCounter.setVisibility(View.VISIBLE);
         }

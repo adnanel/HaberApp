@@ -257,6 +257,8 @@ public class HaberActivity extends ActionBarActivity implements Haber.HaberListe
                 View view = getLayoutInflater().inflate(R.layout.urlviewer, null);
 
                 WebView webView = (WebView)view.findViewById(R.id.webView);
+
+
                 webView.getSettings().setJavaScriptEnabled(true);
                 if ( url.endsWith(".jpg") && url.startsWith("http://pokit.org/get/?")) {
                     String nUrl = url.replace("get/?", "get/img/");
@@ -624,16 +626,18 @@ public class HaberActivity extends ActionBarActivity implements Haber.HaberListe
 
 
                 //check for @Reply and vibrates
-                if ( !vibrationLock && !vibratedYet && AdvancedPreferences.ShouldVibrateOnReply(HaberActivity.this) && (message.getBody() != null) ) {
-                    String mark = "@" + Haber.getUsername();
-                    if ( message.getBody().toUpperCase().contains(mark.toUpperCase()) ) {
-                        ((Vibrator) getSystemService(Context.VIBRATOR_SERVICE)).vibrate(100);
-                        vibratedYet = true;
-                    } else if (Haber.IsGuest() ) {
-                        mark = "@" + Haber.getUsername().substring(1);
-                        if ( message.getBody().toUpperCase().contains(mark.toUpperCase()) ) {
+                if ( AdvancedPreferences.ShouldVibrate(HaberActivity.this)) {
+                    if (!vibrationLock && !vibratedYet && AdvancedPreferences.ShouldVibrateOnReply(HaberActivity.this) && (message.getBody() != null)) {
+                        String mark = "@" + Haber.getUsername();
+                        if (message.getBody().toUpperCase().contains(mark.toUpperCase())) {
                             ((Vibrator) getSystemService(Context.VIBRATOR_SERVICE)).vibrate(100);
                             vibratedYet = true;
+                        } else if (Haber.IsGuest()) {
+                            mark = "@" + Haber.getUsername().substring(1);
+                            if (message.getBody().toUpperCase().contains(mark.toUpperCase())) {
+                                ((Vibrator) getSystemService(Context.VIBRATOR_SERVICE)).vibrate(100);
+                                vibratedYet = true;
+                            }
                         }
                     }
                 }

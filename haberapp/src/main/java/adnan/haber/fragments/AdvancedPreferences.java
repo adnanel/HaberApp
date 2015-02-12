@@ -56,6 +56,9 @@ public class AdvancedPreferences extends PreferenceFragment {
         });
     }
 
+    public static boolean ShouldBlink(Context context) {
+        return PreferenceManager.getDefaultSharedPreferences(context).getBoolean("blinkTab", true);
+    }
     public static boolean ShowJoinedLeftNotifications(Context context) {
         return PreferenceManager.getDefaultSharedPreferences(context).getBoolean("showJoinedLeft", false);
     }

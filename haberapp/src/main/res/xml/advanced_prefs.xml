@@ -18,6 +18,7 @@
 
     <PreferenceCategory android:title="Izgled">
         <CheckBoxPreference android:title="Svoje poruke poravnaj desno" android:key="ownMessageAlignRight" android:defaultValue="true"/>
+        <CheckBoxPreference android:title="Blinkaj tab sa novom porukom" android:key="blinkTab" android:defaultValue="true"/>
     </PreferenceCategory>
 
     <PreferenceCategory android:title="Misc.">

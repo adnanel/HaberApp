@@ -137,7 +137,7 @@ public class Haber {
     public static boolean isConnected() {
         if ( instance == null ) return false;
         try {
-            return instance.connection.isConnected() && instance.getHaberChat().isJoined();
+            return instance.connection.isConnected() && getHaberChat().isJoined();
         } catch (Exception e) {
             Debug.log(e);
             return false;
@@ -529,7 +529,7 @@ public class Haber {
         cachedLobbyMessages = new ArrayList<>();
 
         if ( instance != null ) {
-            instance.Disconnect();
+            Disconnect();
         }
 
         if (CredentialManager.ShouldLoginOnStartup(context) && (CredentialManager.GetSavedPassword(context).length() > 0) && (CredentialManager.GetSavedUsername(context).length() > 0)) {

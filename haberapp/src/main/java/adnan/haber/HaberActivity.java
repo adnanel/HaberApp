@@ -48,6 +48,7 @@ import adnan.haber.util.ChatSaver;
 import adnan.haber.util.Debug;
 import adnan.haber.util.Updater;
 import adnan.haber.util.Util;
+import adnan.haber.views.TabView;
 
 
 public class HaberActivity extends ActionBarActivity implements Haber.HaberListener {
@@ -395,7 +396,7 @@ public class HaberActivity extends ActionBarActivity implements Haber.HaberListe
             }
 
             thread.chatAdapter.notifyDataSetChanged();
-            thread.setState(State.Normal);
+            thread.setState(TabState.Normal);
             chatThreads.put(chats, thread);
 
             if ( HaberService.haberCounter.getPms().containsKey(chats.getParticipant()) ) {
@@ -717,7 +718,7 @@ public class HaberActivity extends ActionBarActivity implements Haber.HaberListe
                     if ( AdvancedPreferences.ShouldSwitchToNewTab(HaberActivity.this) || selfStarted)
                         thread.tabView.performClick();
                     else {
-                        thread.setState(State.Normal);
+                        thread.setState(TabState.Normal);
                     }
 
                     chatThreads.put(chat, thread);
@@ -725,7 +726,7 @@ public class HaberActivity extends ActionBarActivity implements Haber.HaberListe
                     if ( AdvancedPreferences.ShouldSwitchToNewTab(HaberActivity.this) || selfStarted)
                         chatThreads.get(chat).tabView.performClick();
                     else {
-                        chatThreads.get(chat).setState(State.Normal);
+                        chatThreads.get(chat).setState(TabState.Normal);
                     }
                 }
             }
@@ -850,7 +851,7 @@ public class HaberActivity extends ActionBarActivity implements Haber.HaberListe
     }
 
 
-    enum State {
+    public static enum TabState {
         Marked,
         Active,
         Normal
@@ -858,35 +859,18 @@ public class HaberActivity extends ActionBarActivity implements Haber.HaberListe
 
     public class ChatThread {
         private ChatAdapter chatAdapter;
-        private View tabView;
+        private TabView tabView;
         private String user;
 
-        private View tabBackground;
-        private View rlMsgCounter;
-        private TextView tvMsgCounter;
 
-        State currentState;
+        TabState currentState;
 
-        public void setState(final State state) {
+        Thread blinker = null;
+        public void setState(final TabState state) {
             runOnUiThread(new Runnable() {
                 @Override
                 public void run() {
-                    if ( state == State.Active ) {
-                        tabBackground.setBackgroundResource(R.drawable.tab_background_active);
-
-                        rlMsgCounter.setVisibility(View.INVISIBLE);
-                        tvMsgCounter.setText("0");
-                    } else if ( state == State.Normal ) {
-                        tabBackground.setBackgroundResource(R.drawable.tab_background);
-
-                        rlMsgCounter.setVisibility(View.INVISIBLE);
-                        tvMsgCounter.setText("0");
-                    } else if ( state == State.Marked ) {
-                        tabBackground.setBackgroundResource(R.drawable.tab_background_selected);
-
-                        rlMsgCounter.setVisibility(View.VISIBLE);
-                    }
-
+                    tabView.setState(state);
                 }
             });
             currentState = state;
@@ -911,15 +895,15 @@ public class HaberActivity extends ActionBarActivity implements Haber.HaberListe
         }
 
         public int getUnreadMessagesCount() {
-            return Integer.parseInt(tvMsgCounter.getText().toString());
+            return tabView.getUnreadMessagesCount();
         }
 
         public void markTab() {
-            setState(State.Marked);
+            setState(TabState.Marked);
             runOnUiThread(new Runnable() {
                 @Override
                 public void run() {
-                    tvMsgCounter.setText((Integer.parseInt(tvMsgCounter.getText().toString()) + 1) + "");
+                    tabView.setUnreadMessagesCount((tabView.getUnreadMessagesCount() + 1));
                 }
             });
 
@@ -928,11 +912,11 @@ public class HaberActivity extends ActionBarActivity implements Haber.HaberListe
         public void setUnreadMessagesCount(final int counter) {
             if ( counter == 0 ) return;
 
-            setState(State.Marked);
+            setState(TabState.Marked);
             runOnUiThread(new Runnable() {
                 @Override
                 public void run() {
-                    tvMsgCounter.setText(counter + "");
+                    tabView.setUnreadMessagesCount(counter);
                 }
             });
         }
@@ -940,6 +924,7 @@ public class HaberActivity extends ActionBarActivity implements Haber.HaberListe
         public ChatThread(String other) {
             thisThread = this;
             user = other;
+
 
             other = Haber.getFullUsername(other);
 
@@ -949,13 +934,9 @@ public class HaberActivity extends ActionBarActivity implements Haber.HaberListe
                 public void run() {
                     final LinearLayout scrollView = (LinearLayout)findViewById(R.id.tabCarry);
 
-                    tabView = getLayoutInflater().inflate(R.layout.single_tab, null);
+                    tabView = new TabView(HaberActivity.this);
 
-                    rlMsgCounter = tabView.findViewById(R.id.rlMessageCounter);
 
-                    tvMsgCounter = (TextView)tabView.findViewById(R.id.tvMessageCounter);
-
-                    tabBackground = tabView.findViewById(R.id.rlTabBackground);
                     ((TextView)tabView.findViewById(R.id.tvUser)).setText(Haber.getShortUsername(participant));
 
                     tabView.setOnClickListener(new View.OnClickListener() {
@@ -967,15 +948,15 @@ public class HaberActivity extends ActionBarActivity implements Haber.HaberListe
                                     for (Object o : chatThreads.entrySet()) {
                                         Map.Entry pairs = (Map.Entry) o;
                                         int counter = ((ChatThread)pairs.getValue()).getUnreadMessagesCount();
-                                        ((ChatThread)pairs.getValue()).setState(State.Normal);
+                                        ((ChatThread)pairs.getValue()).setState(TabState.Normal);
                                         ((ChatThread)pairs.getValue()).setUnreadMessagesCount(counter);
                                     }
 
                                     int counter = mainChatThread.getUnreadMessagesCount();
-                                    mainChatThread.setState(State.Normal);
+                                    mainChatThread.setState(TabState.Normal);
                                     mainChatThread.setUnreadMessagesCount(counter);
 
-                                    setState(State.Active);
+                                    setState(TabState.Active);
 
                                     chatListView.setAdapter(chatAdapter);
                                     scrollToBottom(true);
@@ -990,7 +971,7 @@ public class HaberActivity extends ActionBarActivity implements Haber.HaberListe
                     if ( participant.equals("haber") )
                         btClose.setVisibility(View.INVISIBLE);
 
-                    setState(State.Active);
+                    setState(TabState.Active);
 
                     btClose.setOnClickListener(new View.OnClickListener() {
                         @Override

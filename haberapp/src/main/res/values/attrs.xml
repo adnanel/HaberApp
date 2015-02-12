@@ -4,4 +4,8 @@
         <attr name="src" format="reference"/>
         <attr name="paused" format="boolean"/>
     </declare-styleable>
+
+    <declare-styleable name="TabView">
+
+    </declare-styleable>
 </resources>

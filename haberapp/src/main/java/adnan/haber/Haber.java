@@ -79,7 +79,7 @@ public class Haber {
     }
 
     public static boolean IsOnline(String user) {
-        for ( String str : haberChat.getOccupants() )
+        for ( String str : getHaberChat().getOccupants() )
             if ( str.equals(user) ) return true;
         return false;
     }
@@ -137,7 +137,7 @@ public class Haber {
     public static boolean isConnected() {
         if ( instance == null ) return false;
         try {
-            return instance.connection.isConnected() && instance.haberChat.isJoined();
+            return instance.connection.isConnected() && instance.getHaberChat().isJoined();
         } catch (Exception e) {
             Debug.log(e);
             return false;
@@ -167,7 +167,7 @@ public class Haber {
             return null;
         }
 
-        Chat chat = haberChat.createPrivateChat(user, new MessageListener() {
+        Chat chat = getHaberChat().createPrivateChat(user, new MessageListener() {
             int id = 0;
             String salt = Util.getRandomInt(1000) + "";
 
@@ -211,7 +211,7 @@ public class Haber {
     }
 
     public static String getFullUsername(String user) {
-        for ( String str : haberChat.getOccupants() ) {
+        for ( String str : getHaberChat().getOccupants() ) {
             if ( getShortUsername(str).equals(user) )
                 return str;
         }
@@ -225,6 +225,10 @@ public class Haber {
     }
 
     public static MultiUserChat getHaberChat() {
+        if ( haberChat == null ) {
+            Debug.log("haberChat is null!! Probably not even connected..");
+            instance.statusListener.onSoftDisconnect();
+        }
         return haberChat;
     }
 

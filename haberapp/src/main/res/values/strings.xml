@@ -51,4 +51,5 @@ Adnan Elezović]]>
 
     <string name="crash_toast_text">Aplikacija se krahirala! Hocu poslati error report developeru? (nakon ok izaberi neki mail kijent)</string>
     <string name="title_activity_archive">Arhiva</string>
+    <string name="title_activity_archive_viewer">Archive Viewer</string>
 </resources>

@@ -1,10 +1,18 @@
 package adnan.haber;
 
+import android.app.AlertDialog;
+import android.content.DialogInterface;
+import android.content.Intent;
+import android.net.Uri;
 import android.support.v7.app.ActionBarActivity;
 import android.os.Bundle;
 import android.util.Pair;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.view.View;
+import android.view.Window;
+import android.webkit.WebView;
+import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.ListView;
 
@@ -15,7 +23,10 @@ import java.util.HashMap;
 import java.util.Map;
 
 import adnan.haber.adapters.ArchiveAdapter;
+import adnan.haber.adapters.ChatAdapter;
+import adnan.haber.adapters.ReadOnlyChatAdapter;
 import adnan.haber.types.ArchiveItem;
+import adnan.haber.types.ListChatItem;
 import adnan.haber.types.MessageDirection;
 import adnan.haber.util.ChatSaver;
 
@@ -24,12 +35,15 @@ public class Archive extends ActionBarActivity {
 
     ListView listView;
 
+    ArchiveAdapter archiveAdapter;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_archive);
 
         listView = (ListView)findViewById(R.id.lvArchive);
+
         new Thread() {
             @Override
             public void run() {
@@ -42,12 +56,12 @@ public class Archive extends ActionBarActivity {
                         if ( map.containsKey(msg.getFrom()) )
                             map.put(msg.getFrom(), map.get(msg.getFrom()) + 1);
                         else
-                            map.put(msg.getFrom(), 0);
+                            map.put(msg.getFrom(), 1);
                     } else if ( msg.getSubject().equals(MessageDirection.OUTGOING)) {
                         if ( map.containsKey(msg.getTo()))
                             map.put(msg.getTo(), map.get(msg.getTo()) + 1);
                         else
-                            map.put(msg.getTo(), 0);
+                            map.put(msg.getTo(), 1);
                     }
                 }
 
@@ -59,7 +73,35 @@ public class Archive extends ActionBarActivity {
                 runOnUiThread(new Runnable() {
                     @Override
                     public void run() {
-                        listView.setAdapter(adapter);
+                        listView.setAdapter(archiveAdapter = adapter);
+                        listView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+                            @Override
+                            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+                                ArchiveItem item = (ArchiveItem)parent.getItemAtPosition(position);
+
+                                final ReadOnlyChatAdapter adapter = new ReadOnlyChatAdapter(Archive.this, new ArrayList<ListChatItem>());
+
+                                for ( Message msg : ChatSaver.getSavedMessages() ) {
+                                    if ( msg.getTo() == null || msg.getFrom() == null ) continue;
+                                    if ( msg.getSubject() == null ) continue;
+
+                                    if ( msg.getSubject().equals(MessageDirection.INCOMING) ) {
+                                        if ( msg.getFrom().equals(item.username))
+                                            adapter.addItem(msg);
+                                    } else if ( msg.getSubject().equals(MessageDirection.OUTGOING)) {
+                                        if ( msg.getTo().equals(item.username))
+                                            adapter.addItem(msg);
+                                    }
+                                }
+
+                                runOnUiThread(new Runnable() {
+                                    @Override
+                                    public void run() {
+                                        listView.setAdapter(adapter);
+                                    }
+                                });
+                            }
+                        });
                     }
                 });
             }
@@ -67,6 +109,57 @@ public class Archive extends ActionBarActivity {
 
     }
 
+    public void openUrl(final String url) {
+        runOnUiThread(new Runnable() {
+            @Override
+            public void run() {
+                AlertDialog.Builder builder = new AlertDialog.Builder(Archive.this);
+                builder.setNegativeButton("Zatvori", new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialog, int which) {
+                        dialog.cancel();
+                    }
+                });
+                builder.setNeutralButton("Otvori u browseru", new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialog, int which) {
+                        Intent i = new Intent(Intent.ACTION_VIEW);
+                        i.setData(Uri.parse(url));
+                        startActivity(i);
+                    }
+                });
+                View view = getLayoutInflater().inflate(R.layout.urlviewer, null);
+
+                WebView webView = (WebView)view.findViewById(R.id.webView);
+                webView.getSettings().setJavaScriptEnabled(true);
+                if ( url.endsWith(".jpg") && url.startsWith("http://pokit.org/get/?")) {
+                    String nUrl = url.replace("get/?", "get/img/");
+                    webView.loadUrl(nUrl);
+                } else
+                    webView.loadUrl(url);
+
+                builder.setView(view);
+                AlertDialog dialog = builder.create();
+                dialog.getWindow().requestFeature(Window.FEATURE_NO_TITLE);
+                dialog.show();
+            }
+        });
+    }
+
+    @Override
+    public void onBackPressed() {
+        if ( listView.getAdapter() instanceof ArchiveAdapter ) {
+            finish();
+            overridePendingTransition(R.anim.slide_in_left, R.anim.slide_out_right);
+        } else {
+            runOnUiThread(new Runnable() {
+                @Override
+                public void run() {
+                    listView.setAdapter(archiveAdapter);
+                }
+            });
+        }
+    }
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {

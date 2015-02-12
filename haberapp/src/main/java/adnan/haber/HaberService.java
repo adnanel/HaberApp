@@ -382,7 +382,7 @@ public class HaberService extends Service implements Haber.HaberListener {
             }
         }
 
-        if (AdvancedPreferences.ShouldVibrateInService(this)) {
+        if (AdvancedPreferences.ShouldVibrateInService(this) && !HaberActivity.InstanceExists()) {
             ((Vibrator) getSystemService(Context.VIBRATOR_SERVICE)).vibrate(100);
         }
     }

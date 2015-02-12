@@ -7,7 +7,7 @@
     </PreferenceCategory>
 
 
-    <PreferenceCategory android:title="Postavke" android:order="2">
+    <PreferenceCategory android:title="Opcije" android:order="2">
         <!-- <Preference android:title="Teme" android:key="themes" /> -->
 
         <Preference android:title="Arhiva" android:key="archive"/>

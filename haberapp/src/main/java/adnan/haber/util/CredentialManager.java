@@ -16,8 +16,8 @@ public class CredentialManager {
     public static void Save(Context context, String username, String password, boolean loginOnStartup) {
         SharedPreferences.Editor editor = context.getSharedPreferences(PREFS, Context.MODE_PRIVATE).edit();
 
-        editor.putString(PREF_PASSWORD, password);
-        editor.putString(PREF_USERNAME, username);
+        editor.putString(PREF_PASSWORD, Util.Encode(password));
+        editor.putString(PREF_USERNAME, Util.Encode(username));
         editor.putBoolean(PREF_LOGIN_ON_STARTUP, loginOnStartup);
 
         editor.commit();
@@ -32,12 +32,15 @@ public class CredentialManager {
     public static String GetSavedUsername(Context context) {
         SharedPreferences sharedPreferences = context.getSharedPreferences(PREFS, Context.MODE_PRIVATE);
 
-        return sharedPreferences.getString(PREF_USERNAME, "");
+        if ( !sharedPreferences.contains(PREF_USERNAME) ) return "";
+        return Util.Decode(sharedPreferences.getString(PREF_USERNAME, ""));
     }
 
     public static String GetSavedPassword(Context context) {
         SharedPreferences sharedPreferences = context.getSharedPreferences(PREFS, Context.MODE_PRIVATE);
 
-        return sharedPreferences.getString(PREF_PASSWORD, "");
+        if ( !sharedPreferences.contains(PREF_PASSWORD) ) return "";
+
+        return Util.Decode(sharedPreferences.getString(PREF_PASSWORD, ""));
     }
 }

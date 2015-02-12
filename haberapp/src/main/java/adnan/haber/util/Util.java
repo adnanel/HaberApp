@@ -2,6 +2,7 @@ package adnan.haber.util;
 
 import android.content.Context;
 import android.content.res.Resources;
+import android.util.Base64;
 import android.util.TypedValue;
 
 import org.jivesoftware.smack.packet.Message;
@@ -34,6 +35,23 @@ import adnan.haber.packets.PacketTimeStamp;
  * Created by Adnan on 26.1.2015..
  */
 public class Util {
+    public static String Encode(String string) {
+        byte[] bytes = new byte[string.length()];
+        int n = 0;
+        for ( char c : string.toCharArray() )
+            bytes[n++] = (byte)c;
+        return Base64.encodeToString(bytes, Base64.DEFAULT).replace("\n", "");
+    }
+
+    public static String Decode(String string) {
+        byte[] bytes = Base64.decode(string, Base64.DEFAULT);
+        StringBuilder builder = new StringBuilder();
+        for ( byte b : bytes )
+            builder.append((char)b);
+        return builder.toString();
+    }
+
+
     public static String readRawTextFile(Context ctx, int resId)
     {
         InputStream inputStream = ctx.getResources().openRawResource(resId);

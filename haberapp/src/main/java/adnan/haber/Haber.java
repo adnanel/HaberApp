@@ -219,8 +219,11 @@ public class Haber {
     }
 
     public static String getShortUsername(String user) {
-        if ( user.indexOf("/") != -1 )
+        if ( user.indexOf("/") != -1 ) {
+            if ( user.toUpperCase().endsWith("HABER") )
+                return user.substring(0, user.indexOf("@"));
             return user.substring(user.indexOf("/") + 1);
+        }
         return user;
     }
 

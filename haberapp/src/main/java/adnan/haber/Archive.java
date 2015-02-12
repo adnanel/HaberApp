@@ -15,6 +15,7 @@ import android.webkit.WebView;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.ListView;
+import android.widget.Toast;
 
 import org.jivesoftware.smack.packet.Message;
 
@@ -177,6 +178,7 @@ public class Archive extends ActionBarActivity {
 
         //noinspection SimplifiableIfStatement
         if (id == R.id.action_export) {
+            Toast.makeText(this, "todo :|", Toast.LENGTH_SHORT).show();
             return true;
         }
 

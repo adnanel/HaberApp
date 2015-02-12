@@ -11,12 +11,14 @@ import android.text.method.LinkMovementMethod;
 import android.text.style.BackgroundColorSpan;
 import android.text.style.ClickableSpan;
 import android.text.style.URLSpan;
+import android.util.AttributeSet;
 import android.util.Patterns;
 import android.view.LayoutInflater;
 import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
+import android.widget.RelativeLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 import android.widget.ViewSwitcher;
@@ -44,6 +46,7 @@ import adnan.haber.R;
 import adnan.haber.fragments.AdvancedPreferences;
 import adnan.haber.packets.PacketTimeStamp;
 import adnan.haber.types.ListChatItem;
+import adnan.haber.types.MessageDirection;
 import adnan.haber.util.Debug;
 import adnan.haber.util.SmileyManager;
 import adnan.haber.util.Util;
@@ -162,6 +165,7 @@ public class ChatAdapter extends ArrayAdapter<ListChatItem> {
 
         ListChatItem item = new ListChatItem();
         item.rank = HaberService.GetRankForUser(msg.getFrom());
+        item.direction = msg.getSubject();
 
         try {
             item.author = Haber.getShortUsername(msg.getFrom());
@@ -284,7 +288,7 @@ public class ChatAdapter extends ArrayAdapter<ListChatItem> {
             TextView tvTime = (TextView) rowView.findViewById(R.id.tvTime);
             (tvTime).setText(Util.dateToFormat("HH:mm", items.get(position).time));
 
-            if ( items.get(position).author.equals(Haber.getShortUsername(Haber.getUsername()))) {
+            if ( items.get(position).direction.equals(MessageDirection.OUTGOING)) {
                 try {
                     rowView.findViewById(R.id.background).setBackgroundResource(R.drawable.adnan_bg);
                 } catch ( Exception er ) {
@@ -307,7 +311,7 @@ public class ChatAdapter extends ArrayAdapter<ListChatItem> {
                         LayoutInflater inflater = (LayoutInflater) context
                                 .getSystemService(Context.LAYOUT_INFLATER_SERVICE);
 
-                        final View view = inflater.inflate(R.layout.single_user_menu, null);
+                        final View view = inflater.inflate(R.layout.single_user_menu, switcher, false);
 
                         switcher.addView(view);
                         switcher.setInAnimation(context, R.anim.slide_in_left);

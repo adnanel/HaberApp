@@ -1,7 +1,9 @@
 <?xml version="1.0" encoding="utf-8"?>
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    android:layout_width="match_parent" android:layout_height="wrap_content"
-    android:background="#ff303030">
+    android:layout_width="match_parent" android:layout_height="45dp"
+    android:background="#ff303030"
+    android:layout_alignParentTop="true"
+    android:layout_alignParentBottom="true">
 
 
     <HorizontalScrollView
@@ -15,33 +17,43 @@
             android:layout_width="fill_parent"
             android:layout_height="fill_parent">
 
-            <Button
+            <ImageButton
                 style="?android:attr/buttonStyleSmall"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
+                android:layout_width="0dp"
+                android:layout_height="fill_parent"
                 android:text="\@Reply"
-                android:id="@+id/btReply" />
+                android:id="@+id/btReply"
+                android:src="@drawable/btreply"
+                android:scaleType="fitCenter"
+                android:layout_weight="1" />
 
-            <Button
+            <ImageButton
                 style="?android:attr/buttonStyleSmall"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
+                android:layout_width="0dp"
+                android:layout_height="fill_parent"
                 android:text="Započni private"
-                android:id="@+id/btStartPrivate" />
+                android:id="@+id/btStartPrivate"
+                android:src="@drawable/btpm"
+                android:scaleType="fitCenter"
+                android:layout_weight="1" />
 
             <Button
                 style="?android:attr/buttonStyleSmall"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
+                android:layout_width="0dp"
+                android:layout_height="fill_parent"
                 android:text="Kick"
-                android:id="@+id/btKick" />
+                android:id="@+id/btKick"
+                android:layout_weight="1" />
 
-            <Button
+            <ImageButton
                 style="?android:attr/buttonStyleSmall"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
+                android:layout_width="0dp"
+                android:layout_height="fill_parent"
                 android:text="Nazad"
-                android:id="@+id/btBack" />
+                android:id="@+id/btBack"
+                android:src="@drawable/btback"
+                android:scaleType="fitCenter"
+                android:layout_weight="1" />
 
         </LinearLayout>
     </HorizontalScrollView>

@@ -10,6 +10,7 @@ public class ListChatItem {
     public String author;
     public Date time;
     public String id;
+    public String direction;
 
     public boolean isSpacer = false;
 

@@ -35,6 +35,7 @@ import adnan.haber.R;
 import adnan.haber.fragments.AdvancedPreferences;
 import adnan.haber.packets.PacketTimeStamp;
 import adnan.haber.types.ListChatItem;
+import adnan.haber.types.MessageDirection;
 import adnan.haber.util.Debug;
 import adnan.haber.util.SmileyManager;
 import adnan.haber.util.Util;
@@ -121,6 +122,7 @@ public class ReadOnlyChatAdapter extends ArrayAdapter<ListChatItem> {
 
         ListChatItem item = new ListChatItem();
         item.rank = HaberService.GetRankForUser(msg.getFrom());
+        item.direction = msg.getSubject();
 
         try {
             item.author = Haber.getShortUsername(msg.getFrom());
@@ -243,7 +245,7 @@ public class ReadOnlyChatAdapter extends ArrayAdapter<ListChatItem> {
             TextView tvTime = (TextView) rowView.findViewById(R.id.tvTime);
             (tvTime).setText(Util.dateToFormat("HH:mm", items.get(position).time));
 
-            if ( items.get(position).author.equals(Haber.getShortUsername(Haber.getUsername()))) {
+            if ( items.get(position).direction.equals(MessageDirection.OUTGOING)) {
                 try {
                     rowView.findViewById(R.id.background).setBackgroundResource(R.drawable.adnan_bg);
                 } catch ( Exception er ) {

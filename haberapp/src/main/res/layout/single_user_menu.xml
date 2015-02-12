@@ -25,7 +25,9 @@
                 android:id="@+id/btReply"
                 android:src="@drawable/btreply"
                 android:scaleType="fitCenter"
-                android:layout_weight="1" />
+                android:layout_weight="1"
+                android:background="#003c3f41"
+                android:padding="5dp" />
 
             <ImageButton
                 style="?android:attr/buttonStyleSmall"
@@ -35,7 +37,9 @@
                 android:id="@+id/btStartPrivate"
                 android:src="@drawable/btpm"
                 android:scaleType="fitCenter"
-                android:layout_weight="1" />
+                android:layout_weight="1"
+                android:background="#003c3f41"
+                android:padding="5dp" />
 
             <Button
                 style="?android:attr/buttonStyleSmall"
@@ -53,7 +57,9 @@
                 android:id="@+id/btBack"
                 android:src="@drawable/btback"
                 android:scaleType="fitCenter"
-                android:layout_weight="1" />
+                android:layout_weight="1"
+                android:background="#003c3f41"
+                android:padding="5dp" />
 
         </LinearLayout>
     </HorizontalScrollView>

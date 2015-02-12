@@ -188,7 +188,7 @@ public class ChatSaver implements Haber.HaberListener {
 
     static void SaveMessage(Message msg) {
 
-        ArrayList<Message> messages = getSavedMessages();
+        ArrayList<Message> messages = getSavedMessages(ChatSaver.getSavedMessagesCount());
         for ( Message message : messages ) {
             if ( message.getPacketID().equals(msg.getPacketID())) return;
         }
@@ -198,7 +198,7 @@ public class ChatSaver implements Haber.HaberListener {
     }
 
     static void SaveLobbyMessage(Message msg) {
-        ArrayList<Message> messages = getSavedLobbyMessages();
+        ArrayList<Message> messages = getSavedLobbyMessages(ChatSaver.getSavedLobbyMessagesCount());
         for ( Message message : messages ) {
             if ( message.getPacketID().equals(msg.getPacketID())) return;
         }

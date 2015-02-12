@@ -76,6 +76,10 @@ public class AdvancedPreferences extends PreferenceFragment {
         return PreferenceManager.getDefaultSharedPreferences(context).getBoolean("vibrate", true);
     }
 
+    public static boolean ShouldVibrateInService(Context context) {
+        return PreferenceManager.getDefaultSharedPreferences(context).getBoolean("vibrateinbackground", true);
+    }
+
     public static boolean ShouldVibrateOnPublic(Context context) {
         return PreferenceManager.getDefaultSharedPreferences(context).getBoolean("vibrateonpublic", true);
     }

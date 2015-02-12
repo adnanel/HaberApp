@@ -8,6 +8,7 @@ import android.content.Intent;
 import android.graphics.BitmapFactory;
 import android.os.IBinder;
 import android.os.Looper;
+import android.os.Vibrator;
 import android.support.v4.app.NotificationCompat;
 import android.util.SparseArray;
 import android.widget.Toast;
@@ -22,6 +23,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 
+import adnan.haber.fragments.AdvancedPreferences;
 import adnan.haber.types.Rank;
 import adnan.haber.util.Debug;
 
@@ -373,6 +375,10 @@ public class HaberService extends Service implements Haber.HaberListener {
                     }
                 }
             }
+        }
+
+        if (AdvancedPreferences.ShouldVibrateInService(this)) {
+            ((Vibrator) getSystemService(Context.VIBRATOR_SERVICE)).vibrate(100);
         }
     }
 

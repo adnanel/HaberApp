@@ -6,6 +6,7 @@
         <CheckBoxPreference android:title="Vibriraj za poruke na aktivnom tabu" android:dependency="vibrate" android:key="vibrateonactive" android:defaultValue="true"/>
         <CheckBoxPreference android:title="Vibriraj za poruke na javnom chatu" android:dependency="vibrate" android:key="vibrateonpublic" android:defaultValue="true"/>
         <CheckBoxPreference android:title="Vibriraj za @Reply poruke" android:dependency="vibrate" android:key="vibrateonreply" android:defaultValue="true"/>
+        <CheckBoxPreference android:title="Vibriraj iako je app u pozadini" android:dependency="vibrate" android:key="vibrateinbackground" android:defaultValue="true"/>
 
         <CheckBoxPreference android:title="Prebaci na tab kada neko zapocne private" android:key="switchToNewChat" android:defaultValue="true"/>
 

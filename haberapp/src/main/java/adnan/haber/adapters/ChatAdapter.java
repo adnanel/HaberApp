@@ -75,10 +75,15 @@ public class ChatAdapter extends ArrayAdapter<ListChatItem> {
 
     }
 
-    public static synchronized void invalidateAll(Activity activity) {
+    public static synchronized void invalidateAll(final HaberActivity activity) {
         activity.runOnUiThread(new Runnable() {
             @Override
             public void run() {
+                if ( AdvancedPreferences.ShouldUseBalloons(activity))
+                    activity.setListViewDivider(0);
+                else
+                    activity.setListViewDivider(1);
+
                 for ( ChatAdapter adapter : allAdapters )
                     adapter.notifyDataSetChanged();
             }
@@ -224,6 +229,10 @@ public class ChatAdapter extends ArrayAdapter<ListChatItem> {
         super.notifyDataSetChanged();
     }
 
+    private boolean isMyMessage(ListChatItem item) {
+        return (item.direction.equals(MessageDirection.OUTGOING) || Haber.getShortUsername(Haber.getUsername()).equals(Haber.getShortUsername(item.author)));
+    }
+
     @Override
     public View getView(final int position, View convertView, ViewGroup parent) {
         LayoutInflater inflater = (LayoutInflater) context
@@ -240,12 +249,29 @@ public class ChatAdapter extends ArrayAdapter<ListChatItem> {
 
             ownUsername = Haber.getShortUsername(Haber.getUsername());
 
-            if ( items.get(position).author.equals(ownUsername) && AdvancedPreferences.ShouldAlignOwnMessagesRight(context) )
-                rowView = inflater.inflate(R.layout.single_own_chat_item, parent, false);
-            else
-                rowView = inflater.inflate(R.layout.single_chat_item, parent, false);
+            if ( AdvancedPreferences.ShouldUseBalloons(context) ) {
+                if (isMyMessage(items.get(position)))
+                    rowView = inflater.inflate(R.layout.single_own_balloon_chat_item, parent, false);
+                else
+                    rowView = inflater.inflate(R.layout.single_balloon_chat_item, parent, false);
+            } else {
+                if (isMyMessage(items.get(position)) && AdvancedPreferences.ShouldAlignOwnMessagesRight(context))
+                    rowView = inflater.inflate(R.layout.single_own_chat_item, parent, false);
+                else
+                    rowView = inflater.inflate(R.layout.single_chat_item, parent, false);
 
-            (tvUsername = (TextView) rowView.findViewById(R.id.tvName)).setText(items.get(position).author);
+                if (isMyMessage(items.get(position))) {
+                    try {
+                        rowView.findViewById(R.id.background).setBackgroundResource(R.drawable.adnan_bg);
+                    } catch ( Exception er ) {
+                        Debug.log(er);
+                    }
+                }
+            }
+
+            tvUsername = (TextView) rowView.findViewById(R.id.tvName);
+            if ( tvUsername != null )
+                tvUsername.setText(items.get(position).author);
 
             tvMessage = (TextView) rowView.findViewById(R.id.tvMessage);
             tvMessage.setMovementMethod(LinkMovementMethod.getInstance());
@@ -288,13 +314,7 @@ public class ChatAdapter extends ArrayAdapter<ListChatItem> {
             TextView tvTime = (TextView) rowView.findViewById(R.id.tvTime);
             (tvTime).setText(Util.dateToFormat("HH:mm", items.get(position).time));
 
-            if ( items.get(position).direction.equals(MessageDirection.OUTGOING)) {
-                try {
-                    rowView.findViewById(R.id.background).setBackgroundResource(R.drawable.adnan_bg);
-                } catch ( Exception er ) {
-                    Debug.log(er);
-                }
-            }
+
 
             final ViewSwitcher switcher = (ViewSwitcher)rowView.findViewById(R.id.viewSwitcher);
             if ( !items.get(position).author.equals(Haber.getUsername())) {

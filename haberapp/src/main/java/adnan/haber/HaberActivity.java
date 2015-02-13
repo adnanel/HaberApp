@@ -350,6 +350,10 @@ public class HaberActivity extends ActionBarActivity implements Haber.HaberListe
         return instance != null;
     }
 
+    public void setListViewDivider(int height) {
+        chatListView.setDividerHeight(height);
+    }
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -371,6 +375,11 @@ public class HaberActivity extends ActionBarActivity implements Haber.HaberListe
         Updater.CheckForUpdates(this, false);
 
         chatListView = (ListView)findViewById(R.id.chatListView);
+
+        if ( AdvancedPreferences.ShouldUseBalloons(this))
+            setListViewDivider(0);
+        else
+            setListViewDivider(1);
 
         setListenerToRootView();
 

@@ -110,7 +110,7 @@ public class SplashScreen extends ActionBarActivity implements Haber.HaberListen
     public void onMessageReceived(Chat chat, Message message) {
         counter++;
 
-        if ( counter >= 10 ) {
+        if ( counter >= 20 ) {
             start();
         }
 

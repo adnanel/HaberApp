@@ -59,7 +59,7 @@
                 android:smoothScrollbar="true"
                 android:stackFromBottom="true"
                 android:layout_above="@+id/editText"
-                />
+                android:background="#ff444444" />
 
             <ImageButton
                 style="?android:attr/buttonStyleSmall"

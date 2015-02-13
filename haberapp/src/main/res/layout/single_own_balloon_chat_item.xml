@@ -1,0 +1,79 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent" android:layout_height="wrap_content"
+    android:id="@+id/rlChatItemCarry"
+    android:padding="3dp">
+
+    <RelativeLayout
+        android:layout_width="wrap_content"
+        android:layout_alignParentRight="true"
+        android:layout_height="wrap_content">
+
+        <RelativeLayout
+            android:layout_width="fill_parent"
+            android:layout_height="fill_parent"
+            android:layout_alignParentRight="true"
+            android:layout_alignBottom="@+id/llCarry"
+            android:id="@+id/background"></RelativeLayout>
+
+        <LinearLayout
+            android:orientation="horizontal"
+            android:layout_width="wrap_content"
+            android:id="@+id/llCarry"
+            android:layout_height="wrap_content"
+            android:layout_alignParentRight="true"
+            android:layout_alignParentEnd="true">
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:textAppearance="?android:attr/textAppearanceSmall"
+                android:text="00:00"
+                android:id="@+id/tvTime"
+                android:singleLine="true"
+                android:textSize="12sp"
+                android:gravity="center"
+                android:layout_weight="1"
+                android:paddingRight="2dp" />
+
+            <TextView
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:textAppearance="?android:attr/textAppearanceMedium"
+                android:text="Medium Text"
+                android:id="@+id/tvMessage"
+                android:layout_alignParentTop="true"
+                android:layout_toRightOf="@+id/tvName"
+                android:paddingLeft="5dp"
+                android:paddingRight="5dp"
+                android:layout_toLeftOf="@+id/tvTime"
+                android:layout_toStartOf="@+id/tvTime"
+                android:gravity="center_vertical|left"
+                android:textSize="13sp"
+                android:textIsSelectable="true"
+                android:paddingTop="10dp"
+                android:paddingBottom="10dp"
+                android:layout_weight="15"
+                android:linksClickable="true"
+                android:background="@drawable/chat_item_own_balloon_background" />
+
+            <ImageView
+                android:layout_width="20dp"
+                android:layout_height="fill_parent"
+                android:id="@+id/imageView4"
+                android:scaleType="fitXY"
+                android:src="@drawable/balloonmaskinverted"
+                android:tint="#ff888888" />
+
+        </LinearLayout>
+
+        <ViewSwitcher
+            android:layout_width="fill_parent"
+            android:layout_height="wrap_content"
+            android:id="@+id/viewSwitcher"
+            android:layout_alignBottom="@id/llCarry"
+            android:layout_alignTop="@id/llCarry"/>
+    </RelativeLayout>
+
+
+</RelativeLayout>

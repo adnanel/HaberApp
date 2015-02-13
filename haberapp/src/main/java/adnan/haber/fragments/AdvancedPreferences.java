@@ -33,7 +33,8 @@ public class AdvancedPreferences extends PreferenceFragment {
     @Override
     public void onDestroy() {
         if ( shouldInvalidatedChatAdapters ) {
-            ChatAdapter.invalidateAll(getActivity());
+            if ( HaberActivity.getInstance() != null )
+                ChatAdapter.invalidateAll(HaberActivity.getInstance());
         }
 
         super.onDestroy();
@@ -48,6 +49,14 @@ public class AdvancedPreferences extends PreferenceFragment {
 
         CheckBoxPreference pref = (CheckBoxPreference)this.getPreferenceScreen().findPreference("ownMessageAlignRight");
         pref.setOnPreferenceChangeListener(new Preference.OnPreferenceChangeListener() {
+            @Override
+            public boolean onPreferenceChange(Preference preference, Object newValue) {
+                shouldInvalidatedChatAdapters = true;
+                return true;
+            }
+        });
+
+        (this.getPreferenceScreen().findPreference("balloonchatitems")).setOnPreferenceChangeListener(new Preference.OnPreferenceChangeListener() {
             @Override
             public boolean onPreferenceChange(Preference preference, Object newValue) {
                 shouldInvalidatedChatAdapters = true;
@@ -103,6 +112,9 @@ public class AdvancedPreferences extends PreferenceFragment {
         return PreferenceManager.getDefaultSharedPreferences(context).getBoolean("switchToNewChat", true);
     }
 
+    public static boolean ShouldUseBalloons(Context context) {
+        return PreferenceManager.getDefaultSharedPreferences(context).getBoolean("balloonchatitems", true);
+    }
 
     public static boolean IsDebug(Context context) {
         try {

@@ -230,7 +230,7 @@ public class HaberService extends Service implements Haber.HaberListener {
                     stopSelf();
                     return;
                 }
-                if ( !haberChat.isJoined() ) {
+                if ( (haberChat == null) || !haberChat.isJoined() ) {
                     if ( HaberActivity.InstanceExists() ) {
                         Intent kickOnStart = new Intent(HaberService.this, KickedOnStartActivity.class);
                         kickOnStart.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);

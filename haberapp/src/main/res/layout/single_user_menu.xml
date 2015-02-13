@@ -10,7 +10,9 @@
         android:layout_width="fill_parent"
         android:layout_height="wrap_content"
         android:id="@+id/horizontalScrollView"
-        android:background="#ff4f5456">
+        android:background="#ff4f5456"
+        android:layout_toLeftOf="@+id/btBack"
+        android:layout_toStartOf="@+id/btBack">
 
         <LinearLayout
             android:orientation="horizontal"
@@ -27,7 +29,8 @@
                 android:scaleType="fitCenter"
                 android:layout_weight="1"
                 android:background="#003c3f41"
-                android:padding="5dp" />
+                android:padding="5dp"
+                android:layout_marginRight="5dp" />
 
             <ImageButton
                 style="?android:attr/buttonStyleSmall"
@@ -39,7 +42,8 @@
                 android:scaleType="fitCenter"
                 android:layout_weight="1"
                 android:background="#003c3f41"
-                android:padding="5dp" />
+                android:padding="5dp"
+                android:layout_marginRight="5dp" />
 
             <Button
                 style="?android:attr/buttonStyleSmall"
@@ -49,18 +53,21 @@
                 android:id="@+id/btKick"
                 android:layout_weight="1" />
 
-            <ImageButton
-                style="?android:attr/buttonStyleSmall"
-                android:layout_width="0dp"
-                android:layout_height="fill_parent"
-                android:text="Nazad"
-                android:id="@+id/btBack"
-                android:src="@drawable/btback"
-                android:scaleType="fitCenter"
-                android:layout_weight="1"
-                android:background="#003c3f41"
-                android:padding="5dp" />
-
         </LinearLayout>
     </HorizontalScrollView>
+
+    <ImageButton
+        style="?android:attr/buttonStyleSmall"
+        android:layout_width="wrap_content"
+        android:layout_height="fill_parent"
+        android:text="Nazad"
+        android:id="@+id/btBack"
+        android:src="@drawable/btback"
+        android:scaleType="fitCenter"
+        android:layout_weight="1"
+        android:background="#003c3f41"
+        android:layout_alignParentRight="true"
+        android:padding="5dp"
+        android:layout_alignParentBottom="true"
+        android:layout_alignParentTop="true" />
 </RelativeLayout>

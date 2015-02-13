@@ -22,6 +22,7 @@ public class ListChatItem {
 
     public ListChatItem(String message) {
         this.message = message;
+        this.direction = MessageDirection.INCOMING;
         this.isSpacer = true;
     }
 }

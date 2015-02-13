@@ -102,6 +102,8 @@ public class HaberService extends Service implements Haber.HaberListener {
     }
 
     public static Rank GetRankForUser(String user) {
+        if ( haberChat == null ) return Rank.Guest;
+
         Occupant occupant = haberChat.getOccupant(Haber.getFullUsername(user));
         if ( occupant == null ) return Rank.Guest;  //todo return cached (and cache it first)
 
@@ -140,31 +142,13 @@ public class HaberService extends Service implements Haber.HaberListener {
         haberListeners.remove(listener);
     }
 
-    private void destroyService() {
-        super.onDestroy();
-    }
-
     @Override
     public void onDestroy(){
-        new Thread() {
-            @Override
-            public void run() {
-                notificationManager.cancel(NOTIF_ID);
-                for ( Chat chat : chatRooms )
-                    chat.close();
-
-                try {
-                    haberChat.leave();
-                } catch ( Exception er ) {
-                    Debug.log(er);
-                }
-
-                Haber.Disconnect();
-
-                destroyService();
-            }
-        }.start();
-
+        notificationManager.cancel(NOTIF_ID);
+        chatRooms.clear();
+        haberChat = null;
+        Haber.QuickDisconnect();
+        super.onDestroy();
     }
 
     public void refreshNotification() {
@@ -293,13 +277,15 @@ public class HaberService extends Service implements Haber.HaberListener {
 
                     if ( !Haber.isConnected() ) {
                         stopSelf();
-                    } else if ( !haberChat.isJoined() ) {
-                        Intent kickOnStart = new Intent(HaberService.this, KickedOnStartActivity.class);
-                        kickOnStart.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-                        HaberService.this.startActivity(kickOnStart);
+                    } else if ( haberChat != null ) {
+                        if (!haberChat.isJoined()) {
+                            Intent kickOnStart = new Intent(HaberService.this, KickedOnStartActivity.class);
+                            kickOnStart.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+                            HaberService.this.startActivity(kickOnStart);
 
-                        stopSelf();
-                        return;
+                            stopSelf();
+                            return;
+                        }
                     }
                 }
 

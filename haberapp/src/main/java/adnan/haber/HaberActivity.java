@@ -804,15 +804,16 @@ public class HaberActivity extends ActionBarActivity implements Haber.HaberListe
                     }
                 } else if ( event == Haber.ChatEvent.Joined ) {
                     if ( AdvancedPreferences.ShowJoinedLeftNotifications(HaberActivity.this) )
-                        message = Haber.getShortUsername(params[0] + " je zapoceo haber");
+                        message = Haber.getShortUsername(params[0]) + " je zapoceo haber";
                     else
                         return;
                 } else if ( event == Haber.ChatEvent.Left ) {
                     if ( AdvancedPreferences.ShowJoinedLeftNotifications(HaberActivity.this) )
-                        message = Haber.getShortUsername(params[0] + " je napustio haber");
+                        message = Haber.getShortUsername(params[0]) + " je napustio haber";
                     else
                         return;
                 }
+
                final ListChatItem item = mainChatThread.chatAdapter.putDivider(message);
 
                 if ( AdvancedPreferences.ShouldClearNotifications(HaberActivity.this)) {

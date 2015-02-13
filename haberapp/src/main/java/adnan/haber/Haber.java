@@ -101,7 +101,9 @@ public class Haber {
         return username;
     }
 
-
+    public static void QuickDisconnect() {
+        instance = null;
+    }
 
     public static void Disconnect() {
         Debug.log("Disconnecting...");
@@ -275,7 +277,7 @@ public class Haber {
                             throw new InvalidCredentialsException(er.toString());
                         }
                         Debug.log(er);
-                        isGuest = true;
+                        setIsGuest(true);
                         return connect();
                     }
                 }
@@ -541,7 +543,7 @@ public class Haber {
         }
 
         if (CredentialManager.ShouldLoginOnStartup(context) && (CredentialManager.GetSavedPassword(context).length() > 0) && (CredentialManager.GetSavedUsername(context).length() > 0)) {
-            isGuest = false;
+            setIsGuest(false);
             try {
                 setUser(CredentialManager.GetSavedUsername(context));
                 setPassword(CredentialManager.GetSavedPassword(context));

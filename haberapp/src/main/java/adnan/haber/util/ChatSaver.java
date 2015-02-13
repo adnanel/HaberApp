@@ -21,6 +21,8 @@ import adnan.haber.types.ListChatItem;
  * Created by Adnan on 24.1.2015..
  */
 public class ChatSaver implements Haber.HaberListener {
+    public static final int ALL = -1;
+
     private static Context context;
 
     private final static String PREFS = "chat_cache_v4";
@@ -68,6 +70,8 @@ public class ChatSaver implements Haber.HaberListener {
     }
 
     public static ArrayList<Message> getSavedMessages(int limit) {
+        if ( limit == ALL ) limit = getSavedMessagesCount();
+
         ArrayList<Message> result = new ArrayList<>();
 
         int count = getSharedPreferences().getInt(PREF_COUNT, 0);
@@ -107,6 +111,8 @@ public class ChatSaver implements Haber.HaberListener {
     }
 
     public static ArrayList<Message> getSavedLobbyMessages(int limit) {
+        if ( limit == ALL ) limit = getSavedLobbyMessagesCount();
+
         ArrayList<Message> result = new ArrayList<>();
 
         int count = getSharedPreferences().getInt(PREF_LOBBY_COUNT, 0);

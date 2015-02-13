@@ -34,6 +34,7 @@ import adnan.haber.util.HaberSSLSocketFactory;
 
 
 public class Archive extends ActionBarActivity {
+    private final static String PUBLIC_CHAT = "Javni chat";
 
     ListView listView;
 
@@ -50,6 +51,8 @@ public class Archive extends ActionBarActivity {
             @Override
             public void run() {
                 HashMap<String, Integer> map = new HashMap<>();
+                map.put(PUBLIC_CHAT, ChatSaver.getSavedLobbyMessagesCount());
+
                 for ( Message msg : ChatSaver.getSavedMessages() ) {
                     if ( msg.getTo() == null || msg.getFrom() == null ) continue;
                     if ( msg.getSubject() == null ) continue;
@@ -81,27 +84,42 @@ public class Archive extends ActionBarActivity {
                             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
                                 ArchiveItem item = (ArchiveItem)parent.getItemAtPosition(position);
 
-                                final ReadOnlyChatAdapter adapter = new ReadOnlyChatAdapter(Archive.this, new ArrayList<ListChatItem>());
+                                if ( item.username.equals(PUBLIC_CHAT) ) {
+                                    final ReadOnlyChatAdapter adapter = new ReadOnlyChatAdapter(Archive.this, new ArrayList<ListChatItem>());
 
-                                for ( Message msg : ChatSaver.getSavedMessages() ) {
-                                    if ( msg.getTo() == null || msg.getFrom() == null ) continue;
-                                    if ( msg.getSubject() == null ) continue;
-
-                                    if ( msg.getSubject().equals(MessageDirection.INCOMING) ) {
-                                        if ( msg.getFrom().equals(item.username))
-                                            adapter.addItem(msg);
-                                    } else if ( msg.getSubject().equals(MessageDirection.OUTGOING)) {
-                                        if ( msg.getTo().equals(item.username))
-                                            adapter.addItem(msg);
+                                    for ( Message msg : ChatSaver.getSavedLobbyMessages(ChatSaver.ALL)) {
+                                        adapter.addItem(msg);
                                     }
+
+                                    runOnUiThread(new Runnable() {
+                                        @Override
+                                        public void run() {
+                                            listView.setAdapter(adapter);
+                                        }
+                                    });
+                                } else {
+                                    final ReadOnlyChatAdapter adapter = new ReadOnlyChatAdapter(Archive.this, new ArrayList<ListChatItem>());
+
+                                    for (Message msg : ChatSaver.getSavedMessages(ChatSaver.ALL)) {
+                                        if (msg.getTo() == null || msg.getFrom() == null) continue;
+                                        if (msg.getSubject() == null) continue;
+
+                                        if (msg.getSubject().equals(MessageDirection.INCOMING)) {
+                                            if (msg.getFrom().equals(item.username))
+                                                adapter.addItem(msg);
+                                        } else if (msg.getSubject().equals(MessageDirection.OUTGOING)) {
+                                            if (msg.getTo().equals(item.username))
+                                                adapter.addItem(msg);
+                                        }
+                                    }
+
+                                    runOnUiThread(new Runnable() {
+                                        @Override
+                                        public void run() {
+                                            listView.setAdapter(adapter);
+                                        }
+                                    });
                                 }
-
-                                runOnUiThread(new Runnable() {
-                                    @Override
-                                    public void run() {
-                                        listView.setAdapter(adapter);
-                                    }
-                                });
                             }
                         });
                     }

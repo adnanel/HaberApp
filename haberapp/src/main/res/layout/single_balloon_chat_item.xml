@@ -8,7 +8,7 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content">
 
-        <LinearLayout
+        <adnan.haber.views.BoundedLinearLayout
             android:orientation="horizontal"
             android:layout_width="wrap_content"
             android:id="@+id/llCarry"
@@ -45,11 +45,11 @@
             </RelativeLayout>
 
             <ImageView
-                android:layout_width="20dp"
+                android:layout_width="1px"
                 android:layout_height="fill_parent"
                 android:id="@+id/imageView4"
                 android:scaleType="fitXY"
-                android:src="@drawable/balloonmaskinverted2"
+                android:src="#ff635f65"
                 android:background="#ff555555"
                 android:tint="#ff666666" />
 
@@ -74,7 +74,7 @@
                 android:linksClickable="true"
                 android:background="@drawable/chat_item_balloon_background" />
 
-        </LinearLayout>
+        </adnan.haber.views.BoundedLinearLayout>
 
         <TextView
             android:layout_width="wrap_content"
@@ -84,12 +84,13 @@
             android:id="@+id/tvTime"
             android:singleLine="true"
             android:textSize="12sp"
-            android:gravity="center"
+            android:gravity="center|left"
             android:layout_centerVertical="true"
             android:layout_weight="1"
             android:layout_toRightOf="@+id/llCarry"
-            android:layout_toEndOf="@+id/llCarry"
-            android:paddingLeft="2dp" />
+            android:paddingLeft="3dp"
+            android:layout_alignParentRight="true"
+            android:layout_alignParentEnd="true" />
 
         <ViewSwitcher
             android:layout_width="fill_parent"

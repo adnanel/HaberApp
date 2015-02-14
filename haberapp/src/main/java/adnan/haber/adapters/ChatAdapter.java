@@ -250,10 +250,11 @@ public class ChatAdapter extends ArrayAdapter<ListChatItem> {
             ownUsername = Haber.getShortUsername(Haber.getUsername());
 
             if ( AdvancedPreferences.ShouldUseBalloons(context) ) {
-                if (isMyMessage(items.get(position)))
+                if (isMyMessage(items.get(position)) && AdvancedPreferences.ShouldAlignOwnMessagesRight(context) )
                     rowView = inflater.inflate(R.layout.single_own_balloon_chat_item, parent, false);
                 else
                     rowView = inflater.inflate(R.layout.single_balloon_chat_item, parent, false);
+
             } else {
                 if (isMyMessage(items.get(position)) && AdvancedPreferences.ShouldAlignOwnMessagesRight(context))
                     rowView = inflater.inflate(R.layout.single_own_chat_item, parent, false);
@@ -318,74 +319,77 @@ public class ChatAdapter extends ArrayAdapter<ListChatItem> {
 
             final ViewSwitcher switcher = (ViewSwitcher)rowView.findViewById(R.id.viewSwitcher);
             if ( !items.get(position).author.equals(Haber.getUsername())) {
-                rowView.findViewById(R.id.nameCarry).setOnClickListener(new View.OnClickListener() {
-                    @Override
-                    public void onClick(View v) {
-                        if ( lastSwitcher != null ) {
-                            View btBack = lastSwitcher.findViewById(R.id.btBack);
-                            if ( btBack != null ) btBack.performClick();
-                        }
-
-                        lastSwitcher = switcher;
-
-                        LayoutInflater inflater = (LayoutInflater) context
-                                .getSystemService(Context.LAYOUT_INFLATER_SERVICE);
-
-                        final View view = inflater.inflate(R.layout.single_user_menu, switcher, false);
-
-                        switcher.addView(view);
-                        switcher.setInAnimation(context, R.anim.slide_in_left);
-                        switcher.setOutAnimation(context, R.anim.slide_out_right);
-                        switcher.setDisplayedChild(1);
-
-                        view.findViewById(R.id.btBack).setOnClickListener(new View.OnClickListener() {
-                            @Override
-                            public void onClick(View v) {
-                                switcher.setBackgroundColor(0);
-                                switcher.removeView(view);
+                View nameCarry = rowView.findViewById(R.id.nameCarry);
+                if ( nameCarry != null ) {
+                    nameCarry.setOnClickListener(new View.OnClickListener() {
+                        @Override
+                        public void onClick(View v) {
+                            if (lastSwitcher != null) {
+                                View btBack = lastSwitcher.findViewById(R.id.btBack);
+                                if (btBack != null) btBack.performClick();
                             }
-                        });
 
-                        view.findViewById(R.id.btReply).setOnClickListener(new View.OnClickListener() {
-                            @Override
-                            public void onClick(View v) {
-                                commandBarListener.onReply(items.get(position).author);
+                            lastSwitcher = switcher;
 
-                                switcher.setBackgroundColor(0);
-                                switcher.removeView(view);
-                            }
-                        });
+                            LayoutInflater inflater = (LayoutInflater) context
+                                    .getSystemService(Context.LAYOUT_INFLATER_SERVICE);
 
+                            final View view = inflater.inflate(R.layout.single_user_menu, switcher, false);
 
-                        if ( !Haber.IsOnline(Haber.getFullUsername(items.get(position).author)) ) {
-                            view.findViewById(R.id.btStartPrivate).setVisibility(View.GONE);
-                        } else {
-                            view.findViewById(R.id.btStartPrivate).setOnClickListener(new View.OnClickListener() {
+                            switcher.addView(view);
+                            switcher.setInAnimation(context, R.anim.slide_in_left);
+                            switcher.setOutAnimation(context, R.anim.slide_out_right);
+                            switcher.setDisplayedChild(1);
+
+                            view.findViewById(R.id.btBack).setOnClickListener(new View.OnClickListener() {
                                 @Override
                                 public void onClick(View v) {
-                                    commandBarListener.onPrivateMessage(Haber.getFullUsername(items.get(position).author));
+                                    switcher.setBackgroundColor(0);
+                                    switcher.removeView(view);
+                                }
+                            });
+
+                            view.findViewById(R.id.btReply).setOnClickListener(new View.OnClickListener() {
+                                @Override
+                                public void onClick(View v) {
+                                    commandBarListener.onReply(items.get(position).author);
 
                                     switcher.setBackgroundColor(0);
                                     switcher.removeView(view);
                                 }
                             });
-                        }
 
-                        if ( isPrivate )
-                            view.findViewById(R.id.btStartPrivate).setVisibility(View.GONE);
 
-                        view.findViewById(R.id.btKick).setOnClickListener(new View.OnClickListener() {
-                            @Override
-                            public void onClick(View v) {
-                                commandBarListener.onKick(items.get(position).author);
+                            if (!Haber.IsOnline(Haber.getFullUsername(items.get(position).author))) {
+                                view.findViewById(R.id.btStartPrivate).setVisibility(View.GONE);
+                            } else {
+                                view.findViewById(R.id.btStartPrivate).setOnClickListener(new View.OnClickListener() {
+                                    @Override
+                                    public void onClick(View v) {
+                                        commandBarListener.onPrivateMessage(Haber.getFullUsername(items.get(position).author));
 
-                                switcher.setBackgroundColor(0);
-                                switcher.removeView(view);
+                                        switcher.setBackgroundColor(0);
+                                        switcher.removeView(view);
+                                    }
+                                });
                             }
-                        });
-                        view.findViewById(R.id.btKick).setVisibility(HaberService.CanKick() ? View.VISIBLE : View.GONE);
-                    }
-                });
+
+                            if (isPrivate)
+                                view.findViewById(R.id.btStartPrivate).setVisibility(View.GONE);
+
+                            view.findViewById(R.id.btKick).setOnClickListener(new View.OnClickListener() {
+                                @Override
+                                public void onClick(View v) {
+                                    commandBarListener.onKick(items.get(position).author);
+
+                                    switcher.setBackgroundColor(0);
+                                    switcher.removeView(view);
+                                }
+                            });
+                            view.findViewById(R.id.btKick).setVisibility(HaberService.CanKick() ? View.VISIBLE : View.GONE);
+                        }
+                    });
+                }
             }
 
         }

@@ -24,7 +24,10 @@
                 android:layout_width="fill_parent"
                 android:layout_height="fill_parent"
                 android:id="@+id/scrollView"
-                android:fillViewport="false" >
+                android:fillViewport="false"
+                android:scrollbars="horizontal"
+                android:scrollbarAlwaysDrawHorizontalTrack="true"
+                android:fadingEdgeLength="20dp">
 
                 <LinearLayout
                     android:orientation="horizontal"
@@ -40,6 +43,7 @@
                 android:layout_alignParentLeft="true"
                 android:layout_alignParentStart="true"
                 android:background="#ff9e3e67"></RelativeLayout>
+
         </RelativeLayout>
 
         <RelativeLayout
@@ -47,7 +51,8 @@
             android:layout_height="fill_parent"
             android:layout_below="@+id/linearLayout"
             android:layout_alignParentLeft="true"
-            android:layout_alignParentStart="true">
+            android:layout_alignParentStart="true"
+            android:id="@+id/relativeLayout">
 
             <ListView
                 android:layout_width="match_parent"
@@ -59,7 +64,7 @@
                 android:smoothScrollbar="true"
                 android:stackFromBottom="true"
                 android:layout_above="@+id/editText"
-                />
+                android:background="#ff444444" />
 
             <ImageButton
                 style="?android:attr/buttonStyleSmall"
@@ -109,6 +114,25 @@
                 android:background="#80cbc4" />
 
         </RelativeLayout>
+
+        <RelativeLayout
+            android:layout_width="20dp"
+            android:layout_height="fill_parent"
+            android:layout_alignParentTop="true"
+            android:layout_alignParentRight="true"
+            android:layout_alignParentEnd="true"
+            android:layout_above="@+id/relativeLayout"
+            android:id="@+id/tabBarRightFade"></RelativeLayout>
+
+
+        <RelativeLayout
+            android:layout_width="20dp"
+            android:layout_height="fill_parent"
+            android:layout_alignParentTop="true"
+            android:layout_alignParentLeft="true"
+            android:layout_alignParentStart="true"
+            android:layout_above="@+id/relativeLayout"
+            android:id="@+id/tabBarLeftFade"></RelativeLayout>
 
 
     </RelativeLayout>

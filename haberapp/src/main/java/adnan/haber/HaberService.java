@@ -101,7 +101,19 @@ public class HaberService extends Service implements Haber.HaberListener {
         return Rank.fromString(role) == Rank.Moderator;
     }
 
+    private static HashMap<String, Rank> rankCache = new HashMap<>();
+
     public static Rank GetRankForUser(String user) {
+        user = Haber.getShortUsername(user);
+        if (rankCache.containsKey(user)) {
+            return rankCache.get(user);
+        }
+        Rank rank;
+        rankCache.put(user, rank = findRankForUser(user));
+        return rank;
+    }
+
+    private static Rank findRankForUser(String user) {
         if ( haberChat == null ) return Rank.Guest;
 
         Occupant occupant = haberChat.getOccupant(Haber.getFullUsername(user));
@@ -230,7 +242,7 @@ public class HaberService extends Service implements Haber.HaberListener {
                     stopSelf();
                     return;
                 }
-                if ( !haberChat.isJoined() ) {
+                if ( (haberChat == null) || !haberChat.isJoined() ) {
                     if ( HaberActivity.InstanceExists() ) {
                         Intent kickOnStart = new Intent(HaberService.this, KickedOnStartActivity.class);
                         kickOnStart.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
@@ -371,7 +383,29 @@ public class HaberService extends Service implements Haber.HaberListener {
         counter++;
         if ( counter >= 25 ) {
             if (AdvancedPreferences.ShouldVibrate(this) && AdvancedPreferences.ShouldVibrateInService(this) && !HaberActivity.InstanceExists()) {
-                ((Vibrator) getSystemService(Context.VIBRATOR_SERVICE)).vibrate(100);
+                boolean shouldVibrate = false;
+                if ( chat == null ) {
+                    if ( message.getBody() != null ) {
+                        if (AdvancedPreferences.ShouldVibrateOnReply(this)) {
+                            String mark = "@" + Haber.getUsername();
+                            if (message.getBody().toUpperCase().contains(mark.toUpperCase())) {
+                                ((Vibrator) getSystemService(Context.VIBRATOR_SERVICE)).vibrate(100);
+                                shouldVibrate = true;
+                            } else if (Haber.IsGuest()) {
+                                mark = "@" + Haber.getUsername().substring(1);
+                                if (message.getBody().toUpperCase().contains(mark.toUpperCase())) {
+                                    ((Vibrator) getSystemService(Context.VIBRATOR_SERVICE)).vibrate(100);
+                                    shouldVibrate = true;
+                                }
+                            }
+                        }
+                    }
+                } else {
+                    shouldVibrate = true;
+                }
+
+                if ( shouldVibrate )
+                    ((Vibrator) getSystemService(Context.VIBRATOR_SERVICE)).vibrate(100);
             }
         }
     }

@@ -109,8 +109,13 @@ public class SplashScreen extends ActionBarActivity implements Haber.HaberListen
     @Override
     public void onMessageReceived(Chat chat, Message message) {
         counter++;
-
-        if ( counter >= 10 ) {
+        runOnUiThread(new Runnable() {
+            @Override
+            public void run() {
+                ((TextView)findViewById(R.id.tvCounter)).setText(counter + "");
+            }
+        });
+        if ( counter >= 17 ) {
             start();
         }
 

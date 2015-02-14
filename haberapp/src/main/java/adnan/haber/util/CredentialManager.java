@@ -32,8 +32,12 @@ public class CredentialManager {
     public static String GetSavedUsername(Context context) {
         SharedPreferences sharedPreferences = context.getSharedPreferences(PREFS, Context.MODE_PRIVATE);
 
-        if ( !sharedPreferences.contains(PREF_USERNAME) ) return "";
-        return Util.Decode(sharedPreferences.getString(PREF_USERNAME, ""));
+        if (!sharedPreferences.contains(PREF_USERNAME)) return "";
+        try {
+            return Util.Decode(sharedPreferences.getString(PREF_USERNAME, ""));
+        } catch ( Exception er ) {
+            return "";
+        }
     }
 
     public static String GetSavedPassword(Context context) {
@@ -41,6 +45,10 @@ public class CredentialManager {
 
         if ( !sharedPreferences.contains(PREF_PASSWORD) ) return "";
 
-        return Util.Decode(sharedPreferences.getString(PREF_PASSWORD, ""));
+        try {
+            return Util.Decode(sharedPreferences.getString(PREF_PASSWORD, ""));
+        } catch ( Exception er ) {
+            return "";
+        }
     }
 }

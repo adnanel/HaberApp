@@ -24,6 +24,7 @@ import android.view.animation.AnimationUtils;
 import android.view.animation.TranslateAnimation;
 import android.webkit.WebView;
 import android.widget.EditText;
+import android.widget.HorizontalScrollView;
 import android.widget.LinearLayout;
 import android.widget.ListView;
 import android.widget.RelativeLayout;
@@ -266,7 +267,7 @@ public class HaberActivity extends ActionBarActivity implements Haber.HaberListe
                 webView.setWebViewClient(new HaberSSLSocketFactory());
 
                 webView.getSettings().setJavaScriptEnabled(true);
-                if ( url.endsWith(".jpg") && url.startsWith("http://pokit.org/get/?")) {
+                if ( (url.endsWith(".jpg") || url.endsWith(".png")) && url.startsWith("http://pokit.org/get/?")) {
                     String nUrl = url.replace("get/?", "get/img/");
                     webView.loadUrl(nUrl);
                 } else
@@ -350,6 +351,10 @@ public class HaberActivity extends ActionBarActivity implements Haber.HaberListe
         return instance != null;
     }
 
+    public void setListViewDivider(int height) {
+        chatListView.setDividerHeight(height);
+    }
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -363,6 +368,7 @@ public class HaberActivity extends ActionBarActivity implements Haber.HaberListe
         }
 
         setContentView(R.layout.activity_haber);
+
         //attach left drawer
         FragmentTransaction transaction = getSupportFragmentManager().beginTransaction();
         transaction.add(R.id.rlLeftDrawer, LeftDrawer.newInstance(this), LeftDrawer.TAG);
@@ -371,6 +377,11 @@ public class HaberActivity extends ActionBarActivity implements Haber.HaberListe
         Updater.CheckForUpdates(this, false);
 
         chatListView = (ListView)findViewById(R.id.chatListView);
+
+        if ( AdvancedPreferences.ShouldUseBalloons(this))
+            setListViewDivider(0);
+        else
+            setListViewDivider(1);
 
         setListenerToRootView();
 
@@ -565,14 +576,6 @@ public class HaberActivity extends ActionBarActivity implements Haber.HaberListe
                 boolean vibratedYet = false;
 
                 if ( chat != null ) {
-                    if  ( AdvancedPreferences.ShouldVibrate(HaberActivity.this) && !vibrationLock ) {
-                        if ( (getCurrentChat() != chat) || (getCurrentChat() == chat && AdvancedPreferences.ShouldVibrateOnActive(HaberActivity.this)) ) {
-                            ((Vibrator) getSystemService(Context.VIBRATOR_SERVICE)).vibrate(100);
-                            vibratedYet = true;
-                        }
-                    }
-
-
                     if ( chatThreads.containsKey(chat) ) {
                         chatThreads.get(chat).chatAdapter.addItem(message);
                         try {
@@ -607,8 +610,17 @@ public class HaberActivity extends ActionBarActivity implements Haber.HaberListe
                             Debug.log(er);
                         }
                     }
+
+                    if  ( AdvancedPreferences.ShouldVibrate(HaberActivity.this) && !vibrationLock ) {
+                        if ( (getCurrentChat() != chat) || (getCurrentChat() == chat && AdvancedPreferences.ShouldVibrateOnActive(HaberActivity.this)) ) {
+                            ((Vibrator) getSystemService(Context.VIBRATOR_SERVICE)).vibrate(100);
+                            vibratedYet = true;
+                        }
+                    }
                 }
                 else {
+                    mainChatThread.chatAdapter.addItem(message);
+
                     if  ( AdvancedPreferences.ShouldVibrate(HaberActivity.this) && !vibrationLock  ) {
                         if ( (getCurrentChat() != null && AdvancedPreferences.ShouldVibrateOnPublic(HaberActivity.this)) || (getCurrentChat() == null && AdvancedPreferences.ShouldVibrateOnActive(HaberActivity.this)) ) {
                             ((Vibrator) getSystemService(Context.VIBRATOR_SERVICE)).vibrate(100);
@@ -616,7 +628,6 @@ public class HaberActivity extends ActionBarActivity implements Haber.HaberListe
                         }
                     }
 
-                    mainChatThread.chatAdapter.addItem(message);
                     try {
                         if ( getCurrentChat() != null )
                             mainChatThread.markTab();
@@ -875,8 +886,7 @@ public class HaberActivity extends ActionBarActivity implements Haber.HaberListe
     public class ChatThread {
         private ChatAdapter chatAdapter;
         private TabView tabView;
-        private String user;
-
+        public String fullUser;
 
         TabState currentState;
 
@@ -895,7 +905,7 @@ public class HaberActivity extends ActionBarActivity implements Haber.HaberListe
         ChatThread thisThread;
 
         public String getUser() {
-            return user;
+            return fullUser;
         }
 
 
@@ -938,10 +948,8 @@ public class HaberActivity extends ActionBarActivity implements Haber.HaberListe
 
         public ChatThread(String other) {
             thisThread = this;
-            user = other;
-
-
             other = Haber.getFullUsername(other);
+            fullUser = other;
 
             final String participant = other;
             runOnUiThread(new Runnable() {
@@ -951,9 +959,7 @@ public class HaberActivity extends ActionBarActivity implements Haber.HaberListe
 
                     tabView = new TabView(HaberActivity.this);
 
-
-                    ((TextView)tabView.findViewById(R.id.tvUser)).setText(Haber.getShortUsername(participant));
-
+                    tabView.setTitle(Haber.getShortUsername(participant));
                     tabView.setOnClickListener(new View.OnClickListener() {
                         @Override
                         public void onClick(View v) {
@@ -1049,7 +1055,7 @@ public class HaberActivity extends ActionBarActivity implements Haber.HaberListe
         }
 
         AlertDialog.Builder builder = new AlertDialog.Builder(this);
-        builder.setTitle("Imaš pametnija posla !?");
+        builder.setTitle("Imaš pametnija posla!?");
         builder.setPositiveButton("Gasi haber", new DialogInterface.OnClickListener() {
             @Override
             public void onClick(DialogInterface dialog, int which) {

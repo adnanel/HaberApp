@@ -12,6 +12,7 @@ import android.widget.TextView;
 import adnan.haber.HaberActivity;
 import adnan.haber.R;
 import adnan.haber.fragments.AdvancedPreferences;
+import adnan.haber.util.Blinker;
 
 /**
  * Created by prg01 on 12.2.2015.
@@ -23,6 +24,15 @@ public class TabView extends FrameLayout {
     private View tabBackground;
     private View rlMsgCounter;
     private TextView tvMsgCounter;
+    private TextView tvTitle;
+
+    public String getTitle() {
+        return tvTitle.getText().toString();
+    }
+
+    public void setTitle(String title) {
+        tvTitle.setText(title);
+    }
 
     public TabView(Context context) {
         super(context);
@@ -82,6 +92,11 @@ public class TabView extends FrameLayout {
         super.onDraw(canvas);
     }
 
+    public void setPostState(HaberActivity.TabState state) {
+        currentState = state;
+        postInvalidate();
+    }
+
     public void setState(HaberActivity.TabState state) {
         currentState = state;
         if ( blinker != null ) {
@@ -98,32 +113,7 @@ public class TabView extends FrameLayout {
             if (!AdvancedPreferences.ShouldBlink(context) ) {
                 currentState = HaberActivity.TabState.Marked;
             } else {
-                blinker = new Thread() {
-                    @Override
-                    public void run() {
-                        while (!this.isInterrupted()) {
-                            currentState = HaberActivity.TabState.Normal;
-                            postInvalidate();
-
-                            try {
-                                Thread.sleep(200);
-                            } catch (Exception er) {
-                            /* probably interrupted */
-                                break;
-                            }
-
-                            currentState = HaberActivity.TabState.Marked;
-                            postInvalidate();
-
-                            try {
-                                Thread.sleep(500);
-                            } catch (Exception er) {
-                            /* probably interrupted */
-                                break;
-                            }
-                        }
-                    }
-                };
+                blinker = new Blinker(this);
                 blinker.start();
             }
 
@@ -136,6 +126,7 @@ public class TabView extends FrameLayout {
     public int getUnreadMessagesCount() {
         return Integer.parseInt(tvMsgCounter.getText().toString());
     }
+
 
     public void setUnreadMessagesCount(int count) {
         tvMsgCounter.setText(count + "");
@@ -159,9 +150,10 @@ public class TabView extends FrameLayout {
 
         LayoutInflater.from(context).inflate(R.layout.single_tab, this);
 
-        rlMsgCounter = this.findViewById(R.id.rlMessageCounter);
-        tvMsgCounter = (TextView)this.findViewById(R.id.tvMessageCounter);
-        tabBackground = this.findViewById(R.id.rlTabBackground);
+        rlMsgCounter    = this.findViewById(R.id.rlMessageCounter);
+        tvMsgCounter    = (TextView)this.findViewById(R.id.tvMessageCounter);
+        tabBackground   = this.findViewById(R.id.rlTabBackground);
+        tvTitle         = (TextView)this.findViewById(R.id.tvUser);
     }
 
 }

@@ -193,25 +193,43 @@ public class ChatSaver implements Haber.HaberListener {
 
 
     static void SaveMessage(Message msg) {
-
-        ArrayList<Message> messages = getSavedMessages(ChatSaver.getSavedMessagesCount());
+        ArrayList<Message> messages = getSavedMessages(10);
         for ( Message message : messages ) {
             if ( message.getPacketID().equals(msg.getPacketID())) return;
         }
 
-        messages.add(msg);
-        saveMessages(messages);
+        SharedPreferences.Editor editor = getSharedPreferences().edit();
+
+        int i = getSavedMessagesCount();
+        editor.putInt(PREF_LOBBY_COUNT, i + 1);
+        editor.putString(PREF_BODY + i, msg.getBody());
+        editor.putString(PREF_FROM + i, msg.getFrom());
+        editor.putString(PREF_ID + i, msg.getPacketID());
+        editor.putString(PREF_TSTAMP + i, getTimeStamp(msg));
+        editor.putString(PREF_DIR + i, msg.getSubject());
+
+
+        editor.commit();
     }
 
     static void SaveLobbyMessage(Message msg) {
-        ArrayList<Message> messages = getSavedLobbyMessages(ChatSaver.getSavedLobbyMessagesCount());
+        ArrayList<Message> messages = getSavedLobbyMessages(10);
         for ( Message message : messages ) {
             if ( message.getPacketID().equals(msg.getPacketID())) return;
         }
 
+        SharedPreferences.Editor editor = getSharedPreferences().edit();
 
-        messages.add(msg);
-        saveLobbyMessages(messages);
+        int i = getSavedLobbyMessagesCount();
+        editor.putInt(PREF_LOBBY_COUNT, i + 1);
+        editor.putString(PREF_LOBBY_BODY + i, msg.getBody());
+        editor.putString(PREF_LOBBY_FROM + i, msg.getFrom());
+        editor.putString(PREF_LOBBY_ID + i, msg.getPacketID());
+        editor.putString(PREF_LOBBY_TSTAMP + i, getTimeStamp(msg));
+        editor.putString(PREF_LOBBY_DIR + i, msg.getSubject());
+
+
+        editor.commit();
     }
 
     @Override

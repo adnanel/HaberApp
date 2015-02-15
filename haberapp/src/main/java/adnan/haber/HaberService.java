@@ -93,7 +93,15 @@ public class HaberService extends Service implements Haber.HaberListener {
         }
     }
 
+    private static HashMap<String, Boolean> modCache = new HashMap<>();
     public static boolean IsMod(String user) {
+        if ( modCache.containsKey(user)) return modCache.get(user);
+        boolean result = isMod(user);
+        modCache.put(user, result);
+        return result;
+    }
+
+    private static boolean isMod(String user) {
         Occupant occupant = haberChat.getOccupant(Haber.getFullUsername(user));
         if ( occupant == null ) return false;
 

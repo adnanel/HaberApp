@@ -13,74 +13,65 @@
             android:layout_width="fill_parent"
             android:layout_height="fill_parent"
             android:layout_alignParentRight="true"
-            android:layout_alignBottom="@+id/ballooncarry"
             android:id="@+id/background"></RelativeLayout>
 
-        <LinearLayout
-            android:layout_width="fill_parent"
-            android:layout_height="wrap_content"
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="match_parent"
+            android:textAppearance="?android:attr/textAppearanceSmall"
+            android:text="00:00"
+            android:id="@+id/tvTime"
+            android:singleLine="true"
+            android:textSize="12sp"
+            android:gravity="center"
+            android:paddingRight="3dp"
+            android:layout_toLeftOf="@+id/llCarry"
+            android:layout_toStartOf="@+id/llCarry"
+            android:layout_alignBottom="@+id/llCarry"
+            android:layout_alignTop="@+id/llCarry"/>
+
+        <adnan.haber.views.BoundedLinearLayout
+            android:orientation="horizontal"
+            android:layout_width="wrap_content"
             android:layout_alignParentRight="true"
-            android:id="@+id/ballooncarry"
-            android:orientation="horizontal">
+            android:id="@+id/llCarry"
+            android:layout_height="wrap_content">
 
             <TextView
-                android:layout_width="wrap_content"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:textAppearance="?android:attr/textAppearanceMedium"
+                android:text="Medium Text"
+                android:id="@+id/tvMessage"
+                android:layout_alignParentTop="true"
+                android:layout_toRightOf="@+id/tvName"
+                android:paddingLeft="5dp"
+                android:paddingRight="5dp"
+                android:layout_toLeftOf="@+id/tvTime"
+                android:layout_toStartOf="@+id/tvTime"
+                android:gravity="center_vertical|left"
+                android:textSize="13sp"
+                android:textIsSelectable="true"
+                android:paddingTop="10dp"
+                android:paddingBottom="10dp"
+                android:layout_weight="15"
+                android:linksClickable="true"
+                android:background="@drawable/chat_item_own_balloon_background" />
+
+            <ImageView
+                android:layout_width="10dp"
                 android:layout_height="fill_parent"
-                android:textAppearance="?android:attr/textAppearanceSmall"
-                android:text="00:00"
-                android:id="@+id/tvTime"
-                android:singleLine="true"
-                android:textSize="12sp"
-                android:gravity="center|right"
-                android:layout_weight="1"
-                android:paddingRight="3dp"
-                android:layout_centerVertical="true" />
+                android:id="@+id/imageView4"
+                android:scaleType="fitXY"
+                android:src="@drawable/balloonmaskinverted"
+                android:tint="#ff888888" />
 
-            <adnan.haber.views.BoundedLinearLayout
-                android:orientation="horizontal"
-                android:layout_width="wrap_content"
-                android:id="@+id/llCarry"
-                android:layout_height="wrap_content">
-
-                <TextView
-                    android:layout_width="0dp"
-                    android:layout_height="wrap_content"
-                    android:textAppearance="?android:attr/textAppearanceMedium"
-                    android:text="Medium Text"
-                    android:id="@+id/tvMessage"
-                    android:layout_alignParentTop="true"
-                    android:layout_toRightOf="@+id/tvName"
-                    android:paddingLeft="5dp"
-                    android:paddingRight="5dp"
-                    android:layout_toLeftOf="@+id/tvTime"
-                    android:layout_toStartOf="@+id/tvTime"
-                    android:gravity="center_vertical|left"
-                    android:textSize="13sp"
-                    android:textIsSelectable="true"
-                    android:paddingTop="10dp"
-                    android:paddingBottom="10dp"
-                    android:layout_weight="15"
-                    android:linksClickable="true"
-                    android:background="@drawable/chat_item_own_balloon_background" />
-
-                <ImageView
-                    android:layout_width="10dp"
-                    android:layout_height="fill_parent"
-                    android:id="@+id/imageView4"
-                    android:scaleType="fitXY"
-                    android:src="@drawable/balloonmaskinverted"
-                    android:tint="#ff888888" />
-
-            </adnan.haber.views.BoundedLinearLayout>
-
-        </LinearLayout>
+        </adnan.haber.views.BoundedLinearLayout>
 
         <ViewSwitcher
             android:layout_width="fill_parent"
             android:layout_height="wrap_content"
             android:id="@+id/viewSwitcher"
-            android:layout_alignBottom="@id/ballooncarry"
-            android:layout_alignTop="@id/ballooncarry"
             android:layout_alignParentLeft="true"
             android:layout_alignParentStart="true" />
 

@@ -433,6 +433,9 @@ public class Haber {
 
                     @Override
                     public void processPacket(Packet packet) throws SmackException.NotConnectedException {
+                        Debug.log("processPacket() " + packet.toXML().toString());
+                        if ( !(packet instanceof Message ) ) return;
+
                         try {
                             Message message = (Message)packet;
                             if ( message.getPacketID() == null ) {
@@ -489,6 +492,7 @@ public class Haber {
 
                             @Override
                             public void processMessage(Chat lchat, Message message) {
+                                Debug.log("processMessage() " + message.toXML().toString());
                                 if ( message.getPacketID() == null ) {
                                     message.setPacketID((id++) + salt);
                                 }

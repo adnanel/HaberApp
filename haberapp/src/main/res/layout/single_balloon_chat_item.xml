@@ -88,9 +88,7 @@
             android:layout_centerVertical="true"
             android:layout_weight="1"
             android:layout_toRightOf="@+id/llCarry"
-            android:paddingLeft="3dp"
-            android:layout_alignParentRight="true"
-            android:layout_alignParentEnd="true" />
+            android:paddingLeft="3dp" />
 
         <ViewSwitcher
             android:layout_width="fill_parent"

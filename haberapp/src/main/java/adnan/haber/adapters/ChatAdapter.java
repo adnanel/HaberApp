@@ -3,6 +3,8 @@ package adnan.haber.adapters;
 import android.app.Activity;
 import android.content.Context;
 import android.graphics.Color;
+import android.graphics.Point;
+import android.os.Build;
 import android.text.Html;
 import android.text.Spannable;
 import android.text.SpannableStringBuilder;
@@ -13,10 +15,12 @@ import android.text.style.ClickableSpan;
 import android.text.style.URLSpan;
 import android.util.AttributeSet;
 import android.util.Patterns;
+import android.view.Display;
 import android.view.LayoutInflater;
 import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.WindowManager;
 import android.widget.ArrayAdapter;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
@@ -50,6 +54,7 @@ import adnan.haber.types.MessageDirection;
 import adnan.haber.util.Debug;
 import adnan.haber.util.SmileyManager;
 import adnan.haber.util.Util;
+import adnan.haber.views.BoundedLinearLayout;
 
 /**
  * Created by Adnan on 23.1.2015..
@@ -167,6 +172,20 @@ public class ChatAdapter extends ArrayAdapter<ListChatItem> {
     }
 
     public void addItem(Message msg, boolean shouldNotifyDataSetChanged) {
+        if ( msg.getBody() == null ) {
+            Debug.log("Blocking message with null body!" + msg.toXML());
+            return;
+        }
+
+        if ( !msg.getPacketID().equals("divider") )
+            for ( ListChatItem citem : items ) {
+                if ( citem.isSpacer ) continue;
+
+                if ( citem.id.equals(msg.getPacketID()) ) {
+                    Debug.log("Blocking duplicate message");
+                    return;
+                }
+            }
 
         ListChatItem item = new ListChatItem();
         item.rank = HaberService.GetRankForUser(msg.getFrom());
@@ -177,10 +196,7 @@ public class ChatAdapter extends ArrayAdapter<ListChatItem> {
         } catch ( Exception er ) {
             Debug.log(er);
         }
-        if ( msg.getBody() == null ) {
-            Debug.log("Blocking message with null body!" + msg.toXML());
-            return;
-        }
+
         if ( msg.getBody().trim().length() == 0 ) {
             //or maybe show subject instead? (haber announcement je subject, no body)
             return;
@@ -189,15 +205,6 @@ public class ChatAdapter extends ArrayAdapter<ListChatItem> {
         item.message = msg.getBody();
         item.id      = msg.getPacketID();
 
-
-        for ( ListChatItem citem : items ) {
-            if ( citem.isSpacer ) continue;
-
-            if ( citem.id.equals(item.id) ) {
-                Debug.log("Blocking duplicate message");
-                return;
-            }
-        }
 
         for (PacketExtension ex : msg.getExtensions() ) {
             if ( ex instanceof PacketTimeStamp ) {
@@ -238,7 +245,7 @@ public class ChatAdapter extends ArrayAdapter<ListChatItem> {
         LayoutInflater inflater = (LayoutInflater) context
                 .getSystemService(Context.LAYOUT_INFLATER_SERVICE);
 
-        View rowView;
+        final View rowView;
         if ( items.get(position).isSpacer ) {
             rowView = inflater.inflate(R.layout.single_divider_item, parent, false);
 
@@ -312,9 +319,31 @@ public class ChatAdapter extends ArrayAdapter<ListChatItem> {
             tvMessage.setText(strBuilder);
             tvMessage.setIncludeFontPadding(false);
 
-            TextView tvTime = (TextView) rowView.findViewById(R.id.tvTime);
+            final TextView tvTime = (TextView) rowView.findViewById(R.id.tvTime);
             (tvTime).setText(Util.dateToFormat("HH:mm", items.get(position).time));
 
+            if (BoundedLinearLayout.getBoundWidth() == 0 ) {
+                BoundedLinearLayout.setWidth(-1);
+                rowView.post(new Runnable() {
+                    @Override
+                    public void run() {
+                        Display display = ((WindowManager) context.getSystemService(Context.WINDOW_SERVICE)).getDefaultDisplay();
+                        Point size = new Point();
+                        int width, height;
+
+                        if (Build.VERSION.SDK_INT >= 13) {
+                            display.getSize(size);
+                            width = size.x;
+                            height = size.y;
+                        } else {
+                            width = display.getWidth();  // deprecated
+                            height = display.getHeight();  // deprecated
+                        }
+
+                        BoundedLinearLayout.setWidth(width - (int)(tvTime.getWidth() * 1.5) );
+                    }
+                });
+            }
 
 
             final ViewSwitcher switcher = (ViewSwitcher)rowView.findViewById(R.id.viewSwitcher);

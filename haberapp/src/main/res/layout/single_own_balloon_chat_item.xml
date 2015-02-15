@@ -9,26 +9,19 @@
         android:layout_alignParentRight="true"
         android:layout_height="wrap_content">
 
-        <RelativeLayout
-            android:layout_width="fill_parent"
-            android:layout_height="fill_parent"
-            android:layout_alignParentRight="true"
-            android:id="@+id/background"></RelativeLayout>
-
         <TextView
             android:layout_width="wrap_content"
-            android:layout_height="match_parent"
+            android:layout_height="wrap_content"
             android:textAppearance="?android:attr/textAppearanceSmall"
             android:text="00:00"
             android:id="@+id/tvTime"
             android:singleLine="true"
             android:textSize="12sp"
-            android:gravity="center"
             android:paddingRight="3dp"
+            android:gravity="center_vertical"
+            android:layout_centerVertical="true"
             android:layout_toLeftOf="@+id/llCarry"
-            android:layout_toStartOf="@+id/llCarry"
-            android:layout_alignBottom="@+id/llCarry"
-            android:layout_alignTop="@+id/llCarry"/>
+            android:layout_toStartOf="@+id/llCarry" />
 
         <adnan.haber.views.BoundedLinearLayout
             android:orientation="horizontal"

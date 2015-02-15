@@ -206,6 +206,7 @@ public class LeftDrawer extends PreferenceFragment {
                             @Override
                             public void run() {
                                 try {
+                                    Debug.log("refreshing online list...");
                                     refreshOnlineList();
                                 } catch ( Exception e ) {
                                     Debug.log(e);

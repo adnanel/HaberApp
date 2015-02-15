@@ -77,7 +77,6 @@ public class ChatAdapter extends ArrayAdapter<ListChatItem> {
         this.isPrivate = isPrivate;
 
         addAdapter(this);
-
     }
 
     public static synchronized void invalidateAll(final HaberActivity activity) {

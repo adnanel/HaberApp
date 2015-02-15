@@ -13,6 +13,7 @@ import android.support.v4.app.ActionBarDrawerToggle;
 import android.support.v4.app.FragmentTransaction;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBarActivity;
+import android.util.Pair;
 import android.view.Gravity;
 import android.view.KeyEvent;
 import android.view.MotionEvent;
@@ -536,6 +537,13 @@ public class HaberActivity extends ActionBarActivity implements Haber.HaberListe
         };
 
         mDrawerLayout.setDrawerListener(mDrawerToggle);
+
+        chatListView.post(new Runnable() {
+            @Override
+            public void run() {
+                scrollToBottom(false);
+            }
+        });
     }
 
     @Override
@@ -814,11 +822,25 @@ public class HaberActivity extends ActionBarActivity implements Haber.HaberListe
 
                     }
                 } else if ( event == Haber.ChatEvent.Joined ) {
+                    for (Map.Entry<Chat, ChatThread> pair : chatThreads.entrySet()) {
+                        if ( pair.getValue().getUser().equals(params[0]) ) {
+                            pair.getValue().chatAdapter.putDivider(Haber.getShortUsername(params[0]) + " je online!");
+                            pair.getValue().setOnline(true);
+                        }
+                    }
+
                     if ( AdvancedPreferences.ShowJoinedLeftNotifications(HaberActivity.this) )
                         message = Haber.getShortUsername(params[0]) + " je zapoceo haber";
                     else
                         return;
                 } else if ( event == Haber.ChatEvent.Left ) {
+                    for (Map.Entry<Chat, ChatThread> pair : chatThreads.entrySet()) {
+                        if ( pair.getValue().getUser().equals(params[0]) ) {
+                            pair.getValue().chatAdapter.putDivider(Haber.getShortUsername(params[0]) + " je offline!");
+                            pair.getValue().setOnline(false);
+                        }
+                    }
+
                     if ( AdvancedPreferences.ShowJoinedLeftNotifications(HaberActivity.this) )
                         message = Haber.getShortUsername(params[0]) + " je napustio haber";
                     else
@@ -887,8 +909,27 @@ public class HaberActivity extends ActionBarActivity implements Haber.HaberListe
         private ChatAdapter chatAdapter;
         private TabView tabView;
         public String fullUser;
+        private boolean isOnline = true;
 
         TabState currentState;
+
+
+        public boolean isOnline() {
+            return isOnline;
+        }
+
+        public void setOnline(boolean isOnline) {
+            this.isOnline = isOnline;
+
+            if ( currentState == TabState.Active ) {
+                runOnUiThread(new Runnable() {
+                    @Override
+                    public void run() {
+                        (findViewById(R.id.editText)).setEnabled(isOnline());
+                    }
+                });
+            }
+        }
 
 
         public void setState(final TabState state) {
@@ -980,6 +1021,8 @@ public class HaberActivity extends ActionBarActivity implements Haber.HaberListe
                                     setState(TabState.Active);
 
                                     chatListView.setAdapter(chatAdapter);
+                                    (findViewById(R.id.editText)).setEnabled(isOnline);
+
                                     scrollToBottom(true);
 
                                     closeLeftDrawer();

@@ -121,8 +121,13 @@ public class ChatAdapter extends ArrayAdapter<ListChatItem> {
 
     public ListChatItem putDivider(String msg) {
         ListChatItem item = new ListChatItem(msg);
-        if ( items.size() > 0 )
+        if ( items.size() > 0 ) {
             item.time = items.get(items.size() - 1).time;
+            if ( item.message.equals(items.get(items.size() - 1).message)) {
+                Debug.log("Supressing double notification...");
+                return null;
+            }
+        }
 
         items.add(item);
         notifyDataSetChanged();

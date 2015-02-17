@@ -26,6 +26,7 @@ import java.util.List;
 import adnan.haber.fragments.AdvancedPreferences;
 import adnan.haber.types.MessageDirection;
 import adnan.haber.types.Rank;
+import adnan.haber.util.ChatSaver;
 import adnan.haber.util.Debug;
 
 public class HaberService extends Service implements Haber.HaberListener {
@@ -125,7 +126,7 @@ public class HaberService extends Service implements Haber.HaberListener {
         if ( haberChat == null ) return Rank.Guest;
 
         Occupant occupant = haberChat.getOccupant(Haber.getFullUsername(user));
-        if ( occupant == null ) return Rank.Guest;  //todo return cached (and cache it first)
+        if ( occupant == null ) return Rank.Guest;
 
         if ( Haber.getShortUsername(user).toUpperCase().equals("ADNAN_E") )
             return Rank.Adnan;
@@ -168,6 +169,13 @@ public class HaberService extends Service implements Haber.HaberListener {
         chatRooms.clear();
         haberChat = null;
         Haber.QuickDisconnect();
+
+        runnables.clear();
+        haberListeners.clear();
+        instance = null;
+
+        ChatSaver.Finalize();
+
         super.onDestroy();
     }
 

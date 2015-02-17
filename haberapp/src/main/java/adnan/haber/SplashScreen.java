@@ -39,6 +39,7 @@ public class SplashScreen extends ActionBarActivity implements Haber.HaberListen
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_splash_screen);
 
+        //all that's initialized here, should be disposed in HaberService's onDestroy();
         Debug.Initialize(this); // <- must be first
         ChatSaver.Initialize(this);
 

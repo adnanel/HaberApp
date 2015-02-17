@@ -11,6 +11,7 @@ import org.jivesoftware.smackx.muc.MultiUserChat;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
+import java.util.Date;
 
 import adnan.haber.Haber;
 import adnan.haber.HaberService;
@@ -50,12 +51,27 @@ public class ChatSaver implements Haber.HaberListener {
         return context.getSharedPreferences(PREFS, Context.MODE_PRIVATE);
     }
 
+    public static void Finalize() {
+        Debug.log("Finalizing ChatSaver...");
+        if ( instance != null ) {
+            instance = null;
+        } else {
+            Debug.log(new Exception("Chat saver was not initialized!"));
+        }
+    }
+
     public static void Initialize(Context context) {
         ChatSaver.context = context;
 
         if ( instance == null ) {
             instance = new ChatSaver();
 
+            Message message = new Message();
+            message.setFrom("divider");
+            message.setSubject("divider");
+            message.setPacketID("divider");
+            message.setBody(Util.dateToFormat("dd-MM-yyyy HH:mm", new Date()));
+            instance.onMessageReceived(null, message);
             HaberService.addHaberListener(instance);
         }
     }

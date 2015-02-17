@@ -391,13 +391,18 @@ public class HaberActivity extends ActionBarActivity implements Haber.HaberListe
         mainChatThread.chatAdapter = new ChatAdapter(this, new ArrayList<ListChatItem>(), cmdListener, false);
         //load old messages
         mainChatThread.chatAdapter.putDivider("Stare poruke");
+        ListChatItem lStamp = null;
         for ( Message msg : ChatSaver.getSavedLobbyMessages(30) ) {
-            if ( msg.getPacketID().equals("divider") )
-                mainChatThread.chatAdapter.putDivider(msg.getBody());
-            else
+            if ( msg.getPacketID().equals("divider") ) {
+                ListChatItem lItem = mainChatThread.chatAdapter.putDivider(msg.getBody());
+                if ( Util.getDate(lItem.message) != null ) {
+                    lStamp = lItem;
+                }
+            } else
                 mainChatThread.chatAdapter.addItem(msg, false);
         }
-        mainChatThread.chatAdapter.putDivider("Ova sesija");
+        if (lStamp != null )
+            lStamp.message = "Ova sesija";
 
         for ( Message msg : Haber.getCachedLobbyMessages() )
             mainChatThread.chatAdapter.addItem(msg, false);

@@ -160,10 +160,10 @@ public class Util {
         return DateTimeFormat.forPattern(format).print(new DateTime(date.getTime()));
     }
 
-    public static Date getDate(String date) {
+    public static Date getDate(String date, String format) {
         Date res;
         try {
-            DateTimeFormatter sdf = DateTimeFormat.forPattern(TIME_FORMAT);
+            DateTimeFormatter sdf = DateTimeFormat.forPattern(format);
 
             res = sdf.parseDateTime(date).toDate();
         } catch ( Exception e ) {
@@ -172,6 +172,10 @@ public class Util {
         }
 
         return res;
+    }
+
+    public static Date getDate(String date) {
+        return getDate(date, TIME_FORMAT);
     }
 
     public static String _GeneratePacketId(Packet packet) {

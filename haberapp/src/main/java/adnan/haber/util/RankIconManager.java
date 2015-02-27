@@ -48,38 +48,15 @@ public class RankIconManager {
             span = "</lamija>";
         } else if ( rank == Rank.Merima ) {
             span = "</merima>";
+        } else if ( rank == Rank.Vedran ) {
+            span = "</vedran>";
         }
 
         return _getSpanned(context, span + "  " + altString);
     }
 
     public static Spannable getSpanned(Context context, String username)  {
-        Rank rank = HaberService.GetRankForUser(username);
-
-        String span = "</guest>";
-        if ( rank == Rank.Moderator || rank == Rank.Admin ) {
-            span = "</moderator>";
-        } else if ( rank == Rank.Adnan ) {
-            span = "</adnan>";
-        } else if ( rank == Rank.User ) {
-            span = "</user>";
-        } else if ( rank == Rank.Enil ) {
-            span = "</enil>";
-        } else if ( rank == Rank.Berina ) {
-            span = "</berina>";
-        } else if ( rank == Rank.Mathilda ) {
-            span = "</mathilda>";
-        } else if ( rank == Rank.Alma ) {
-            span = "</alma>";
-        } else if ( rank == Rank.Memi ) {
-            span = "</memi>";
-        } else if ( rank == Rank.Lamija ) {
-            span = "</lamija>";
-        } else if ( rank == Rank.Merima ) {
-            span = "</merima>";
-        }
-
-        return _getSpanned(context, span + "  " + Haber.getShortUsername(username));
+        return getSpanned(context, username, Haber.getShortUsername(username));
     }
 
     static {
@@ -94,6 +71,7 @@ public class RankIconManager {
         addPattern(emoticons, "</memi>", R.drawable.memi);
         addPattern(emoticons, "</lamija>", R.drawable.lamija);
         addPattern(emoticons, "</merima>", R.drawable.merima);
+        addPattern(emoticons, "</vedran>", R.drawable.tux);
     }
 
     private static void addPattern(Map<Pattern, Integer> map, String smile,

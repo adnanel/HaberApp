@@ -115,10 +115,8 @@ public class LeftDrawer extends PreferenceFragment {
         Arrays.sort(users, new Comparator<Object>() {
             @Override
             public int compare(Object lhs, Object rhs) {
-                Rank r1 = HaberService.GetRankForUser((String)rhs);
-                Rank r2 = HaberService.GetRankForUser((String)lhs);
-                int n1 = r1.toInt();
-                int n2 = r2.toInt();
+                int n1 = HaberService.GetRankForUser((String)rhs).toInt();
+                int n2 = HaberService.GetRankForUser((String)lhs).toInt();
                 return n1 > n2 ? 1 : n1 < n2 ? -1 : 0;
             }
         });
@@ -131,15 +129,6 @@ public class LeftDrawer extends PreferenceFragment {
             String user = (String)obj;
             if ( Haber.getShortUsername(user).equals(Haber.getUsername()))
                 continue;
-
-            boolean found = false;
-            for ( Preference pref : onlineUsers ) {
-                if ( pref.getKey().equals(user) ) {
-                    found = true;
-                    break;
-                }
-            }
-            if ( found ) continue;
 
             Preference pref = new Preference(getActivity());
 

@@ -44,6 +44,7 @@ public class Archive extends ActionBarActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_archive);
+        getSupportActionBar().hide();
 
         listView = (ListView)findViewById(R.id.lvArchive);
 
@@ -95,6 +96,7 @@ public class Archive extends ActionBarActivity {
                                         @Override
                                         public void run() {
                                             listView.setAdapter(adapter);
+                                            getSupportActionBar().show();
                                         }
                                     });
                                 } else {
@@ -117,6 +119,7 @@ public class Archive extends ActionBarActivity {
                                         @Override
                                         public void run() {
                                             listView.setAdapter(adapter);
+                                            getSupportActionBar().show();
                                         }
                                     });
                                 }
@@ -178,6 +181,7 @@ public class Archive extends ActionBarActivity {
                 @Override
                 public void run() {
                     listView.setAdapter(archiveAdapter);
+                    getSupportActionBar().hide();
                 }
             });
         }
@@ -199,7 +203,27 @@ public class Archive extends ActionBarActivity {
 
         //noinspection SimplifiableIfStatement
         if (id == R.id.action_export) {
-            Toast.makeText(this, "todo :|", Toast.LENGTH_SHORT).show();
+            AlertDialog.Builder builder = new AlertDialog.Builder(this);
+            builder.setTitle("Izaberi format");
+            builder.setPositiveButton("Prekid", null);
+            ArrayAdapter<String> adapter = new ArrayAdapter<String>(this, android.R.layout.simple_list_item_1, new String[] {
+                "CSV"
+            });
+            builder.setAdapter(adapter, new DialogInterface.OnClickListener() {
+                @Override
+                public void onClick(DialogInterface dialog, int which) {
+                    if ( which == 0 ) {
+                        //csv
+                        if ( !(listView.getAdapter() instanceof ReadOnlyChatAdapter) ) {
+                            Toast.makeText(Archive.this, "todo :|", Toast.LENGTH_SHORT).show();
+                            return;
+                        }
+
+                        ReadOnlyChatAdapter adapter = (ReadOnlyChatAdapter)listView.getAdapter();
+                    }
+                }
+            });
+            builder.create().show();
             return true;
         }
 

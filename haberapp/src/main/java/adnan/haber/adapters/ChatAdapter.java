@@ -181,15 +181,20 @@ public class ChatAdapter extends ArrayAdapter<ListChatItem> {
             return;
         }
 
-        if ( !msg.getPacketID().equals("divider") )
-            for ( ListChatItem citem : items ) {
-                if ( citem.isSpacer ) continue;
+        if ( !msg.getPacketID().equals("divider") ) {
+            int start = items.size() - 40;
+            if ( start < 0 ) start = 0;
 
-                if ( citem.id.equals(msg.getPacketID()) ) {
+            for (; start < items.size(); start ++ ) {
+                ListChatItem citem = items.get(start);
+                if (citem.isSpacer) continue;
+
+                if (citem.id.equals(msg.getPacketID())) {
                     Debug.log("Blocking duplicate message");
                     return;
                 }
             }
+        }
 
         ListChatItem item = new ListChatItem();
         item.rank = HaberService.GetRankForUser(msg.getFrom());

@@ -20,6 +20,7 @@ import org.jivesoftware.smackx.muc.MultiUserChat;
 import org.jivesoftware.smackx.muc.Occupant;
 
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 
@@ -72,6 +73,11 @@ public class HaberService extends Service implements Haber.HaberListener {
             haberListeners.add(listener);
     }
 
+    public static void StopService(Context context) throws Exception {
+        if ( instance == null ) throw new Exception("No service to stop!");
+        Haber.Disconnect();
+        instance.stopSelf();
+    }
     public static void RestartService(Context context) {
         try {
             Intent intent = new Intent(context, HaberService.class);
@@ -144,6 +150,8 @@ public class HaberService extends Service implements Haber.HaberListener {
             return Rank.Lamija;
         if ( Haber.getShortUsername(user).toUpperCase().equals("KOKI") )
             return Rank.Merima;
+        if ( Haber.getShortUsername(user).toUpperCase().equals("VEDRAN") )
+            return Rank.Vedran;
 
         if ( Haber.getShortUsername(user).charAt(0) == 'ǂ')
             return Rank.Guest;
@@ -227,6 +235,11 @@ public class HaberService extends Service implements Haber.HaberListener {
 
     @Override
     public void onCreate() {
+        //all that's initialized here, should be disposed in HaberService's onDestroy();
+        Debug.Initialize(this); // <- must be first
+        ChatSaver.Initialize(this);
+
+
         instance = this;
         haberCounter = new HaberCounter();
 
@@ -357,6 +370,8 @@ public class HaberService extends Service implements Haber.HaberListener {
 
     @Override
     public void onMessageReceived(Chat chat, Message message) {
+        Date date = new Date();
+
         message.setSubject(MessageDirection.INCOMING);
 
         ArrayList<Haber.HaberListener> corpses = new ArrayList<>();
@@ -423,6 +438,13 @@ public class HaberService extends Service implements Haber.HaberListener {
                 if ( shouldVibrate )
                     ((Vibrator) getSystemService(Context.VIBRATOR_SERVICE)).vibrate(100);
             }
+        }
+
+        long delay = ((new Date()).getTime() - date.getTime());
+        Debug.log("onMessageReceived - " + delay + " ms");
+        if ( delay > 300 ) {
+            Debug.log("Slow frame detected, data:");
+            Debug.log(String.format("Counter: %d\n chat is null: %d\ncorpses.length(): %d\nMessage: %s", counter, (chat == null) ? 1 : 0, corpses.size(), message.toXML().toString()));
         }
     }
     int counter = 0;
@@ -565,7 +587,7 @@ public class HaberService extends Service implements Haber.HaberListener {
             return pms;
         }
 
-        public void addPm(String from) {
+        private void addPm(String from) {
             if ( pms.containsKey(from))
                 pms.put(from, pms.get(from) + 1);
             else

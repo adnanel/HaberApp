@@ -102,6 +102,11 @@ public class Haber {
     }
 
     public static void QuickDisconnect() {
+        try {
+            haberChat.leave();
+        } catch ( Exception e ) {
+            Debug.log(e);
+        }
         instance = null;
     }
 
@@ -115,6 +120,7 @@ public class Haber {
                     instance.statusListener = null;
                 }
 
+                haberChat.leave();
                 instance.connection.disconnect();
             }
 

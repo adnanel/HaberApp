@@ -17,7 +17,8 @@ public enum Rank {
     User,
     Alma,
     Lamija,
-    Merima;
+    Merima,
+    Vedran;
 
     public static Rank fromString(String role) {
         if ( role.equals("moderator") ) return Moderator;
@@ -39,6 +40,7 @@ public enum Rank {
         if ( this == Enil ) return 170;
         if ( this == Adnan ) return 200;
         if ( this == Moderator ) return 300;
+        if ( this == Vedran ) return 350;
         if ( this == Admin ) return 400;
         Debug.log("This shouldnt happen! Unknown rank in toInt()! " + this.toString());
         return -1;

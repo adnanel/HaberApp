@@ -4,14 +4,14 @@ package adnan.haber.util;
  * Created by Adnan on 26.11.2014..
  */
 import android.content.Context;
-import android.content.SharedPreferences;
 import android.os.Environment;
 import android.util.Log;
 
-import java.io.BufferedOutputStream;
 import java.io.File;
 import java.io.FileOutputStream;
+import java.io.IOException;
 import java.io.PrintWriter;
+import java.io.Writer;
 
 import adnan.haber.fragments.AdvancedPreferences;
 
@@ -57,27 +57,48 @@ public class Debug {
     }
 
     public static void log(String msg) {
+        if ( context == null ) {
+            return;
+        }
+
         if (AdvancedPreferences.IsDebug(context) ) {
             try {
                 outputFile.println(msg);
             } catch ( Exception er ) {
                 //
             }
+
             Log.i(TAG, msg);
         }
     }
 
 
     public static void log(Exception e) {
-        String print = "Stack trace:\n";
-        for ( StackTraceElement stack : e.getStackTrace() ) {
-            print += stack.toString() + "\n";
-        }
-        print += "------------------\n";
-        print += "cause: " + e.getCause();
-        print += "class: " + e.getClass();
-        print += "------------------\n";
+        StringBuilder sb = new StringBuilder();
+        e.printStackTrace(new PrintWriter(new LogWriter(sb)));
+        log(sb.toString());
+    }
 
-        log( e.toString() + "\n\n" + print);
+    public static class LogWriter extends Writer {
+        private StringBuilder builder;
+        public LogWriter(StringBuilder builder) {
+            super();
+            this.builder = builder;
+        }
+
+        @Override
+        public void close() throws IOException {
+
+        }
+
+        @Override
+        public void flush() throws IOException {
+
+        }
+
+        @Override
+        public void write(char[] buf, int offset, int count) throws IOException {
+            builder.append(buf, offset, count);
+        }
     }
 }

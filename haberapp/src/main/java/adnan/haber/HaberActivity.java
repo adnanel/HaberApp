@@ -415,7 +415,7 @@ public class HaberActivity extends ActionBarActivity implements Haber.HaberListe
 
 
             int counter = 0;
-            for ( Message msg : ChatSaver.getSavedMessages() ) {
+            for ( Message msg : ChatSaver.getSavedMessages(150) ) {
                 if ( msg.getFrom().equals(chats.getParticipant()) || msg.getTo().equals(chats.getParticipant())) {
                     thread.chatAdapter.addItem(msg);
                     counter++;
@@ -977,7 +977,6 @@ public class HaberActivity extends ActionBarActivity implements Haber.HaberListe
                     tabView.setUnreadMessagesCount((tabView.getUnreadMessagesCount() + 1));
                 }
             });
-
         }
 
         public void setUnreadMessagesCount(final int counter) {
@@ -1112,8 +1111,7 @@ public class HaberActivity extends ActionBarActivity implements Haber.HaberListe
                     public void run() {
 
                         try {
-                            Intent intent = new Intent(HaberActivity.this, HaberService.class);
-                            stopService(intent);
+                            HaberService.StopService(HaberActivity.this);
                         } catch ( Exception e ) {
                             Debug.log(e);
                         }

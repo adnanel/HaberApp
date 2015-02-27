@@ -14,6 +14,7 @@ import java.util.Calendar;
 import java.util.Date;
 
 import adnan.haber.Haber;
+import adnan.haber.HaberActivity;
 import adnan.haber.HaberService;
 import adnan.haber.packets.PacketTimeStamp;
 import adnan.haber.types.ListChatItem;
@@ -26,7 +27,7 @@ public class ChatSaver implements Haber.HaberListener {
 
     private static Context context;
 
-    private final static String PREFS = "chat_cache_v4";
+    private final static String PREFS = "chat_cache_v4_1";
     private final static String PREF_COUNT  = "count";
     private final static String PREF_BODY   = "body";
     private final static String PREF_FROM   = "from";
@@ -48,6 +49,13 @@ public class ChatSaver implements Haber.HaberListener {
     }
 
     private static SharedPreferences getSharedPreferences() {
+        if ( context == null ) {
+            Debug.log("I have no context!!! Trying to pull one from the activity if its active to avoid crash...");
+            if (HaberActivity.InstanceExists())
+                context = HaberActivity.getInstance();
+            else
+                Debug.log("No luck, WE'RE GOING DOWN!!!");
+        }
         return context.getSharedPreferences(PREFS, Context.MODE_PRIVATE);
     }
 
@@ -63,23 +71,54 @@ public class ChatSaver implements Haber.HaberListener {
     public static void Initialize(Context context) {
         ChatSaver.context = context;
 
-        if ( instance == null ) {
-            instance = new ChatSaver();
-
-            Message message = new Message();
-            message.setFrom("divider");
-            message.setSubject("divider");
-            message.setPacketID("divider");
-            message.setBody(Util.dateToFormat("dd-MM-yyyy HH:mm", new Date()));
-            instance.onMessageReceived(null, message);
-            HaberService.addHaberListener(instance);
+        if ( instance != null ) {
+            Finalize();
         }
+
+        instance = new ChatSaver();
+
+        Message message = new Message();
+        message.setFrom("divider");
+        message.setSubject("divider");
+        message.setPacketID("divider");
+        message.setBody(Util.dateToFormat("dd-MM-yyyy HH:mm", new Date()));
+        instance.onMessageReceived(null, message);
+        HaberService.addHaberListener(instance);
     }
 
     public static int getSavedMessagesCount() {
         return getSharedPreferences().getInt(PREF_COUNT, 0);
     }
 
+    public static boolean MessageExists(String id) {
+        return MessageExists(id, getSavedMessagesCount());
+    }
+
+
+    public static boolean MessageExists(String id, int count ) {
+        int i = getSavedMessagesCount() - count;
+        if ( i < 0 ) i = 0;
+        SharedPreferences prefs = getSharedPreferences();
+        for (; i < getSavedMessagesCount(); i ++ ) {
+            if ( prefs.getString(PREF_ID + i, "").equals(id) ) return true;
+        }
+        return false;
+    }
+
+    public static boolean LobbyMessageExists(String id) {
+        return LobbyMessageExists(id, getSavedLobbyMessagesCount());
+    }
+
+
+    public static boolean LobbyMessageExists(String id, int count ) {
+        int i = getSavedMessagesCount() - count;
+        if ( i < 0 ) i = 0;
+        SharedPreferences prefs = getSharedPreferences();
+        for (; i < getSavedLobbyMessagesCount(); i ++ ) {
+            if ( prefs.getString(PREF_LOBBY_ID + i, "").equals(id) ) return true;
+        }
+        return false;
+    }
 
     public static ArrayList<Message> getSavedMessages() {
         return getSavedMessages(30);
@@ -209,17 +248,15 @@ public class ChatSaver implements Haber.HaberListener {
 
 
     static void SaveMessage(Message msg) {
-        ArrayList<Message> messages = getSavedMessages(10);
-        for ( Message message : messages ) {
-            if ( message.getPacketID().equals(msg.getPacketID())) return;
-        }
+        if ( MessageExists(msg.getPacketID(), 25)) return;
 
         SharedPreferences.Editor editor = getSharedPreferences().edit();
 
         int i = getSavedMessagesCount();
-        editor.putInt(PREF_LOBBY_COUNT, i + 1);
+        editor.putInt(PREF_COUNT, i + 1);
         editor.putString(PREF_BODY + i, msg.getBody());
         editor.putString(PREF_FROM + i, msg.getFrom());
+        editor.putString(PREF_TO + i, msg.getTo());
         editor.putString(PREF_ID + i, msg.getPacketID());
         editor.putString(PREF_TSTAMP + i, getTimeStamp(msg));
         editor.putString(PREF_DIR + i, msg.getSubject());
@@ -229,10 +266,7 @@ public class ChatSaver implements Haber.HaberListener {
     }
 
     static void SaveLobbyMessage(Message msg) {
-        ArrayList<Message> messages = getSavedLobbyMessages(10);
-        for ( Message message : messages ) {
-            if ( message.getPacketID().equals(msg.getPacketID())) return;
-        }
+        if ( LobbyMessageExists(msg.getPacketID(), 25)) return;
 
         SharedPreferences.Editor editor = getSharedPreferences().edit();
 

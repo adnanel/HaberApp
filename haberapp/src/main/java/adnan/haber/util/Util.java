@@ -2,8 +2,12 @@ package adnan.haber.util;
 
 import android.content.Context;
 import android.content.res.Resources;
+import android.net.http.SslError;
 import android.util.Base64;
 import android.util.TypedValue;
+import android.webkit.SslErrorHandler;
+import android.webkit.WebView;
+import android.webkit.WebViewClient;
 
 import org.apache.http.HttpVersion;
 import org.apache.http.client.HttpClient;
@@ -201,6 +205,7 @@ public class Util {
             }
         }
     }
+
 
     public static String DownloadString(String _url) {
         try

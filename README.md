@@ -8,6 +8,13 @@ https://dl.dropboxusercontent.com/u/67764496/haber/haberapp-debug.apk
 
 # Change log
 ------------------
+Verzija 0.7
+------------------
+NOTE: INSTALACIJA OVOG UPDATE-A NECE USPIJETI!!! NAKON GRESKE
+DEINSTALIRAJ APP PA INSTALIRAJ 101.APK SA SD KARTICE\haberTemp\101.apk
+------------------
+- So much stuff I forgot to write any of it down.
+
 Verzija 0.5b
 ------------------
 - Jako puno ispravljenih bugova

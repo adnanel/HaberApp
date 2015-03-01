@@ -20,7 +20,7 @@ public class CredentialManager {
         editor.putString(PREF_USERNAME, Util.Encode(username));
         editor.putBoolean(PREF_LOGIN_ON_STARTUP, loginOnStartup);
 
-        editor.commit();
+        editor.apply();
     }
 
     public static boolean ShouldLoginOnStartup(Context context) {

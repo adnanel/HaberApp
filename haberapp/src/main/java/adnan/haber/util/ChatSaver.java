@@ -199,7 +199,7 @@ public class ChatSaver implements Haber.HaberListener {
     public static void ClearCache() {
         SharedPreferences.Editor editor = getSharedPreferences().edit();
         editor.clear();
-        editor.commit();
+        editor.apply();
     }
 
     static void saveMessages(ArrayList<Message> messages) {
@@ -217,7 +217,7 @@ public class ChatSaver implements Haber.HaberListener {
             i++;
         }
 
-        editor.commit();
+        editor.apply();
     }
 
     private static String getTimeStamp(Message message) {
@@ -243,7 +243,7 @@ public class ChatSaver implements Haber.HaberListener {
             i++;
         }
 
-        editor.commit();
+        editor.apply();
     }
 
 
@@ -262,7 +262,7 @@ public class ChatSaver implements Haber.HaberListener {
         editor.putString(PREF_DIR + i, msg.getSubject());
 
 
-        editor.commit();
+        editor.apply();
     }
 
     static void SaveLobbyMessage(Message msg) {
@@ -279,7 +279,7 @@ public class ChatSaver implements Haber.HaberListener {
         editor.putString(PREF_LOBBY_DIR + i, msg.getSubject());
 
 
-        editor.commit();
+        editor.apply();
     }
 
     @Override

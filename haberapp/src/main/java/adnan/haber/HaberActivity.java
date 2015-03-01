@@ -808,7 +808,7 @@ public class HaberActivity extends ActionBarActivity implements Haber.HaberListe
                     } else {
                         //someone else got kicked
 
-                        message = params[1] + " kickuje " + params[0] + ", razlog: " + params[2];
+                        message = params[0] + " je kickovan!";
                     }
                 } else if ( event == Haber.ChatEvent.Banned ) {
                     if ( params.length == 2 ) {
@@ -823,7 +823,7 @@ public class HaberActivity extends ActionBarActivity implements Haber.HaberListe
                     } else {
                         //someone else got kicked
 
-                        message = params[1] + " banuje " + params[0] + ", razlog: " + params[2];
+                        message = params[0] + " je banovan!";
 
                     }
                 } else if ( event == Haber.ChatEvent.Joined ) {

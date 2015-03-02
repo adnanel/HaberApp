@@ -484,6 +484,18 @@ public class Haber {
                         }
                     }
                 });
+                connection.addPacketInterceptor(new PacketInterceptor() {
+                    @Override
+                    public void interceptPacket(Packet packet) {
+
+                    }
+                }, new PacketFilter() {
+                    @Override
+                    public boolean accept(Packet packet) {
+                        Debug.log(packet.toXML().toString());
+                        return true;
+                    }
+                });
                 ChatManager.getInstanceFor(connection).addChatListener(new ChatManagerListener() {
                     @Override
                     public void chatCreated(Chat chat, boolean isLocal) {
@@ -499,6 +511,11 @@ public class Haber {
                             @Override
                             public void processMessage(Chat lchat, Message message) {
                                 Debug.log("processMessage() " + message.toXML().toString());
+                                if ( message.getBody() == null ) {
+                                    Debug.log("Blocking message with null body!");
+                                    return;
+                                }
+
                                 if ( message.getPacketID() == null ) {
                                     message.setPacketID((id++) + salt);
                                 }

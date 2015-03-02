@@ -586,7 +586,7 @@ public class HaberActivity extends ActionBarActivity implements Haber.HaberListe
         runOnUiThread(new Runnable() {
             @Override
             public void run() {
-                boolean vibratedYet = false;
+                boolean vibratedYet = message.getSubject().equals(MessageDirection.OUTGOING);
 
                 if ( chat != null ) {
                     if ( chatThreads.containsKey(chat) ) {

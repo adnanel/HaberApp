@@ -412,7 +412,7 @@ public class HaberService extends Service implements Haber.HaberListener {
         }
 
         counter++;
-        if ( counter >= 25 ) {
+        if ( counter >= 25 && !message.getSubject().equals(MessageDirection.OUTGOING)) {
             if (AdvancedPreferences.ShouldVibrate(this) && AdvancedPreferences.ShouldVibrateInService(this) && !HaberActivity.InstanceExists()) {
                 boolean shouldVibrate = false;
                 if ( chat == null ) {

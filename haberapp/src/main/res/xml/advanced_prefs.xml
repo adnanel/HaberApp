@@ -34,6 +34,6 @@
 
         <Preference android:title="Report bug" android:key="reportbug"/>
         <Preference android:title="O aplikaciji..." android:key="about"/>
-        <Preference android:title="Verzija" android:key="version" android:summary="0.6.1  27.2.2015"/>
+        <Preference android:title="Verzija" android:key="version" android:summary="0.6.2"/>
     </PreferenceCategory>
 </PreferenceScreen>

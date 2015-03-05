@@ -30,9 +30,10 @@ import adnan.haber.types.Rank;
 import adnan.haber.util.ChatSaver;
 import adnan.haber.util.Debug;
 
-public class HaberService extends Service implements Haber.HaberListener {
+public class HaberService extends Service implements Haber.HaberListener, Haber.RoleChangeListener {
     private static List<Runnable> runnables = new ArrayList<>();
     private static List<Haber.HaberListener> haberListeners = new ArrayList<>();
+    private static List<Haber.RoleChangeListener> roleChangeListeners = new ArrayList<>();
 
     static List<Chat> chatRooms = new ArrayList<>();
     private static MultiUserChat haberChat;
@@ -67,6 +68,12 @@ public class HaberService extends Service implements Haber.HaberListener {
         runnables.remove(runnables.size() - 1);
         return run;
     }
+
+    public static synchronized void addRoleListener(Haber.RoleChangeListener listener) {
+        if ( roleChangeListeners.contains(listener) )
+            roleChangeListeners.add(listener);
+    }
+
 
     public static synchronized void addHaberListener(Haber.HaberListener listener) {
         if ( !haberListeners.contains(listener) )
@@ -124,15 +131,22 @@ public class HaberService extends Service implements Haber.HaberListener {
             return rankCache.get(user);
         }
         Rank rank;
-        rankCache.put(user, rank = findRankForUser(user));
+        try {
+            rankCache.put(user, rank = findRankForUser(user));
+        } catch ( TemporaryUnknownException er ) {
+            Debug.log(String.format("Rank for %s is temporary unknown, treating him like a guest.", user));
+            return Rank.Guest;
+        }
         return rank;
     }
 
-    private static Rank findRankForUser(String user) {
-        if ( haberChat == null ) return Rank.Guest;
+    private static Rank findRankForUser(String user) throws TemporaryUnknownException {
+        if ( haberChat == null )
+            throw new TemporaryUnknownException();
 
         Occupant occupant = haberChat.getOccupant(Haber.getFullUsername(user));
-        if ( occupant == null ) return Rank.Guest;
+        if ( occupant == null )
+            throw new TemporaryUnknownException();
 
         if ( Haber.getShortUsername(user).toUpperCase().equals("ADNAN_E") )
             return Rank.Adnan;
@@ -563,6 +577,46 @@ public class HaberService extends Service implements Haber.HaberListener {
         throw new UnsupportedOperationException("Not yet implemented");
     }
 
+    @Override
+    public void onModeratorGranted(String username) {
+
+    }
+
+    @Override
+    public void onModeratorGranted() {
+
+    }
+
+    @Override
+    public void onModeratorRevoked(String username) {
+
+    }
+
+    @Override
+    public void onModeratorRevoked() {
+
+    }
+
+    @Override
+    public void onAdminGranted(String username) {
+
+    }
+
+    @Override
+    public void onAdminGranted() {
+
+    }
+
+    @Override
+    public void onAdminRevoked(String username) {
+
+    }
+
+    @Override
+    public void onAdminRevoked() {
+
+    }
+
     public class HaberCounter {
         private HashMap<String, Integer> pms = new HashMap<>();
         private int mentionCounter = 0;
@@ -595,5 +649,8 @@ public class HaberService extends Service implements Haber.HaberListener {
 
             pmCount ++;
         }
+    }
+
+    public static class TemporaryUnknownException extends Exception {
     }
 }

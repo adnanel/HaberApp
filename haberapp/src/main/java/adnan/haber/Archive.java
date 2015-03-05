@@ -89,7 +89,9 @@ public class Archive extends ActionBarActivity {
                                     final ReadOnlyChatAdapter adapter = new ReadOnlyChatAdapter(Archive.this, new ArrayList<ListChatItem>());
 
                                     for ( Message msg : ChatSaver.getSavedLobbyMessages(ChatSaver.ALL)) {
-                                        adapter.addItem(msg);
+                                        if (!msg.getPacketID().equals("divider") ) {
+                                            adapter.addItem(msg);
+                                        }
                                     }
 
                                     runOnUiThread(new Runnable() {
@@ -105,8 +107,9 @@ public class Archive extends ActionBarActivity {
                                     for (Message msg : ChatSaver.getSavedMessages(ChatSaver.ALL)) {
                                         if (msg.getTo() == null || msg.getFrom() == null) continue;
                                         if (msg.getSubject() == null) continue;
-
-                                        if (msg.getSubject().equals(MessageDirection.INCOMING)) {
+                                        if (msg.getPacketID().equals("divider") ) {
+                                            adapter.putDivider(msg.getBody());
+                                        } else if (msg.getSubject().equals(MessageDirection.INCOMING)) {
                                             if (msg.getFrom().equals(item.username))
                                                 adapter.addItem(msg);
                                         } else if (msg.getSubject().equals(MessageDirection.OUTGOING)) {
@@ -132,44 +135,6 @@ public class Archive extends ActionBarActivity {
 
     }
 
-    public void openUrl(final String url) {
-        runOnUiThread(new Runnable() {
-            @Override
-            public void run() {
-                AlertDialog.Builder builder = new AlertDialog.Builder(Archive.this);
-                builder.setNegativeButton("Zatvori", new DialogInterface.OnClickListener() {
-                    @Override
-                    public void onClick(DialogInterface dialog, int which) {
-                        dialog.cancel();
-                    }
-                });
-                builder.setNeutralButton("Otvori u browseru", new DialogInterface.OnClickListener() {
-                    @Override
-                    public void onClick(DialogInterface dialog, int which) {
-                        Intent i = new Intent(Intent.ACTION_VIEW);
-                        i.setData(Uri.parse(url));
-                        startActivity(i);
-                    }
-                });
-                View view = getLayoutInflater().inflate(R.layout.urlviewer, null);
-
-                WebView webView = (WebView)view.findViewById(R.id.webView);
-                webView.getSettings().setJavaScriptEnabled(true);
-                webView.setWebViewClient(new HaberSSLSocketFactory());
-
-                if ( url.endsWith(".jpg") && url.startsWith("http://pokit.org/get/?")) {
-                    String nUrl = url.replace("get/?", "get/img/");
-                    webView.loadUrl(nUrl);
-                } else
-                    webView.loadUrl(url);
-
-                builder.setView(view);
-                AlertDialog dialog = builder.create();
-                dialog.getWindow().requestFeature(Window.FEATURE_NO_TITLE);
-                dialog.show();
-            }
-        });
-    }
 
     @Override
     public void onBackPressed() {

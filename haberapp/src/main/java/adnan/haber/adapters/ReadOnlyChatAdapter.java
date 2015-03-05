@@ -267,7 +267,7 @@ public class ReadOnlyChatAdapter extends ArrayAdapter<ListChatItem> {
         ClickableSpan clickable = new ClickableSpan() {
             public void onClick(View view) {
                 Toast.makeText(context, "Učitavam...", Toast.LENGTH_SHORT).show();
-                context.openUrl(url);
+                Util.openUrl(context, url);
             }
         };
         strBuilder.setSpan(clickable, start, end, flags);

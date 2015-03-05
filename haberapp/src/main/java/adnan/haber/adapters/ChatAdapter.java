@@ -22,6 +22,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.view.WindowManager;
 import android.widget.ArrayAdapter;
+import android.widget.FrameLayout;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -332,7 +333,6 @@ public class ChatAdapter extends ArrayAdapter<ListChatItem> {
             (tvTime).setText(Util.dateToFormat("HH:mm", items.get(position).time));
 
             if (BoundedLinearLayout.getBoundWidth() == 0 ) {
-                BoundedLinearLayout.setWidth(-1);
                 rowView.post(new Runnable() {
                     @Override
                     public void run() {
@@ -350,6 +350,7 @@ public class ChatAdapter extends ArrayAdapter<ListChatItem> {
                         }
 
                         BoundedLinearLayout.setWidth(width - (int)(tvTime.getWidth() * 1.5) );
+                        rowView.invalidate();
                     }
                 });
             }
@@ -373,7 +374,16 @@ public class ChatAdapter extends ArrayAdapter<ListChatItem> {
                                     .getSystemService(Context.LAYOUT_INFLATER_SERVICE);
 
                             final View view = inflater.inflate(R.layout.single_user_menu, switcher, false);
-
+                            view.post(new Runnable() {
+                                @Override
+                                public void run() {
+                                    try {
+                                        view.getLayoutParams().height = switcher.getLayoutParams().height;
+                                    } catch ( Exception er ) {
+                                        Debug.log(er);
+                                    }
+                                }
+                            });
                             switcher.addView(view);
                             switcher.setInAnimation(context, R.anim.slide_in_left);
                             switcher.setOutAnimation(context, R.anim.slide_out_right);
@@ -445,7 +455,7 @@ public class ChatAdapter extends ArrayAdapter<ListChatItem> {
         ClickableSpan clickable = new ClickableSpan() {
             public void onClick(View view) {
                 Toast.makeText(context, "Učitavam...", Toast.LENGTH_SHORT).show();
-                context.openUrl(url);
+                Util.openUrl(context, url);
             }
         };
         strBuilder.setSpan(clickable, start, end, flags);

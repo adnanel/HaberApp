@@ -112,7 +112,7 @@ public class SplashScreen extends ActionBarActivity implements Haber.HaberListen
                 ((TextView)findViewById(R.id.tvCounter)).setText(counter + "");
             }
         });
-        if ( counter >= 17 ) {
+        if ( counter >= 10 ) {
             start();
         }
 

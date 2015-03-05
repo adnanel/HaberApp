@@ -1,13 +1,22 @@
 package adnan.haber.util;
 
+import android.app.Activity;
+import android.app.AlertDialog;
 import android.content.Context;
+import android.content.DialogInterface;
+import android.content.Intent;
 import android.content.res.Resources;
+import android.net.Uri;
 import android.net.http.SslError;
 import android.util.Base64;
 import android.util.TypedValue;
+import android.view.View;
+import android.view.Window;
 import android.webkit.SslErrorHandler;
 import android.webkit.WebView;
 import android.webkit.WebViewClient;
+import android.widget.EditText;
+import android.widget.Toast;
 
 import org.apache.http.HttpVersion;
 import org.apache.http.client.HttpClient;
@@ -47,6 +56,7 @@ import java.util.Locale;
 import java.util.Random;
 
 import adnan.haber.Haber;
+import adnan.haber.R;
 import adnan.haber.fragments.AdvancedPreferences;
 import adnan.haber.packets.PacketTimeStamp;
 
@@ -206,6 +216,62 @@ public class Util {
         }
     }
 
+
+
+    public static void openUrl(final Activity activity, String _url) {
+        if (!_url.matches("^\\w+?://.*")) {
+            _url = "http://" + _url;
+        }
+
+        final String url = _url;
+        activity.runOnUiThread(new Runnable() {
+            @Override
+            public void run() {
+                AlertDialog.Builder builder = new AlertDialog.Builder(activity);
+                builder.setNegativeButton("Zatvori", new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialog, int which) {
+                        dialog.cancel();
+                    }
+                });
+                builder.setNeutralButton("Otvori u browseru", new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialog, int which) {
+                        Intent i = new Intent(Intent.ACTION_VIEW);
+                        i.setData(Uri.parse(url));
+                        try {
+                            activity.startActivity(i);
+                        } catch ( Exception er ) {
+                            Debug.log("No browser found!");
+                            activity.runOnUiThread(new Runnable() {
+                                @Override
+                                public void run() {
+                                    Toast.makeText(activity, "Nije pronadjen ni jedan web browser!", Toast.LENGTH_SHORT).show();
+                                }
+                            });
+                        }
+                    }
+                });
+                View view = activity.getLayoutInflater().inflate(R.layout.urlviewer, null);
+
+                ((EditText)view.findViewById(R.id.etUrl)).setText(url);
+                WebView webView = (WebView)view.findViewById(R.id.webView);
+                webView.setWebViewClient(new HaberSSLSocketFactory());
+
+                webView.getSettings().setJavaScriptEnabled(true);
+                if ( (url.endsWith(".jpg") || url.endsWith(".png")) && url.startsWith("http://pokit.org/get/?")) {
+                    String nUrl = url.replace("get/?", "get/img/");
+                    webView.loadUrl(nUrl);
+                } else
+                    webView.loadUrl(url);
+
+                builder.setView(view);
+                AlertDialog dialog = builder.create();
+                dialog.getWindow().requestFeature(Window.FEATURE_NO_TITLE);
+                dialog.show();
+            }
+        });
+    }
 
     public static String DownloadString(String _url) {
         try

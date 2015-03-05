@@ -47,11 +47,40 @@ public class LeftDrawer extends PreferenceFragment {
 
     private ArrayList<Preference> onlineUsers = new ArrayList<Preference>();
     private PreferenceCategory prefcat;
+    private Preference btLogin;
 
     public static LeftDrawer newInstance(Context context) {
         LeftDrawer instance = new LeftDrawer();
         instance.context = context;
         return instance;
+    }
+
+    public void refreshUsername() {
+        if ( btLogin == null ) return;
+
+        if ( !Haber.IsGuest() ) {
+            new Thread() {
+                @Override
+                public void run() {
+                    this.setPriority(Thread.MIN_PRIORITY);
+                    while ( !this.isInterrupted() ) {
+                        try {
+                            if ( Haber.isConnected() ) break;
+                            Thread.sleep(100);
+                        } catch ( Exception er ) {
+                            Debug.log(er);
+                        }
+                    }
+
+                    getActivity().runOnUiThread(new Runnable() {
+                        @Override
+                        public void run() {
+                            btLogin.setTitle(RankIconManager.getSpanned(getActivity(), Haber.getUsername(), "Logout"));
+                        }
+                    });
+                }
+            }.start();
+        }
     }
 
     @Override
@@ -60,34 +89,14 @@ public class LeftDrawer extends PreferenceFragment {
         view.setBackgroundColor(Color.parseColor("#ff3c3f41"));
 
         if ( prefcat == null ) {
-            final Preference btLogin = new Preference(getActivity());
+            btLogin = new Preference(getActivity());
             if ( Haber.IsGuest() ) {
                 btLogin.setKey("login");
                 btLogin.setTitle("Login");
             } else {
                 btLogin.setKey("logout");
                 btLogin.setSummary(Haber.getUsername());
-                new Thread() {
-                    @Override
-                    public void run() {
-                        this.setPriority(Thread.MIN_PRIORITY);
-                        while ( !this.isInterrupted() ) {
-                            try {
-                                if ( Haber.isConnected() ) break;
-                                Thread.sleep(100);
-                            } catch ( Exception er ) {
-                                Debug.log(er);
-                            }
-                        }
-
-                        getActivity().runOnUiThread(new Runnable() {
-                            @Override
-                            public void run() {
-                                btLogin.setTitle(RankIconManager.getSpanned(getActivity(), Haber.getUsername(), "Logout"));
-                            }
-                        });
-                    }
-                }.start();
+                refreshUsername();
             }
 
             btLogin.setOrder(-1);
@@ -110,6 +119,8 @@ public class LeftDrawer extends PreferenceFragment {
             Debug.log("HaberService isn't running...");
             return;
         }
+
+        refreshUsername();
 
         Object[] users = HaberService.getHaberChat().getOccupants().toArray();
         Arrays.sort(users, new Comparator<Object>() {

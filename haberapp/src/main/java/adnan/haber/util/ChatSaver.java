@@ -248,7 +248,7 @@ public class ChatSaver implements Haber.HaberListener {
 
 
     static void SaveMessage(Message msg) {
-        if ( MessageExists(msg.getPacketID(), 25)) return;
+        if ( MessageExists(msg.getPacketID(), 75)) return;
 
         SharedPreferences.Editor editor = getSharedPreferences().edit();
 
@@ -266,7 +266,7 @@ public class ChatSaver implements Haber.HaberListener {
     }
 
     static void SaveLobbyMessage(Message msg) {
-        if ( LobbyMessageExists(msg.getPacketID(), 25)) return;
+        if ( LobbyMessageExists(msg.getPacketID(), 75)) return;
 
         SharedPreferences.Editor editor = getSharedPreferences().edit();
 

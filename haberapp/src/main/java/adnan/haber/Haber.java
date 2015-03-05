@@ -57,6 +57,8 @@ public class Haber {
     static String lastError = "";
 
     HaberListener statusListener;
+    RoleChangeListener roleChangeListener;
+
     Context context;
     XMPPConnection connection;
     private static MultiUserChat haberChat;
@@ -272,8 +274,7 @@ public class Haber {
                         SASLAuthentication.registerSASLMechanism("DIGEST-MD5", SASLDigestMD5Mechanism.class);
                         SASLAuthentication.supportSASLMechanism("DIGEST-MD5");
 
-
-                        connection.login(username, password);
+                        connection.login(username, password, username + "@etf.ba/");
                     } catch ( Exception er ) {
                         if ( er.toString().endsWith("not-authorized") ) {
                             setUser("");
@@ -297,9 +298,7 @@ public class Haber {
 
                 chat.addParticipantStatusListener(new ParticipantStatusListener() {
                     @Override
-                    public void joined(String s) {
-
-                    }
+                    public void joined(String s) { statusListener.onChatEvent(ChatEvent.Joined, s); }
 
                     @Override
                     public void left(String s) {
@@ -338,12 +337,14 @@ public class Haber {
 
                     @Override
                     public void moderatorGranted(String s) {
-
+                        if ( roleChangeListener != null )
+                            roleChangeListener.onModeratorGranted(s);
                     }
 
                     @Override
                     public void moderatorRevoked(String s) {
-
+                        if ( roleChangeListener != null )
+                            roleChangeListener.onModeratorRevoked(s);
                     }
 
                     @Override
@@ -358,12 +359,14 @@ public class Haber {
 
                     @Override
                     public void adminGranted(String s) {
-
+                        if ( roleChangeListener != null )
+                            roleChangeListener.onAdminGranted(s);
                     }
 
                     @Override
                     public void adminRevoked(String s) {
-
+                        if ( roleChangeListener != null )
+                            roleChangeListener.onAdminRevoked(s);
                     }
 
                     @Override
@@ -404,12 +407,14 @@ public class Haber {
 
                     @Override
                     public void moderatorGranted() {
-
+                        if ( roleChangeListener != null )
+                            roleChangeListener.onModeratorGranted();
                     }
 
                     @Override
                     public void moderatorRevoked() {
-
+                        if ( roleChangeListener != null )
+                            roleChangeListener.onModeratorRevoked();
                     }
 
                     @Override
@@ -424,12 +429,14 @@ public class Haber {
 
                     @Override
                     public void adminGranted() {
-
+                        if ( roleChangeListener != null )
+                            roleChangeListener.onAdminGranted();
                     }
 
                     @Override
                     public void adminRevoked() {
-
+                        if ( roleChangeListener != null )
+                            roleChangeListener.onAdminRevoked();
                     }
                 });
 
@@ -590,6 +597,19 @@ public class Haber {
         return true;
     }
 
+    public interface RoleChangeListener {
+        public abstract void onModeratorGranted(String username);
+        public abstract void onModeratorGranted(); //self
+
+        public abstract void onModeratorRevoked(String username);
+        public abstract void onModeratorRevoked(); //self
+
+        public abstract void onAdminGranted(String username);
+        public abstract void onAdminGranted(); //self
+
+        public abstract void onAdminRevoked(String username);
+        public abstract void onAdminRevoked(); //self
+    }
 
     public interface HaberListener {
         public abstract void onStatusChanged(String status);

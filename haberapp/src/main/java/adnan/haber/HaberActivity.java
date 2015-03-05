@@ -1,6 +1,7 @@
 package adnan.haber;
 
 import android.annotation.SuppressLint;
+import android.app.Activity;
 import android.app.AlertDialog;
 import android.content.Context;
 import android.content.DialogInterface;
@@ -24,6 +25,7 @@ import android.view.animation.Animation;
 import android.view.animation.AnimationUtils;
 import android.view.animation.TranslateAnimation;
 import android.webkit.WebView;
+import android.widget.AdapterView;
 import android.widget.EditText;
 import android.widget.HorizontalScrollView;
 import android.widget.LinearLayout;
@@ -55,11 +57,13 @@ import adnan.haber.util.Util;
 import adnan.haber.views.TabView;
 
 
-public class HaberActivity extends ActionBarActivity implements Haber.HaberListener {
+public class HaberActivity extends ActionBarActivity implements Haber.HaberListener, Haber.RoleChangeListener {
     HashMap<Chat, ChatThread> chatThreads = new HashMap<>();
     private ChatThread mainChatThread;
     private ListView chatListView;
     private AlertDialog smileyDialog;
+    private LeftDrawer mLeftDrawer;
+
 
     private boolean vibrationLock = true;
     private static HaberActivity instance = null;
@@ -243,44 +247,6 @@ public class HaberActivity extends ActionBarActivity implements Haber.HaberListe
         });
     }
 
-    public void openUrl(final String url) {
-        runOnUiThread(new Runnable() {
-            @Override
-            public void run() {
-                AlertDialog.Builder builder = new AlertDialog.Builder(HaberActivity.this);
-                builder.setNegativeButton("Zatvori", new DialogInterface.OnClickListener() {
-                    @Override
-                    public void onClick(DialogInterface dialog, int which) {
-                        dialog.cancel();
-                    }
-                });
-                builder.setNeutralButton("Otvori u browseru", new DialogInterface.OnClickListener() {
-                    @Override
-                    public void onClick(DialogInterface dialog, int which) {
-                        Intent i = new Intent(Intent.ACTION_VIEW);
-                        i.setData(Uri.parse(url));
-                        startActivity(i);
-                    }
-                });
-                View view = getLayoutInflater().inflate(R.layout.urlviewer, null);
-
-                WebView webView = (WebView)view.findViewById(R.id.webView);
-                webView.setWebViewClient(new HaberSSLSocketFactory());
-
-                webView.getSettings().setJavaScriptEnabled(true);
-                if ( (url.endsWith(".jpg") || url.endsWith(".png")) && url.startsWith("http://pokit.org/get/?")) {
-                    String nUrl = url.replace("get/?", "get/img/");
-                    webView.loadUrl(nUrl);
-                } else
-                    webView.loadUrl(url);
-
-                builder.setView(view);
-                AlertDialog dialog = builder.create();
-                dialog.getWindow().requestFeature(Window.FEATURE_NO_TITLE);
-                dialog.show();
-            }
-        });
-    }
 
     Chat getCurrentChat()  {
         if ( chatListView.getAdapter() == mainChatThread.chatAdapter )
@@ -372,7 +338,7 @@ public class HaberActivity extends ActionBarActivity implements Haber.HaberListe
 
         //attach left drawer
         FragmentTransaction transaction = getSupportFragmentManager().beginTransaction();
-        transaction.add(R.id.rlLeftDrawer, LeftDrawer.newInstance(this), LeftDrawer.TAG);
+        transaction.add(R.id.rlLeftDrawer, mLeftDrawer = LeftDrawer.newInstance(this), LeftDrawer.TAG);
         transaction.commit();
 
         Updater.CheckForUpdates(this, false);
@@ -433,6 +399,7 @@ public class HaberActivity extends ActionBarActivity implements Haber.HaberListe
         }
 
         HaberService.addHaberListener(this);
+        HaberService.addRoleListener(this);
 
         chatListView.setAdapter(mainChatThread.chatAdapter);
 
@@ -475,7 +442,6 @@ public class HaberActivity extends ActionBarActivity implements Haber.HaberListe
             }
         });
 
-        //todo shift enter fix
         (findViewById(R.id.editText)).setOnKeyListener(new View.OnKeyListener() {
             @Override
             public boolean onKey(View v, int keyCode, KeyEvent event) {
@@ -542,6 +508,17 @@ public class HaberActivity extends ActionBarActivity implements Haber.HaberListe
         };
 
         mDrawerLayout.setDrawerListener(mDrawerToggle);
+
+        chatListView.setOnItemLongClickListener(new AdapterView.OnItemLongClickListener() {
+            @Override
+            public boolean onItemLongClick(AdapterView<?> parent, View view, int position, long id) {
+                View nameCarry = view.findViewById(R.id.nameCarry);
+                if (nameCarry != null) {
+                    nameCarry.performClick();
+                }
+                return false;
+            }
+        });
 
         chatListView.post(new Runnable() {
             @Override
@@ -852,27 +829,7 @@ public class HaberActivity extends ActionBarActivity implements Haber.HaberListe
                         return;
                 }
 
-               final ListChatItem item = mainChatThread.chatAdapter.putDivider(message);
-
-                if ( AdvancedPreferences.ShouldClearNotifications(HaberActivity.this)) {
-                    new Thread() {
-                        @Override
-                        public void run() {
-                            try {
-                                Thread.sleep(AdvancedPreferences.GetStatusChangeTimeout(HaberActivity.this));
-                            } catch (Exception er) {
-                                Debug.log(er);
-                            }
-
-                            runOnUiThread(new Runnable() {
-                                @Override
-                                public void run() {
-                                    mainChatThread.chatAdapter.remove(item);
-                                }
-                            });
-                        }
-                    }.start();
-                }
+                addNotification(message);
 
                 scrollToBottom(true);
             }
@@ -903,6 +860,70 @@ public class HaberActivity extends ActionBarActivity implements Haber.HaberListe
         });
     }
 
+    public void addNotification(String message) {
+        final ListChatItem item = mainChatThread.chatAdapter.putDivider(message);
+
+        if ( AdvancedPreferences.ShouldClearNotifications(HaberActivity.this)) {
+            new Thread() {
+                @Override
+                public void run() {
+                    try {
+                        Thread.sleep(AdvancedPreferences.GetStatusChangeTimeout(HaberActivity.this));
+                    } catch (Exception er) {
+                        Debug.log(er);
+                    }
+
+                    runOnUiThread(new Runnable() {
+                        @Override
+                        public void run() {
+                            mainChatThread.chatAdapter.remove(item);
+                        }
+                    });
+                }
+            }.start();
+        }
+    }
+
+    @Override
+    public void onModeratorGranted(String username) {
+        addNotification(String.format("%s je dobio status moderatora!", username));
+    }
+
+    @Override
+    public void onModeratorGranted() {
+        addNotification(String.format("Dobio si status moderatora!"));
+    }
+
+    @Override
+    public void onModeratorRevoked(String username) {
+        addNotification(String.format("%s je izgubio status moderatora!", username));
+    }
+
+    @Override
+    public void onModeratorRevoked() {
+        addNotification(String.format("Izgubio si status moderatora!"));
+    }
+
+    @Override
+    public void onAdminGranted(String username) {
+        addNotification(String.format("%s si status admina!", username));
+    }
+
+    @Override
+    public void onAdminGranted() {
+        addNotification(String.format("Dobio si status admina!"));
+    }
+
+    @Override
+    public void onAdminRevoked(String username) {
+        addNotification(String.format("%s je izgubio status admina!", username));
+    }
+
+    @Override
+    public void onAdminRevoked() {
+        addNotification(String.format("Izgubio si status admina!"));
+    }
+
 
     public static enum TabState {
         Marked,
@@ -930,7 +951,7 @@ public class HaberActivity extends ActionBarActivity implements Haber.HaberListe
                 runOnUiThread(new Runnable() {
                     @Override
                     public void run() {
-                        (findViewById(R.id.editText)).setEnabled(isOnline());
+                        (findViewById(R.id.editText)).setEnabled(ChatThread.this.isOnline);
                     }
                 });
             }

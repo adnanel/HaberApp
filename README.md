@@ -8,10 +8,18 @@ https://dl.dropboxusercontent.com/u/67764496/haber/haberapp-debug.apk
 
 # Change log
 ------------------
+Verzija 0.7.3
+------------------
+- Ispravljen bug na online listi (pogresni rankovi prikazani)
+- Drasticno ubrzano kesiranje poruka
+- Ubacene notifikacije za moderator/admin granted/revoked
+- Resurs logovanog usera promjenjen sa ```user@etf.ba/Smack``` na ```user@etf.ba/```
+- Ispravljeno vise vizuelnih bugova
+- Ispravljeno gasenje habera preko notifikacije
+
 Verzija 0.7
 ------------------
-NOTE: INSTALACIJA OVOG UPDATE-A NECE USPIJETI!!! NAKON GRESKE
-DEINSTALIRAJ APP PA INSTALIRAJ 101.APK SA SD KARTICE\haberTemp\101.apk
+NOTE: INSTALACIJA OVOG UPDATE-A NECE USPIJETI!!! NAKON GRESKE DEINSTALIRAJ APP PA INSTALIRAJ 101.APK SA SD KARTICE\haberTemp\101.apk
 ------------------
 - So much stuff I forgot to write any of it down.
 

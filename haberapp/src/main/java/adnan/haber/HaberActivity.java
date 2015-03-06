@@ -120,6 +120,83 @@ public class HaberActivity extends ActionBarActivity implements Haber.HaberListe
         }
     };
 
+    public Chat findChatForUser(String user) {
+        for (Object o : chatThreads.entrySet()) {
+            Map.Entry pairs = (Map.Entry) o;
+            ChatThread thread = (ChatThread)pairs.getValue();
+
+            if ( thread.fullUser.equals(user) ) return (Chat)pairs.getKey();
+        }
+        return null;
+    }
+
+    public void sendMessage(String to, String body) {
+        Chat chat;
+        try {
+            chat = findChatForUser(to);
+        } catch ( Exception e ) {
+            Debug.log(e);
+            return;
+        }
+
+        if ( chat == null ) {
+            try {
+                if ( !Haber.IsHellBanned() ) {
+                    HaberService.getHaberChat().sendMessage(body);
+                } else {
+                    Message msg = new Message();
+                    msg.setBody(body);
+                    msg.setFrom(Haber.getFullUsername(Haber.getUsername()));
+                    msg.setTo(chat.getParticipant());
+                    msg.setSubject(MessageDirection.OUTGOING);
+
+                    try {
+                        msg.addExtension(new PacketTimeStamp(msg));
+                        msg.setPacketID(Util.GeneratePacketId(msg));
+                    } catch ( Exception er ) {
+                        Debug.log(er);
+                    }
+                    ChatSaver.OnMessageReceived(chat, msg);
+
+                    mainChatThread.chatAdapter.addItem(msg);
+                    runOnUiThread(new Runnable() {
+                        @Override
+                        public void run() {
+                            mainChatThread.chatAdapter.notifyDataSetChanged();
+                            scrollToBottom(true);
+                        }
+                    });
+                }
+            } catch (Exception e) {
+                Debug.log(e);
+            }
+        } else {
+            try {
+                chat.sendMessage(body);
+
+                Message msg = new Message();
+                msg.setBody(body);
+                msg.setFrom(Haber.getFullUsername(Haber.getUsername()));
+                msg.setTo(chat.getParticipant());
+                msg.setSubject(MessageDirection.OUTGOING);
+
+                try {
+                    msg.addExtension(new PacketTimeStamp(msg));
+                    msg.setPacketID(Util.GeneratePacketId(msg));
+                } catch ( Exception er ) {
+                    Debug.log(er);
+                }
+                ChatSaver.OnMessageReceived(chat, msg);
+
+                chatThreads.get(chat).chatAdapter.addItem(msg);
+
+                scrollToBottom(true);
+            } catch (Exception e) {
+                Debug.log(e);
+            }
+        }
+    }
+
     private Runnable sendMessage = new Runnable() {
         @Override
         public void run() {
@@ -138,64 +215,7 @@ public class HaberActivity extends ActionBarActivity implements Haber.HaberListe
                 Debug.log(e);
                 return;
             }
-
-            if ( chat == null ) {
-                try {
-                    if ( !Haber.IsHellBanned() ) {
-                        HaberService.getHaberChat().sendMessage(editText.getText().toString());
-                    } else {
-                        Message msg = new Message();
-                        msg.setBody(editText.getText().toString());
-                        msg.setFrom(Haber.getFullUsername(Haber.getUsername()));
-                        msg.setTo(chat.getParticipant());
-                        msg.setSubject(MessageDirection.OUTGOING);
-
-                        try {
-                            msg.addExtension(new PacketTimeStamp(msg));
-                            msg.setPacketID(Util.GeneratePacketId(msg));
-                        } catch ( Exception er ) {
-                            Debug.log(er);
-                        }
-                        ChatSaver.OnMessageReceived(chat, msg);
-
-                        mainChatThread.chatAdapter.addItem(msg);
-                        runOnUiThread(new Runnable() {
-                            @Override
-                            public void run() {
-                                mainChatThread.chatAdapter.notifyDataSetChanged();
-                                scrollToBottom(true);
-                            }
-                        });
-                    }
-                } catch (Exception e) {
-                    Debug.log(e);
-                }
-            } else {
-                try {
-                    String body = editText.getText().toString();
-                    chat.sendMessage(body);
-
-                    Message msg = new Message();
-                    msg.setBody(body);
-                    msg.setFrom(Haber.getFullUsername(Haber.getUsername()));
-                    msg.setTo(chat.getParticipant());
-                    msg.setSubject(MessageDirection.OUTGOING);
-
-                    try {
-                        msg.addExtension(new PacketTimeStamp(msg));
-                        msg.setPacketID(Util.GeneratePacketId(msg));
-                    } catch ( Exception er ) {
-                        Debug.log(er);
-                    }
-                    ChatSaver.OnMessageReceived(chat, msg);
-
-                    chatThreads.get(chat).chatAdapter.addItem(msg);
-
-                    scrollToBottom(true);
-                } catch (Exception e) {
-                    Debug.log(e);
-                }
-            }
+            sendMessage(chat.getParticipant(), editText.getText().toString());
 
             runOnUiThread(new Runnable() {
                 @Override

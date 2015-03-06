@@ -27,6 +27,7 @@ import org.jivesoftware.smackx.delay.packet.DelayInformation;
 import org.jivesoftware.smackx.muc.MultiUserChat;
 import org.jivesoftware.smackx.muc.ParticipantStatusListener;
 import org.jivesoftware.smackx.muc.UserStatusListener;
+import org.jivesoftware.smackx.pubsub.EventElement;
 import org.joda.time.format.DateTimeFormat;
 import org.joda.time.format.DateTimeFormatter;
 import org.xmlpull.v1.XmlPullParser;
@@ -233,6 +234,8 @@ public class Haber {
             if ( user.toUpperCase().endsWith("HABER") )
                 return user.substring(0, user.indexOf("@"));
             return user.substring(user.indexOf("/") + 1);
+        } else if ( user.toUpperCase().contains("@etf.ba") ) {
+            return user.substring(0, user.indexOf("@"));
         }
         return user;
     }
@@ -240,7 +243,8 @@ public class Haber {
     public static MultiUserChat getHaberChat() {
         if ( haberChat == null ) {
             Debug.log("haberChat is null!! Probably not even connected..");
-            instance.statusListener.onSoftDisconnect();
+            if ( instance != null )
+                instance.statusListener.onSoftDisconnect();
         }
         return haberChat;
     }
@@ -274,7 +278,7 @@ public class Haber {
                         SASLAuthentication.registerSASLMechanism("DIGEST-MD5", SASLDigestMD5Mechanism.class);
                         SASLAuthentication.supportSASLMechanism("DIGEST-MD5");
 
-                        connection.login(username, password, username + "@etf.ba/");
+                        connection.login(username, password, "");
                     } catch ( Exception er ) {
                         if ( er.toString().endsWith("not-authorized") ) {
                             setUser("");
@@ -447,11 +451,11 @@ public class Haber {
                     @Override
                     public void processPacket(Packet packet) throws SmackException.NotConnectedException {
                         Debug.log("processPacket() " + packet.toXML().toString());
-                        if ( !(packet instanceof Message ) ) return;
+                        if (!(packet instanceof Message)) return;
 
                         try {
-                            Message message = (Message)packet;
-                            if ( message.getPacketID() == null ) {
+                            Message message = (Message) packet;
+                            if (message.getPacketID() == null) {
                                 message.setPacketID((id++) + salt);
                             }
 
@@ -462,7 +466,7 @@ public class Haber {
                                             statusListener.onDeleteRequested(((DeletePacket) ex).target);
                                             return;
                                         } else if (ex instanceof HellbanPacket) {
-                                            if ( Haber.getFullUsername(Haber.getUsername()).toUpperCase().equals(Haber.getFullUsername(((HellbanPacket) ex).target).toUpperCase())) {
+                                            if (Haber.getFullUsername(Haber.getUsername()).toUpperCase().equals(Haber.getFullUsername(((HellbanPacket) ex).target).toUpperCase())) {
                                                 hellBanned = true;
                                                 statusListener.onChatEvent(ChatEvent.Hellbanned);
                                                 return;
@@ -470,7 +474,7 @@ public class Haber {
                                         }
                                     }
                                 }
-                            } catch ( Exception er ) {
+                            } catch (Exception er) {
                                 Debug.log(er);
                             }
 
@@ -478,14 +482,14 @@ public class Haber {
                             try {
                                 message.addExtension(new PacketTimeStamp(message));
                                 message.setPacketID(Util.GeneratePacketId(message));
-                            } catch ( Exception er ) {
+                            } catch (Exception er) {
                                 Debug.log(er);
                             }
 
 
                             statusListener.onMessageReceived(null, message);
                             addMessageToCache(message);
-                        } catch ( Exception e ) {
+                        } catch (Exception e) {
                             Debug.log("This exception is expected! " + e.toString());
                             Debug.log(e);
                         }
@@ -503,6 +507,8 @@ public class Haber {
                         return true;
                     }
                 });
+
+
                 ChatManager.getInstanceFor(connection).addChatListener(new ChatManagerListener() {
                     @Override
                     public void chatCreated(Chat chat, boolean isLocal) {

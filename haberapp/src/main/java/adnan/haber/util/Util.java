@@ -157,7 +157,7 @@ public class Util {
         return result;
     }
 
-    public static String TIME_FORMAT = "HH:mm yyyy-MM-dd";
+    public static String TIME_FORMAT = "HH:mm:ss'.'SS yyyy-MM-dd";
 
     public static String GeneratePacketId(Packet packet) {
         String res = _GeneratePacketId(packet);

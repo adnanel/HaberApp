@@ -16,6 +16,7 @@ Verzija 0.7.3
 - Resurs logovanog usera promjenjen sa ```user@etf.ba/Smack``` na ```user@etf.ba/```
 - Ispravljeno vise vizuelnih bugova
 - Ispravljeno gasenje habera preko notifikacije
+- Implementiran AutoReply-er
 
 Verzija 0.7
 ------------------

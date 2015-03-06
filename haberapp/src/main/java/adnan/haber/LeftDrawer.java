@@ -11,6 +11,7 @@ import android.graphics.Color;
 import android.graphics.drawable.ColorDrawable;
 import android.net.Uri;
 import android.os.Bundle;
+import android.preference.CheckBoxPreference;
 import android.preference.Preference;
 import android.preference.PreferenceCategory;
 import android.preference.PreferenceScreen;
@@ -24,6 +25,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.CheckBox;
 import android.widget.EditText;
+import android.widget.Spinner;
 import android.widget.Toast;
 
 import org.jivesoftware.smack.Chat;
@@ -36,6 +38,7 @@ import java.util.Map;
 
 import adnan.haber.fragments.ReportFragment;
 import adnan.haber.types.Rank;
+import adnan.haber.util.AutoReply;
 import adnan.haber.util.CredentialManager;
 import adnan.haber.util.Debug;
 import adnan.haber.util.RankIconManager;
@@ -220,6 +223,15 @@ public class LeftDrawer extends PreferenceFragment {
                 }
             }
         }.start();
+
+        CheckBoxPreference autoReply = (CheckBoxPreference)getPreferenceManager().findPreference("autoreply");
+        autoReply.setOnPreferenceChangeListener(new Preference.OnPreferenceChangeListener() {
+            @Override
+            public boolean onPreferenceChange(Preference preference, Object newValue) {
+                AutoReply.setEnabled(getActivity(), (boolean)newValue);
+                return true;
+            }
+        });
     }
 
     @Override
@@ -299,6 +311,27 @@ public class LeftDrawer extends PreferenceFragment {
             Intent intent = new Intent(getActivity(), AdvancedPrefsActivity.class);
             ActivityOptionsCompat activityOps = ActivityOptionsCompat.makeCustomAnimation(getActivity(), R.anim.slide_in_right, R.anim.slide_out_left);
             ActivityCompat.startActivity(getActivity(), intent, activityOps.toBundle());
+        } else if ( preference.getKey().equals("autoreplytext") ) {
+            getActivity().runOnUiThread(new Runnable() {
+                @Override
+                public void run() {
+                    AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
+                    builder.setTitle("Auto-Reply text");
+                    final View replyWindow = getActivity().getLayoutInflater().inflate(R.layout.autoreply, null);
+                    builder.setView(replyWindow);
+                    builder.setPositiveButton("OK", new DialogInterface.OnClickListener() {
+                        @Override
+                        public void onClick(DialogInterface dialog, int which) {
+                            EditText etMessage = (EditText)replyWindow.findViewById(R.id.editText6);
+                            AutoReply.saveMessage(getActivity(), etMessage.getText().toString());
+                            Spinner spinner = (Spinner)replyWindow.findViewById(R.id.spinner);
+                            AutoReply.setMode(getActivity(), (int)spinner.getSelectedItemId());
+                        }
+                    });
+                    builder.setNegativeButton("Prekid", null);
+                    builder.create().show();
+                }
+            });
         }
 
         return true;

@@ -27,8 +27,10 @@ import java.util.List;
 import adnan.haber.fragments.AdvancedPreferences;
 import adnan.haber.types.MessageDirection;
 import adnan.haber.types.Rank;
+import adnan.haber.util.AutoReply;
 import adnan.haber.util.ChatSaver;
 import adnan.haber.util.Debug;
+import adnan.haber.util.Util;
 
 public class HaberService extends Service implements Haber.HaberListener, Haber.RoleChangeListener {
     private static List<Runnable> runnables = new ArrayList<>();
@@ -160,7 +162,7 @@ public class HaberService extends Service implements Haber.HaberListener, Haber.
             return Rank.Alma;
         if ( Haber.getShortUsername(user).toUpperCase().equals("MEMI~") )
             return Rank.Memi;
-        if ( Haber.getShortUsername(user).toUpperCase().equals("ZAPHOD") )
+        if ( Haber.getShortUsername(user).toUpperCase().equals("ZAPHOD") || Haber.getShortUsername(user).toUpperCase().equals("LUCY") )
             return Rank.Lamija;
         if ( Haber.getShortUsername(user).toUpperCase().equals("KOKI") )
             return Rank.Merima;
@@ -385,7 +387,6 @@ public class HaberService extends Service implements Haber.HaberListener, Haber.
     @Override
     public void onMessageReceived(Chat chat, Message message) {
         Date date = new Date();
-
         message.setSubject(MessageDirection.INCOMING);
 
         ArrayList<Haber.HaberListener> corpses = new ArrayList<>();
@@ -460,6 +461,36 @@ public class HaberService extends Service implements Haber.HaberListener, Haber.
             Debug.log("Slow frame detected, data:");
             Debug.log(String.format("Counter: %d\n chat is null: %d\ncorpses.length(): %d\nMessage: %s", counter, (chat == null) ? 1 : 0, corpses.size(), message.toXML().toString()));
         }
+
+
+        //auto reply code
+        Debug.log("AutoReply is " + (AutoReply.getEnabled(this) ? "enabled" : "disabled"));
+
+        if (AutoReply.getEnabled(this) && (chat != null)) {
+            if ( AutoReply.getMode(this) == AutoReply.MODE_EVERY_MESSAGE) {
+                try {
+                    Debug.log("Sending AutoReply message to " + chat.getParticipant() + ", message: " + AutoReply.getMessage(this));
+
+                    if ( HaberActivity.InstanceExists() ) {
+                        HaberActivity.getInstance().sendMessage(message.getFrom(), AutoReply.getMessage(this));
+                    } else {
+                        Message msg = new Message();
+                        msg.setSubject(MessageDirection.OUTGOING);
+                        msg.setBody(AutoReply.getMessage(this));
+                        msg.setTo(message.getFrom());
+                        msg.setPacketID("autoReply");
+                        msg.setPacketID(Util.GeneratePacketId(msg));
+
+
+                        chat.sendMessage(msg.getBody());
+                        ChatSaver.OnMessageReceived(chat, msg);
+                    }
+                } catch ( Exception er ) {
+                    Debug.log(er);
+                }
+            }
+        }
+        //end of auto reply code
     }
     int counter = 0;
 

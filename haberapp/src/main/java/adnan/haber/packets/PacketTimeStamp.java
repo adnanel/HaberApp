@@ -6,6 +6,7 @@ import org.jivesoftware.smackx.delay.packet.DelayInformation;
 
 import java.util.Date;
 
+import adnan.haber.util.Debug;
 import adnan.haber.util.Util;
 
 /**
@@ -20,14 +21,17 @@ public class PacketTimeStamp implements PacketExtension {
     }
 
     public PacketTimeStamp(Message message) {
-        if ( message.getBody() != null ) {
-            for ( PacketExtension ext : message.getExtensions() ) {
-                if ( ext instanceof DelayInformation) {
+
+        try {
+            for (PacketExtension ext : message.getExtensions()) {
+                if (ext instanceof DelayInformation) {
 
                     time = Util.dateToFormat(((DelayInformation) ext).getStamp());
                     return;
                 }
             }
+        } catch ( Exception er ) {
+            Debug.log(er);
         }
 
         time = Util.dateToFormat(new Date());

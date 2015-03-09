@@ -222,6 +222,7 @@ public class ChatAdapter extends ArrayAdapter<ListChatItem> {
                 break;
             }
         }
+        Debug.log("addItem - " + msg.toString());
         items.add(item);
 
         if ( shouldNotifyDataSetChanged ) {

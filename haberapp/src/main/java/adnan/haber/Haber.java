@@ -242,6 +242,9 @@ public class Haber {
 
     public static MultiUserChat getHaberChat() {
         if ( haberChat == null ) {
+            if ( HaberService.haberChatExists() )
+                return haberChat = HaberService.getHaberChat();
+
             Debug.log("haberChat is null!! Probably not even connected..");
             if ( instance != null )
                 instance.statusListener.onSoftDisconnect();

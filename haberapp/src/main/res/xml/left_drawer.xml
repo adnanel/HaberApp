@@ -12,7 +12,7 @@
         <Preference android:title="Arhiva" android:key="archive"/>
 
         <CheckBoxPreference android:title="Auto-Reply" android:key="autoreply"/>
-        <Preference android:title="Auto-Reply postavke" android:key="autoreplytext" android:dependency="autoreply"/>
+        <Preference android:title="Auto-Reply postavke" android:key="autoreplytext" android:dependency="autoreply" android:defaultValue="false"/>
 
         <Preference android:title="Napredno" android:key="advanced"/>
     </PreferenceCategory>

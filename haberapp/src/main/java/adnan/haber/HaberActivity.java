@@ -121,11 +121,13 @@ public class HaberActivity extends ActionBarActivity implements Haber.HaberListe
     };
 
     public Chat findChatForUser(String user) {
+        String other  = Haber.getShortUsername(user);
+
         for (Object o : chatThreads.entrySet()) {
             Map.Entry pairs = (Map.Entry) o;
             ChatThread thread = (ChatThread)pairs.getValue();
 
-            if ( thread.fullUser.equals(user) ) return (Chat)pairs.getKey();
+            if ( Haber.getShortUsername(thread.fullUser).equalsIgnoreCase(other) ) return (Chat)pairs.getKey();
         }
         return null;
     }
@@ -215,7 +217,10 @@ public class HaberActivity extends ActionBarActivity implements Haber.HaberListe
                 Debug.log(e);
                 return;
             }
-            sendMessage(chat.getParticipant(), editText.getText().toString());
+            if ( chat != null )
+                sendMessage(chat.getParticipant(), editText.getText().toString());
+            else
+                sendMessage("haber", editText.getText().toString());
 
             runOnUiThread(new Runnable() {
                 @Override
@@ -381,8 +386,12 @@ public class HaberActivity extends ActionBarActivity implements Haber.HaberListe
         for ( Message msg : ChatSaver.getSavedLobbyMessages(30) ) {
             if ( msg.getPacketID().equals("divider") ) {
                 ListChatItem lItem = mainChatThread.chatAdapter.putDivider(msg.getBody());
-                if ( Util.getDate(lItem.message) != null ) {
-                    lStamp = lItem;
+                try {
+                    if (Util.getDate(lItem.message) != null) {
+                        lStamp = lItem;
+                    }
+                } catch ( Exception er ) {
+                    //divider wasnt a time divider
                 }
             } else
                 mainChatThread.chatAdapter.addItem(msg, false);

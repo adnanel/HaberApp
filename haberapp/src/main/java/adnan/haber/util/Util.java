@@ -157,7 +157,7 @@ public class Util {
         return result;
     }
 
-    public static String TIME_FORMAT = "HH:mm:ss'.'SS yyyy-MM-dd";
+    public static String TIME_FORMAT = "HH:mm:ss'.' yyyy-MM-dd";
 
     public static String GeneratePacketId(Packet packet) {
         String res = _GeneratePacketId(packet);
@@ -194,6 +194,17 @@ public class Util {
 
     public static String _GeneratePacketId(Packet packet) {
         try {
+            for (PacketExtension ext : packet.getExtensions() ) {
+                if ( ext instanceof PacketTimeStamp ) {
+                    PacketTimeStamp stamp = (PacketTimeStamp) ext;
+                    Message message = (Message) packet;
+                    Date date = getDate(stamp.getTime());
+
+                    String id = (message.getPacketID() == null) ? "" : message.getPacketID();
+                    return makeSHA1Hash(date.toString() + message.getBody() + message.getFrom() + id);
+                }
+            }
+
             for (PacketExtension ext : packet.getExtensions() ) {
                 if ( ext instanceof PacketTimeStamp ) {
                     PacketTimeStamp stamp = (PacketTimeStamp) ext;

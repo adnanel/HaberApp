@@ -52,6 +52,10 @@ public class HaberService extends Service implements Haber.HaberListener, Haber.
 
     private static HaberService instance = null;
 
+    public static boolean haberChatExists() {
+        return haberChat != null;
+    }
+
     public static MultiUserChat getHaberChat() {
         if ( haberChat == null )
             haberChat = Haber.getHaberChat();
@@ -464,15 +468,22 @@ public class HaberService extends Service implements Haber.HaberListener, Haber.
 
 
         //auto reply code
-        Debug.log("AutoReply is " + (AutoReply.getEnabled(this) ? "enabled" : "disabled"));
-
         if (AutoReply.getEnabled(this) && (chat != null)) {
             if ( AutoReply.getMode(this) == AutoReply.MODE_EVERY_MESSAGE) {
                 try {
                     Debug.log("Sending AutoReply message to " + chat.getParticipant() + ", message: " + AutoReply.getMessage(this));
 
                     if ( HaberActivity.InstanceExists() ) {
-                        HaberActivity.getInstance().sendMessage(message.getFrom(), AutoReply.getMessage(this));
+                        final Message msg = message;
+                        HaberActivity.getInstance().runOnUiThread(new Runnable() {
+                            @Override
+                            public void run() {
+                                if ( HaberActivity.getInstance().findChatForUser(msg.getFrom()) == null ) {
+                                    Debug.log("Couldn't find the chat for " + msg.getFrom() + "!!!");
+                                } else
+                                    HaberActivity.getInstance().sendMessage(msg.getFrom(), AutoReply.getMessage(HaberService.this));
+                            }
+                        });
                     } else {
                         Message msg = new Message();
                         msg.setSubject(MessageDirection.OUTGOING);

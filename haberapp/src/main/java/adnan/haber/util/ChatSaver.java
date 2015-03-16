@@ -27,7 +27,7 @@ public class ChatSaver implements Haber.HaberListener {
 
     private static Context context;
 
-    private final static String PREFS = "chat_cache_v4_4";
+    private final static String PREFS = "chat_cache_v4_5";
     private final static String PREF_COUNT  = "count";
     private final static String PREF_BODY   = "body";
     private final static String PREF_FROM   = "from";
@@ -77,12 +77,38 @@ public class ChatSaver implements Haber.HaberListener {
 
         instance = new ChatSaver();
 
-        Message message = new Message();
-        message.setFrom("divider");
-        message.setSubject("divider");
-        message.setPacketID("divider");
-        message.setBody(Util.dateToFormat("dd-MM-yyyy HH:mm", new Date()));
-        instance.onMessageReceived(null, message);
+
+        Date date = Util.getCurrentDate();
+        if ( date != null ) {
+            Message message = new Message();
+            message.setFrom("divider");
+            message.setSubject("divider");
+            message.setPacketID("divider");
+            message.setBody(Util.dateToFormat("dd-MM-yyyy HH:mm", Util.getCurrentDate()));
+            instance.onMessageReceived(null, message);
+        } else {
+            new Thread() {
+                @Override
+                public void run() {
+                    this.setPriority(MIN_PRIORITY);
+                    while (Util.getCurrentDate() == null) {
+                        try {
+                            Thread.sleep(500);
+                        } catch ( Exception er ) {
+                            Debug.log(er);
+                        }
+                    }
+
+                    Message message = new Message();
+                    message.setFrom("divider");
+                    message.setSubject("divider");
+                    message.setPacketID("divider");
+                    message.setBody(Util.dateToFormat("dd-MM-yyyy HH:mm", Util.getCurrentDate()));
+                    instance.onMessageReceived(null, message);
+                }
+            }.start();
+        }
+
         HaberService.addHaberListener(instance);
     }
 

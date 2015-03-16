@@ -390,7 +390,7 @@ public class HaberService extends Service implements Haber.HaberListener, Haber.
 
     @Override
     public void onMessageReceived(Chat chat, Message message) {
-        Date date = new Date();
+        Date date = Util.getCurrentDate();
         message.setSubject(MessageDirection.INCOMING);
 
         ArrayList<Haber.HaberListener> corpses = new ArrayList<>();
@@ -459,7 +459,7 @@ public class HaberService extends Service implements Haber.HaberListener, Haber.
             }
         }
 
-        long delay = ((new Date()).getTime() - date.getTime());
+        long delay = ((Util.getCurrentDate()).getTime() - date.getTime());
         Debug.log("onMessageReceived - " + delay + " ms");
         if ( delay > 300 ) {
             Debug.log("Slow frame detected, data:");

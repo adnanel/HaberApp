@@ -34,7 +34,7 @@ public class PacketTimeStamp implements PacketExtension {
             Debug.log(er);
         }
 
-        time = Util.dateToFormat(new Date());
+        time = Util.dateToFormat(Util.getCurrentDate());
     }
 
     public PacketTimeStamp(String stamp) {

@@ -35,6 +35,7 @@ import org.apache.http.protocol.HTTP;
 import org.jivesoftware.smack.packet.Message;
 import org.jivesoftware.smack.packet.Packet;
 import org.jivesoftware.smack.packet.PacketExtension;
+import org.jivesoftware.smackx.delay.packet.DelayInformation;
 import org.joda.time.DateTime;
 import org.joda.time.DateTimeZone;
 import org.joda.time.format.DateTimeFormat;
@@ -167,11 +168,24 @@ public class Util {
     }
 
     public static String dateToFormat(Date date) {
-        return dateToFormat(TIME_FORMAT, date);
+        String res = dateToFormat(TIME_FORMAT, date);
+        Date sdate = getDate(res);
+        if ( sdate.getHours() != date.getHours() ) {
+            Debug.log("shit");
+        }
+        return res;
     }
 
     public static String dateToFormat(String format, Date date) {
         return DateTimeFormat.forPattern(format).print(new DateTime(date.getTime()));
+    }
+
+    public static Date getCurrentDate() {
+        try {
+            return ServerTimeSync.getTime();
+        } catch ( Exception er ) {
+            return null;
+        }
     }
 
     public static Date getDate(String date, String format) {
@@ -182,7 +196,7 @@ public class Util {
             res = sdf.parseDateTime(date).toDate();
         } catch ( Exception e ) {
             Debug.log(e);
-            res = new Date();
+            res = Util.getCurrentDate();
         }
 
         return res;
@@ -200,19 +214,7 @@ public class Util {
                     Message message = (Message) packet;
                     Date date = getDate(stamp.getTime());
 
-                    String id = (message.getPacketID() == null) ? "" : message.getPacketID();
-                    return makeSHA1Hash(date.toString() + message.getBody() + message.getFrom() + id);
-                }
-            }
-
-            for (PacketExtension ext : packet.getExtensions() ) {
-                if ( ext instanceof PacketTimeStamp ) {
-                    PacketTimeStamp stamp = (PacketTimeStamp) ext;
-                    Message message = (Message) packet;
-                    Date date = getDate(stamp.getTime());
-
-                    String id = (message.getPacketID() == null) ? "" : message.getPacketID();
-                    return makeSHA1Hash(date.toString() + message.getBody() + message.getFrom() + id);
+                    return makeSHA1Hash(date.toString() + message.getBody() + message.getFrom());
                 }
             }
             throw new Exception("Couldn't find timestamp!");

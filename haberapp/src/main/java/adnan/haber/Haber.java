@@ -47,6 +47,7 @@ import adnan.haber.packets.HellbanPacketProvider;
 import adnan.haber.packets.PacketTimeStamp;
 import adnan.haber.util.CredentialManager;
 import adnan.haber.util.Debug;
+import adnan.haber.util.ServerTimeSync;
 import adnan.haber.util.Util;
 
 
@@ -254,6 +255,7 @@ public class Haber {
 
     public boolean connect() throws InvalidCredentialsException {
         try {
+            ServerTimeSync.refreshTime();
 
             // Create a connection to the igniterealtime.org XMPP server.
             String server = "etf.ba";

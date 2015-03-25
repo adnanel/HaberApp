@@ -480,8 +480,9 @@ public class HaberService extends Service implements Haber.HaberListener, Haber.
                             public void run() {
                                 if ( HaberActivity.getInstance().findChatForUser(msg.getFrom()) == null ) {
                                     Debug.log("Couldn't find the chat for " + msg.getFrom() + "!!!");
-                                } else
+                                } else {
                                     HaberActivity.getInstance().sendMessage(msg.getFrom(), AutoReply.getMessage(HaberService.this));
+                                }
                             }
                         });
                     } else {

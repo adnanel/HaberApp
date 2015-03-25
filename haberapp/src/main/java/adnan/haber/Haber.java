@@ -45,6 +45,7 @@ import adnan.haber.packets.DeletePacketProvider;
 import adnan.haber.packets.HellbanPacket;
 import adnan.haber.packets.HellbanPacketProvider;
 import adnan.haber.packets.PacketTimeStamp;
+import adnan.haber.util.ChatSaver;
 import adnan.haber.util.CredentialManager;
 import adnan.haber.util.Debug;
 import adnan.haber.util.ServerTimeSync;
@@ -70,6 +71,7 @@ public class Haber {
     private static boolean hellBanned = false;
     private static String  password = "";
     private static ArrayList<Message> cachedLobbyMessages = new ArrayList<Message>();
+    private ArrayList<Message> lastMessages = new ArrayList<>();
 
     public static boolean IsHellBanned() {
         return hellBanned;
@@ -253,6 +255,21 @@ public class Haber {
         return haberChat;
     }
 
+    public boolean messageAlreadyCached(Message message) {
+        try {
+            for (PacketExtension ext : message.getExtensions()) {
+                if (ext instanceof DelayInformation) {
+                    for ( Message msg : lastMessages ) {
+                        if ( msg.getBody().equals(message.getBody()) && msg.getFrom().equals(message.getFrom())) return true;
+                    }
+                }
+            }
+        } catch ( Exception er ) {
+            Debug.log(er);
+        }
+        return false;
+    }
+
     public boolean connect() throws InvalidCredentialsException {
         try {
             ServerTimeSync.refreshTime();
@@ -298,6 +315,7 @@ public class Haber {
                     }
                 }
 
+                lastMessages = ChatSaver.getSavedLobbyMessages(30);
                 MultiUserChat chat = new MultiUserChat(connection, "haber@conference.etf.ba");
                 chat.join(username);
 
@@ -483,6 +501,7 @@ public class Haber {
                                 Debug.log(er);
                             }
 
+                            if ( messageAlreadyCached(message) ) return;
 
                             try {
                                 message.addExtension(new PacketTimeStamp(message));
@@ -544,6 +563,9 @@ public class Haber {
                                 } catch ( Exception er ) {
                                     Debug.log(er);
                                 }
+
+                                if ( messageAlreadyCached(message) ) return;
+
 
                                 if ( lchat.getParticipant().equals(message.getFrom()) )
                                     statusListener.onMessageReceived(lchat, message);

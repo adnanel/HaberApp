@@ -27,7 +27,7 @@ public class ChatSaver implements Haber.HaberListener {
 
     private static Context context;
 
-    private final static String PREFS = "chat_cache_v4_5";
+    private final static String PREFS = "chat_cache_v4_75";
     private final static String PREF_COUNT  = "count";
     private final static String PREF_BODY   = "body";
     private final static String PREF_FROM   = "from";

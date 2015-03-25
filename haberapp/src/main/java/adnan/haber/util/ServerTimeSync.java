@@ -2,6 +2,7 @@ package adnan.haber.util;
 
 import org.apache.commons.net.ntp.NTPUDPClient;
 import org.apache.commons.net.ntp.TimeInfo;
+import org.jivesoftware.smack.provider.IQProvider;
 
 import java.net.InetAddress;
 import java.util.Date;

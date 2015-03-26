@@ -87,7 +87,7 @@ public class SplashScreen extends ActionBarActivity implements Haber.HaberListen
 
     @Override
     public void onLoggedIn(MultiUserChat haberChat) {
-
+        start();
     }
 
 
@@ -112,9 +112,6 @@ public class SplashScreen extends ActionBarActivity implements Haber.HaberListen
                 ((TextView)findViewById(R.id.tvCounter)).setText(counter + "");
             }
         });
-        if ( counter >= 10 ) {
-            start();
-        }
 
     }
 

@@ -7,6 +7,7 @@ import org.jivesoftware.smack.Chat;
 import org.jivesoftware.smack.ChatManager;
 import org.jivesoftware.smack.ChatManagerListener;
 import org.jivesoftware.smack.ConnectionConfiguration;
+import org.jivesoftware.smack.ConnectionListener;
 import org.jivesoftware.smack.MessageListener;
 import org.jivesoftware.smack.PacketInterceptor;
 import org.jivesoftware.smack.PacketListener;
@@ -61,6 +62,7 @@ public class Haber {
 
     HaberListener statusListener;
     RoleChangeListener roleChangeListener;
+    ConnectionListener connectionListener;
 
     Context context;
     XMPPConnection connection;
@@ -579,6 +581,7 @@ public class Haber {
                         });
                     }
                 });
+
             } catch (SmackException.ConnectionException e ) {
                 for (HostAddress addr : e.getFailedAddresses() ) {
                     Debug.log(addr.getErrorMessage());
@@ -601,6 +604,21 @@ public class Haber {
         }
     }
 
+    public static void setConnectionListener(ConnectionListener listener) {
+        if ( instance == null ) {
+            Debug.log("instance is null! (setConnectionListener())");
+            return;
+        }
+        if ( instance.connection == null ) {
+            Debug.log("instance.connection is null! (setConnectionListener())");
+            return;
+        }
+
+        if ( instance.connectionListener != null ) {
+            instance.connection.removeConnectionListener(instance.connectionListener);
+        }
+        instance.connection.addConnectionListener(instance.connectionListener = listener);
+    }
 
     public static boolean Initialize(HaberListener statusListener, Context context) throws InvalidCredentialsException {
         cachedLobbyMessages = new ArrayList<>();

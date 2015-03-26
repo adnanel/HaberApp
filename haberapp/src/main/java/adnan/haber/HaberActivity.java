@@ -1161,7 +1161,7 @@ public class HaberActivity extends ActionBarActivity implements Haber.HaberListe
                     public void run() {
 
                         try {
-                            HaberService.StopService(HaberActivity.this);
+                            HaberService.StopService();
                         } catch ( Exception e ) {
                             Debug.log(e);
                         }

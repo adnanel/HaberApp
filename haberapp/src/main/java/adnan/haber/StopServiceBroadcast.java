@@ -25,7 +25,7 @@ public class StopServiceBroadcast extends BroadcastReceiver {
                         @Override
                         public void onClick(DialogInterface dialog, int which) {
                             try {
-                                HaberService.StopService(HaberActivity.getInstance());
+                                HaberService.StopService();
                             } catch ( Exception e ) {
                                 Debug.log(e);
                             }

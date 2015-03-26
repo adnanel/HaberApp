@@ -1,20 +1,23 @@
 package adnan.haber;
 
+import android.app.AlertDialog;
 import android.app.NotificationManager;
 import android.app.PendingIntent;
 import android.app.Service;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.graphics.BitmapFactory;
 import android.os.IBinder;
 import android.os.Looper;
 import android.os.Vibrator;
 import android.support.v4.app.NotificationCompat;
-import android.util.SparseArray;
 import android.widget.Toast;
 
 import org.apache.http.auth.InvalidCredentialsException;
 import org.jivesoftware.smack.Chat;
+import org.jivesoftware.smack.ConnectionListener;
+import org.jivesoftware.smack.XMPPConnection;
 import org.jivesoftware.smack.packet.Message;
 import org.jivesoftware.smackx.muc.MultiUserChat;
 import org.jivesoftware.smackx.muc.Occupant;
@@ -32,17 +35,15 @@ import adnan.haber.util.ChatSaver;
 import adnan.haber.util.Debug;
 import adnan.haber.util.Util;
 
-public class HaberService extends Service implements Haber.HaberListener, Haber.RoleChangeListener {
-    private static List<Runnable> runnables = new ArrayList<>();
+public class HaberService extends Service implements Haber.HaberListener,
+        Haber.RoleChangeListener,
+        ConnectionListener {
+
     private static List<Haber.HaberListener> haberListeners = new ArrayList<>();
     private static List<Haber.RoleChangeListener> roleChangeListeners = new ArrayList<>();
 
     static List<Chat> chatRooms = new ArrayList<>();
     private static MultiUserChat haberChat;
-
-    public static synchronized void runOnHaberThread(Runnable runnable) {
-        runnables.add(runnable);
-    }
 
     private NotificationManager notificationManager;
     private int NOTIF_ID = 125125;
@@ -69,12 +70,6 @@ public class HaberService extends Service implements Haber.HaberListener, Haber.
             instance.refreshNotification();
     }
 
-    synchronized Runnable popRunnable() {
-        Runnable run = runnables.get(runnables.size() - 1);
-        runnables.remove(runnables.size() - 1);
-        return run;
-    }
-
     public static synchronized void addRoleListener(Haber.RoleChangeListener listener) {
         if ( roleChangeListeners.contains(listener) )
             roleChangeListeners.add(listener);
@@ -86,7 +81,7 @@ public class HaberService extends Service implements Haber.HaberListener, Haber.
             haberListeners.add(listener);
     }
 
-    public static void StopService(Context context) throws Exception {
+    public static void StopService() throws Exception {
         if ( instance == null ) throw new Exception("No service to stop!");
         Haber.Disconnect();
         instance.stopSelf();
@@ -198,7 +193,6 @@ public class HaberService extends Service implements Haber.HaberListener, Haber.
         haberChat = null;
         Haber.QuickDisconnect();
 
-        runnables.clear();
         haberListeners.clear();
         instance = null;
 
@@ -277,6 +271,7 @@ public class HaberService extends Service implements Haber.HaberListener, Haber.
                         stopSelf();
                         return;
                     }
+                    Haber.setConnectionListener(HaberService.this);
                 } catch ( InvalidCredentialsException er ) {
                     Debug.log("Invalid user/pass");
                     Debug.log(er);
@@ -324,11 +319,6 @@ public class HaberService extends Service implements Haber.HaberListener, Haber.
                 }
 
                 while ( !this.isInterrupted() ) {
-                    int i;
-                    int size = runnables.size();
-                    for ( i = 0; i < size; i ++ )
-                        popRunnable().run();
-
                     try {
                         Thread.sleep(500);
                     } catch ( Exception e ) {
@@ -481,7 +471,14 @@ public class HaberService extends Service implements Haber.HaberListener, Haber.
                                 if ( HaberActivity.getInstance().findChatForUser(msg.getFrom()) == null ) {
                                     Debug.log("Couldn't find the chat for " + msg.getFrom() + "!!!");
                                 } else {
-                                    HaberActivity.getInstance().sendMessage(msg.getFrom(), AutoReply.getMessage(HaberService.this));
+                                    if ( HaberActivity.getInstance().getCurrentChat() != null ) {
+                                        if (HaberActivity.getInstance().getCurrentChat().getParticipant().equals(msg.getFrom()))
+                                            Debug.log("Not auto replying after all. (current chat participant == sender)");
+                                        else
+                                            HaberActivity.getInstance().sendMessage(msg.getFrom(), AutoReply.getMessage(HaberService.this));
+                                    } else {
+                                        HaberActivity.getInstance().sendMessage(msg.getFrom(), AutoReply.getMessage(HaberService.this));
+                                    }
                                 }
                             }
                         });
@@ -657,6 +654,107 @@ public class HaberService extends Service implements Haber.HaberListener, Haber.
 
     @Override
     public void onAdminRevoked() {
+
+    }
+
+    @Override
+    public void connected(XMPPConnection xmppConnection) {
+
+    }
+
+    @Override
+    public void authenticated(XMPPConnection xmppConnection) {
+
+    }
+
+    @Override
+    public void connectionClosed() {
+
+    }
+
+    @Override
+    public void connectionClosedOnError(Exception e) {
+        Debug.log("Connection closing, error: ");
+        Debug.log(e);
+
+        if ( HaberActivity.getInstance() != null ) {
+            if ( AdvancedPreferences.AutoReconnectEnabled(HaberService.this) ) {
+                HaberService.this.sendBroadcast(new Intent(this, RestartServiceBroadcast.class));
+
+                HaberActivity.getInstance().finish();
+                stopSelf();
+            } else {
+                HaberActivity.getInstance().runOnUiThread(new Runnable() {
+                    @Override
+                    public void run() {
+                        AlertDialog.Builder builder = new AlertDialog.Builder(HaberActivity.getInstance());
+                        builder.setTitle("Pukla konekcija!");
+                        builder.setMessage("Izgubljena konekcija sa etf.ba!");
+                        builder.setPositiveButton("Povezi se opet", new DialogInterface.OnClickListener() {
+                            @Override
+                            public void onClick(DialogInterface dialog, int which) {
+                                stopSelf();
+                                HaberActivity.getInstance().finish();
+
+                                Intent intent = new Intent(HaberService.this, SplashScreen.class);
+                                intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+
+                                startActivity(intent);
+                            }
+                        });
+                        builder.setNegativeButton("Zatvori app", new DialogInterface.OnClickListener() {
+                            @Override
+                            public void onClick(DialogInterface dialog, int which) {
+                                stopSelf();
+                                HaberActivity.getInstance().finish();
+                            }
+                        });
+                        builder.setCancelable(false);
+                        builder.create().show();
+                    }
+                });
+            }
+        } else {
+            if ( AdvancedPreferences.AutoReconnectEnabled(HaberService.this) ) {
+                HaberService.this.sendBroadcast(new Intent(this, RestartServiceBroadcast.class));
+
+                stopSelf();
+            } else {
+                NotificationCompat.Builder builder = new NotificationCompat.Builder(HaberService.this);
+                builder.setContentTitle("Haber");
+                builder.setContentText("Izgubili ste konekciju sa haberom! Dodirni ovdje da se opet spojiš!");
+                builder.setSmallIcon(R.drawable.ic_launcher);
+                builder.setLargeIcon(BitmapFactory.decodeResource(getResources(), R.drawable.ic_launcher));
+                builder.setAutoCancel(true);
+
+                PendingIntent intent = PendingIntent.getBroadcast(
+                        this,
+                        0,
+                        new Intent(this, RestartServiceBroadcast.class),
+                        PendingIntent.FLAG_CANCEL_CURRENT
+                );
+
+
+                builder.setContentIntent(intent);
+                notificationManager.notify(NOTIF_EVENT_ID, builder.build());
+
+                stopSelf();
+            }
+        }
+    }
+
+    @Override
+    public void reconnectingIn(int i) {
+
+    }
+
+    @Override
+    public void reconnectionSuccessful() {
+
+    }
+
+    @Override
+    public void reconnectionFailed(Exception e) {
 
     }
 

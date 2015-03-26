@@ -24,6 +24,11 @@
 
     <PreferenceCategory android:title="Misc.">
         <CheckBoxPreference
+            android:title="Auto Reconnect"
+            android:key="autoReconnect"
+            android:defaultValue="false"/>
+
+        <CheckBoxPreference
             android:title="Debug Mode"
             android:key="debugMode"
             android:summary="U većini slučajeva je bolje da ovo bude off."/>

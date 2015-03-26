@@ -65,6 +65,10 @@ public class AdvancedPreferences extends PreferenceFragment {
         });
     }
 
+    public static boolean AutoReconnectEnabled(Context context) {
+        return PreferenceManager.getDefaultSharedPreferences(context).getBoolean("autoReconnect", false);
+    }
+
     public static boolean ShouldBlink(Context context) {
         return PreferenceManager.getDefaultSharedPreferences(context).getBoolean("blinkTab", true);
     }

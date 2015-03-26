@@ -80,6 +80,12 @@
             android:label="@string/title_activity_archive"
             android:theme="@style/ArchiveTheme" >
         </activity>
+
+        <receiver
+            android:name=".RestartServiceBroadcast"
+            android:enabled="true"
+            android:exported="true" >
+        </receiver>
     </application>
 
 </manifest>

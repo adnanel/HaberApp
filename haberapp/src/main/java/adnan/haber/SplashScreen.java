@@ -20,7 +20,7 @@ import adnan.haber.util.ChatSaver;
 import adnan.haber.util.Debug;
 
 
-public class SplashScreen extends ActionBarActivity implements Haber.HaberListener {
+public class SplashScreen extends ActionBarActivity {
     private boolean started = false;
     private boolean canStart = true;
 
@@ -39,25 +39,24 @@ public class SplashScreen extends ActionBarActivity implements Haber.HaberListen
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_splash_screen);
 
-        if ( Haber.isConnected() ) {
-            start();
-            return;
-        }
+        setStatus("");
 
-        Intent intent = new Intent(this, HaberService.class);
-        startService(intent);
-        HaberService.addHaberListener(this);
+        (new Thread() {
+            @Override
+            public void run() {
+                try {
+                    Thread.sleep(2500);
+                } catch ( Exception er ) {
+                    Debug.log(er);
+                }
+                SplashScreen.this.start();
+            }
+        }).start();
 
         if ( savedInstanceState == null ) {
             findViewById(R.id.imageView).startAnimation(AnimationUtils.loadAnimation(this, R.anim.splash_anim));
         }
 
-    }
-
-    @Override
-    public void onDestroy() {
-        super.onDestroy();
-        HaberService.removeHaberListener(this);
     }
 
     @Override
@@ -71,26 +70,6 @@ public class SplashScreen extends ActionBarActivity implements Haber.HaberListen
         }
     }
 
-    @Override
-    public void onStatusChanged(final String status) {
-        runOnUiThread(new Runnable() {
-            @Override
-            public void run() {
-                setStatus(status);
-
-
-            }
-        });
-
-    }
-
-
-    @Override
-    public void onLoggedIn(MultiUserChat haberChat) {
-        start();
-    }
-
-
     void start() {
         if ( !canStart || started ) return;
 
@@ -100,46 +79,6 @@ public class SplashScreen extends ActionBarActivity implements Haber.HaberListen
         ActivityCompat.startActivity(this, intent, activityOps.toBundle());
         finish();
         started = true;
-    }
-
-    private int counter = 0;
-    @Override
-    public void onMessageReceived(Chat chat, Message message) {
-        counter++;
-        runOnUiThread(new Runnable() {
-            @Override
-            public void run() {
-                ((TextView)findViewById(R.id.tvCounter)).setText(counter + "");
-            }
-        });
-
-    }
-
-    @Override
-    public void onRoomJoined(Chat chat, boolean selfStarted) {
-
-    }
-
-    @Override
-    public void onChatEvent(Haber.ChatEvent event, final String... params) {
-        if ( started ) return;
-
-        if ( params.length == 2 && ( event == Haber.ChatEvent.Banned || event == Haber.ChatEvent.Kicked ) ) {
-            canStart = false;
-        }
-        if ( event == Haber.ChatEvent.Hellbanned ) {
-            counter++;
-        }
-    }
-
-    @Override
-    public void onSoftDisconnect() {
-        finish();
-    }
-
-    @Override
-    public void onDeleteRequested(String user) {
-        counter++;
     }
 
 }

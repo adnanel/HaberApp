@@ -352,6 +352,30 @@ public class HaberActivity extends ActionBarActivity implements Haber.HaberListe
         super.onCreate(savedInstanceState);
         instance = this;
 
+        HaberService.RestartService(this);
+
+        (new Thread() {
+            @Override
+            public void run() {
+                while ( !Haber.isConnected() ) {
+                    try {
+                        Thread.sleep(250);
+                    } catch ( Exception er ) {
+                        Debug.log(er);
+                    }
+                }
+
+                runOnUiThread(new Runnable() {
+                    @Override
+                    public void run() {
+                        initialize();
+                    }
+                });
+            }
+        }).start();
+    }
+
+    private void initialize() {
         LeftDrawer leftDrawer = (LeftDrawer)getSupportFragmentManager().findFragmentByTag(LeftDrawer.TAG);
         if ( leftDrawer != null ) {
             FragmentTransaction transaction = getSupportFragmentManager().beginTransaction();
@@ -383,7 +407,8 @@ public class HaberActivity extends ActionBarActivity implements Haber.HaberListe
         //load old messages
         mainChatThread.chatAdapter.putDivider("Stare poruke");
         ListChatItem lStamp = null;
-        for ( Message msg : ChatSaver.getSavedLobbyMessages(30) ) {
+        for ( Message msg : ChatSaver.getSavedLobbyMessages(26) ) {
+
             if ( msg.getPacketID().equals("divider") ) {
                 ListChatItem lItem = mainChatThread.chatAdapter.putDivider(msg.getBody());
                 try {

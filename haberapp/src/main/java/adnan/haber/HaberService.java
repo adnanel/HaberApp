@@ -64,7 +64,8 @@ public class HaberService extends Service implements Haber.HaberListener,
     }
 
     public static void resetCounters() {
-        haberCounter.resetCounters();
+        if (haberCounter != null )
+            haberCounter.resetCounters();
 
         if ( instance != null )
             instance.refreshNotification();

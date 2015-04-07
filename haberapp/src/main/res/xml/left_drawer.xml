@@ -9,8 +9,6 @@
     <PreferenceCategory android:title="Opcije" android:order="1">
         <!-- <Preference android:title="Teme" android:key="themes" /> -->
 
-        <Preference android:title="Arhiva" android:key="archive"/>
-
         <CheckBoxPreference android:title="Auto-Reply" android:key="autoreply"/>
         <Preference android:title="Auto-Reply postavke" android:key="autoreplytext" android:dependency="autoreply" android:defaultValue="false"/>
 

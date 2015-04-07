@@ -236,11 +236,7 @@ public class LeftDrawer extends PreferenceFragment {
 
     @Override
     public boolean onPreferenceTreeClick(PreferenceScreen screen, Preference preference) {
-        if ( preference.getKey().equals("archive") ) {
-            Intent intent = new Intent(getActivity(), Archive.class);
-            ActivityOptionsCompat activityOps = ActivityOptionsCompat.makeCustomAnimation(getActivity(), R.anim.slide_in_right, R.anim.slide_out_left);
-            ActivityCompat.startActivity(getActivity(), intent, activityOps.toBundle());
-        } else if ( preference.getKey().equals("themes") ) {
+        if ( preference.getKey().equals("themes") ) {
             /*Intent intent = new Intent(getActivity(), ThemeChooser.class);
             ActivityOptionsCompat activityOps = ActivityOptionsCompat.makeCustomAnimation(getActivity(), R.anim.slide_in_right, R.anim.slide_out_left);
             ActivityCompat.startActivity(getActivity(), intent, activityOps.toBundle());

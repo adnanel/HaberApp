@@ -31,7 +31,6 @@ import adnan.haber.fragments.AdvancedPreferences;
 import adnan.haber.types.MessageDirection;
 import adnan.haber.types.Rank;
 import adnan.haber.util.AutoReply;
-import adnan.haber.util.ChatSaver;
 import adnan.haber.util.Debug;
 import adnan.haber.util.Util;
 
@@ -87,14 +86,39 @@ public class HaberService extends Service implements Haber.HaberListener,
         Haber.Disconnect();
         instance.stopSelf();
     }
-    public static void RestartService(Context context) {
+
+    private static Runnable onStartRunnable = null;
+
+
+    public static boolean StartService(Context context, Runnable onStart) {
         try {
+            if ( instance != null ) {
+                onStart.run();
+                return false;
+            }
+            onStartRunnable = onStart;
+            Intent intent = new Intent(context, HaberService.class);
+            context.startService(intent);
+        } catch ( Exception e ) {
+            Debug.log(e);
+        }
+        return true;
+    }
+
+
+    public static void RestartService(Context context, Runnable onStart) {
+        try {
+            onStartRunnable = onStart;
             Intent intent = new Intent(context, HaberService.class);
             context.stopService(intent);
             context.startService(intent);
         } catch ( Exception e ) {
             Debug.log(e);
         }
+    }
+
+    public static void RestartService(Context context) {
+        RestartService(context, null);
     }
 
     public static boolean CanKick() {
@@ -197,8 +221,6 @@ public class HaberService extends Service implements Haber.HaberListener,
         haberListeners.clear();
         instance = null;
 
-        ChatSaver.Finalize();
-
         super.onDestroy();
     }
 
@@ -252,8 +274,8 @@ public class HaberService extends Service implements Haber.HaberListener,
     public void onCreate() {
         //all that's initialized here, should be disposed in HaberService's onDestroy();
         Debug.Initialize(this); // <- must be first
-        ChatSaver.Initialize(this);
-
+        if ( onStartRunnable != null )
+            onStartRunnable.run();
 
         instance = this;
         haberCounter = new HaberCounter();
@@ -493,7 +515,6 @@ public class HaberService extends Service implements Haber.HaberListener,
 
 
                         chat.sendMessage(msg.getBody());
-                        ChatSaver.OnMessageReceived(chat, msg);
                     }
                 } catch ( Exception er ) {
                     Debug.log(er);

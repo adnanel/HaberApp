@@ -9,6 +9,7 @@ import android.content.Intent;
 import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
+import android.os.Parcelable;
 import android.os.Vibrator;
 import android.support.v4.app.ActionBarDrawerToggle;
 import android.support.v4.app.FragmentTransaction;
@@ -49,7 +50,6 @@ import adnan.haber.fragments.SmileyChooser;
 import adnan.haber.packets.PacketTimeStamp;
 import adnan.haber.types.ListChatItem;
 import adnan.haber.types.MessageDirection;
-import adnan.haber.util.ChatSaver;
 import adnan.haber.util.Debug;
 import adnan.haber.util.HaberSSLSocketFactory;
 import adnan.haber.util.Updater;
@@ -58,8 +58,8 @@ import adnan.haber.views.TabView;
 
 
 public class HaberActivity extends ActionBarActivity implements Haber.HaberListener, Haber.RoleChangeListener {
-    HashMap<Chat, ChatThread> chatThreads = new HashMap<>();
-    private ChatThread mainChatThread;
+    static HashMap<Chat, ChatThread> chatThreads = new HashMap<>();
+    static private ChatThread mainChatThread;
     private ListView chatListView;
     private AlertDialog smileyDialog;
     private LeftDrawer mLeftDrawer;
@@ -67,9 +67,10 @@ public class HaberActivity extends ActionBarActivity implements Haber.HaberListe
 
     private boolean vibrationLock = true;
     private static HaberActivity instance = null;
-    private ActionBarDrawerToggle mDrawerToggle;
     private float lastTranslate = 0.0f;
-    private DrawerLayout mDrawerLayout;
+
+    public HashMap<Chat, Message> messageStack = new HashMap<>();
+    public boolean initialized = false;
 
     private RelativeLayout rlContent;
 
@@ -149,7 +150,6 @@ public class HaberActivity extends ActionBarActivity implements Haber.HaberListe
                     Message msg = new Message();
                     msg.setBody(body);
                     msg.setFrom(Haber.getFullUsername(Haber.getUsername()));
-                    msg.setTo(chat.getParticipant());
                     msg.setSubject(MessageDirection.OUTGOING);
 
                     try {
@@ -158,7 +158,6 @@ public class HaberActivity extends ActionBarActivity implements Haber.HaberListe
                     } catch ( Exception er ) {
                         Debug.log(er);
                     }
-                    ChatSaver.OnMessageReceived(chat, msg);
 
                     mainChatThread.chatAdapter.addItem(msg);
                     runOnUiThread(new Runnable() {
@@ -188,7 +187,6 @@ public class HaberActivity extends ActionBarActivity implements Haber.HaberListe
                 } catch ( Exception er ) {
                     Debug.log(er);
                 }
-                ChatSaver.OnMessageReceived(chat, msg);
 
                 chatThreads.get(chat).chatAdapter.addItem(msg);
 
@@ -246,7 +244,7 @@ public class HaberActivity extends ActionBarActivity implements Haber.HaberListe
             if ( tabs.containsKey(thread.getUnreadMessagesCount()))
                 tabs.get(thread.getUnreadMessagesCount()).add(thread.tabView);
             else {
-                ArrayList<View> views = new ArrayList<View>();
+                ArrayList<View> views = new ArrayList<>();
                 views.add(thread.tabView);
                 tabs.put(thread.getUnreadMessagesCount(), views);
             }
@@ -347,16 +345,40 @@ public class HaberActivity extends ActionBarActivity implements Haber.HaberListe
         chatListView.setDividerHeight(height);
     }
 
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         instance = this;
 
-        HaberService.RestartService(this);
-
         (new Thread() {
+            AlertDialog dialog;
+
             @Override
             public void run() {
+                runOnUiThread(new Runnable() {
+                    @Override
+                    public void run() {
+                        AlertDialog.Builder builder = new AlertDialog.Builder(HaberActivity.this);
+                        builder.setOnCancelListener(new DialogInterface.OnCancelListener() {
+                            @Override
+                            public void onCancel(DialogInterface dialog) {
+                                finish();
+                            }
+                        });
+                        builder.setView(getLayoutInflater().inflate(R.layout.startup_loader, null));
+                        dialog = builder.create();
+                        dialog.show();
+
+                        HaberService.StartService(HaberActivity.this, new Runnable() {
+                            @Override
+                            public void run() {
+                                HaberService.addHaberListener(HaberActivity.this);
+                                HaberService.addRoleListener(HaberActivity.this);
+                            }
+                        });
+                    }
+                });
                 while ( !Haber.isConnected() ) {
                     try {
                         Thread.sleep(250);
@@ -369,6 +391,14 @@ public class HaberActivity extends ActionBarActivity implements Haber.HaberListe
                     @Override
                     public void run() {
                         initialize();
+                        initialized = true;
+
+                        for ( Map.Entry<Chat, Message> pair : messageStack.entrySet() ) {
+                            onMessageReceived(pair.getKey(), pair.getValue());
+                        }
+                        messageStack.clear();
+
+                        dialog.dismiss();
                     }
                 });
             }
@@ -402,46 +432,27 @@ public class HaberActivity extends ActionBarActivity implements Haber.HaberListe
         setListenerToRootView();
 
         //glavni Haber chat
-        mainChatThread = new ChatThread("haber");
-        mainChatThread.chatAdapter = new ChatAdapter(this, new ArrayList<ListChatItem>(), cmdListener, false);
-        //load old messages
-        mainChatThread.chatAdapter.putDivider("Stare poruke");
-        ListChatItem lStamp = null;
-        for ( Message msg : ChatSaver.getSavedLobbyMessages(26) ) {
 
-            if ( msg.getPacketID().equals("divider") ) {
-                ListChatItem lItem = mainChatThread.chatAdapter.putDivider(msg.getBody());
-                try {
-                    if (Util.getDate(lItem.message) != null) {
-                        lStamp = lItem;
-                    }
-                } catch ( Exception er ) {
-                    //divider wasnt a time divider
-                }
-            } else
-                mainChatThread.chatAdapter.addItem(msg, false);
+        if ( mainChatThread == null )
+            mainChatThread = new ChatThread("haber");
+        else {
+            if ( mainChatThread.tabView.getParent() != null )
+                ((LinearLayout)mainChatThread.tabView.getParent()).removeView(mainChatThread.tabView);
         }
-        if (lStamp != null )
-            lStamp.message = "Ova sesija";
+        if ( mainChatThread.chatAdapter == null )
+            mainChatThread.chatAdapter = new ChatAdapter(this, new ArrayList<ListChatItem>(), cmdListener, false);
 
-        for ( Message msg : Haber.getCachedLobbyMessages() )
-            mainChatThread.chatAdapter.addItem(msg, false);
-        mainChatThread.chatAdapter.notifyDataSetChanged();
 
         //ostali chatovi
         for ( Chat chats : HaberService.chatRooms ) {
             ChatThread thread = new ChatThread(chats.getParticipant());
-            thread.chatAdapter = new ChatAdapter(this, new ArrayList<ListChatItem>(), cmdListener, true);
-
-
-            int counter = 0;
-            for ( Message msg : ChatSaver.getSavedMessages(150) ) {
-                if ( msg.getFrom().equals(chats.getParticipant()) || msg.getTo().equals(chats.getParticipant())) {
-                    thread.chatAdapter.addItem(msg);
-                    counter++;
-                    if ( counter >= 30 ) break;
+            for ( ChatThread oThread : chatThreads.values() )
+                if ( thread.getTitle().equals(chats.getParticipant()) ) {
+                    thread.chatAdapter = oThread.chatAdapter;
                 }
-            }
+            if ( thread.chatAdapter == null )
+                thread.chatAdapter = new ChatAdapter(this, new ArrayList<ListChatItem>(), cmdListener, true);
+
 
             thread.chatAdapter.notifyDataSetChanged();
             thread.setState(TabState.Normal);
@@ -451,9 +462,6 @@ public class HaberActivity extends ActionBarActivity implements Haber.HaberListe
                 thread.setUnreadMessagesCount(HaberService.haberCounter.getPms().get(chats.getParticipant()));
             }
         }
-
-        HaberService.addHaberListener(this);
-        HaberService.addRoleListener(this);
 
         chatListView.setAdapter(mainChatThread.chatAdapter);
 
@@ -535,22 +543,17 @@ public class HaberActivity extends ActionBarActivity implements Haber.HaberListe
 
 
         //left drawer
-        mDrawerLayout = (DrawerLayout) findViewById(R.id.drawer_layout);
+        DrawerLayout mDrawerLayout = (DrawerLayout) findViewById(R.id.drawer_layout);
         rlContent = (RelativeLayout) findViewById(R.id.rlContent);
 
-        mDrawerToggle = new ActionBarDrawerToggle(this, mDrawerLayout, R.drawable.ic_launcher, R.string.acc_drawer_open, R.string.acc_drawer_close)
-        {
+        ActionBarDrawerToggle mDrawerToggle = new ActionBarDrawerToggle(this, mDrawerLayout, R.drawable.ic_launcher, R.string.acc_drawer_open, R.string.acc_drawer_close) {
             @SuppressLint("NewApi")
-            public void onDrawerSlide(View drawerView, float slideOffset)
-            {
+            public void onDrawerSlide(View drawerView, float slideOffset) {
                 float moveFactor = (Util.DpiToPixel(HaberActivity.this, 240) * slideOffset);
 
-                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.HONEYCOMB)
-                {
+                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.HONEYCOMB) {
                     rlContent.setTranslationX(moveFactor);
-                }
-                else
-                {
+                } else {
                     TranslateAnimation anim = new TranslateAnimation(lastTranslate, moveFactor, 0.0f, 0.0f);
                     anim.setDuration(0);
                     anim.setFillAfter(true);
@@ -580,6 +583,8 @@ public class HaberActivity extends ActionBarActivity implements Haber.HaberListe
                 scrollToBottom(false);
             }
         });
+
+        sortTabs();
     }
 
     @Override
@@ -614,6 +619,11 @@ public class HaberActivity extends ActionBarActivity implements Haber.HaberListe
 
     @Override
     public void onMessageReceived(final Chat chat, final Message message) {
+        if ( !initialized ) {
+            messageStack.put(chat, message);
+            return;
+        }
+
         runOnUiThread(new Runnable() {
             @Override
             public void run() {
@@ -633,14 +643,6 @@ public class HaberActivity extends ActionBarActivity implements Haber.HaberListe
                     } else {
                         ChatThread thread = new ChatThread(chat.getParticipant());
                         thread.chatAdapter = new ChatAdapter(HaberActivity.this, new ArrayList<ListChatItem>(), cmdListener, true);
-                        for ( Message msg : ChatSaver.getSavedMessages() ) {
-                            if ( msg.getFrom().equals(chat.getParticipant()) || msg.getTo().equals(chat.getParticipant())) {
-                                if ( msg.getPacketID().equals("divider") )
-                                    thread.chatAdapter.putDivider(msg.getBody());
-                                else
-                                    thread.chatAdapter.addItem(msg);
-                            }
-                        }
 
                         thread.chatAdapter.addItem(message);
                         chatThreads.put(chat, thread);
@@ -731,6 +733,8 @@ public class HaberActivity extends ActionBarActivity implements Haber.HaberListe
     }
 
     void scrollToBottom(final boolean smooth) {
+        if ( chatListView == null || !initialized ) return;
+
         runOnUiThread(new Runnable() {
             @Override
             public void run() {
@@ -774,14 +778,6 @@ public class HaberActivity extends ActionBarActivity implements Haber.HaberListe
                 if ( !chatThreads.containsKey(chat) ) {
                     ChatThread thread = new ChatThread(chat.getParticipant());
                     thread.chatAdapter = new ChatAdapter(HaberActivity.this, new ArrayList<ListChatItem>(), cmdListener, true);
-                    int counter = 0;
-                    for ( Message msg : ChatSaver.getSavedMessages() ) {
-                        if ( msg.getFrom().equals(chat.getParticipant()) || msg.getTo().equals(chat.getParticipant())) {
-                            thread.chatAdapter.addItem(msg);
-                            counter++;
-                            if ( counter >= 30 ) break;
-                        }
-                    }
 
                     if ( AdvancedPreferences.ShouldSwitchToNewTab(HaberActivity.this) || selfStarted)
                         thread.tabView.performClick();
@@ -915,6 +911,11 @@ public class HaberActivity extends ActionBarActivity implements Haber.HaberListe
     }
 
     public void addNotification(String message) {
+        if ( !initialized ) {
+            Debug.log("Not showing notification, not yet intialized. " + message);
+            return;
+        }
+
         final ListChatItem item = mainChatThread.chatAdapter.putDivider(message);
 
         if ( AdvancedPreferences.ShouldClearNotifications(HaberActivity.this)) {
@@ -990,13 +991,11 @@ public class HaberActivity extends ActionBarActivity implements Haber.HaberListe
         private TabView tabView;
         public String fullUser;
         private boolean isOnline = true;
+        private String title;
+
+        public String getTitle() { return title; }
 
         TabState currentState;
-
-
-        public boolean isOnline() {
-            return isOnline;
-        }
 
         public void setOnline(boolean isOnline) {
             this.isOnline = isOnline;
@@ -1067,6 +1066,7 @@ public class HaberActivity extends ActionBarActivity implements Haber.HaberListe
         }
 
         public ChatThread(String other) {
+            title = other;
             thisThread = this;
             other = Haber.getFullUsername(other);
             fullUser = other;
@@ -1170,11 +1170,13 @@ public class HaberActivity extends ActionBarActivity implements Haber.HaberListe
 
     @Override
     public void onBackPressed() {
-        DrawerLayout drawer = (DrawerLayout)findViewById(R.id.drawer_layout);
-        if ( drawer.isDrawerOpen(Gravity.LEFT) ) {
-            closeLeftDrawer();
-            return;
-        }
+        DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
+        if ( drawer != null )
+            if (drawer.isDrawerOpen(Gravity.LEFT)) {
+                closeLeftDrawer();
+                return;
+            }
+
 
         AlertDialog.Builder builder = new AlertDialog.Builder(this);
         builder.setTitle("Imaš pametnija posla!?");
@@ -1192,18 +1194,21 @@ public class HaberActivity extends ActionBarActivity implements Haber.HaberListe
                         }
 
                         Debug.log("Finishing because of user interaction (haber shutting down)");
+                        chatThreads.clear();
+                        mainChatThread = null;
+
                         finish();
                     }
                 }.start();
             }
         });
-        builder.setNeutralButton("Sakrij se u pozadini", new DialogInterface.OnClickListener() {
+        /*builder.setNeutralButton("Sakrij se u pozadini", new DialogInterface.OnClickListener() {
             @Override
             public void onClick(DialogInterface dialog, int which) {
                 Debug.log("Finishg because of user interaction (move to back)");
                 finish();
             }
-        });
+        });*/
         builder.setNegativeButton("Vrati se na haber", null);
         builder.create().show();
     }

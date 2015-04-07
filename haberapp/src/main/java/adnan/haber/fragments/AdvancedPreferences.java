@@ -22,7 +22,6 @@ import adnan.haber.Haber;
 import adnan.haber.HaberActivity;
 import adnan.haber.R;
 import adnan.haber.adapters.ChatAdapter;
-import adnan.haber.util.ChatSaver;
 import adnan.haber.util.Debug;
 import adnan.haber.util.Updater;
 
@@ -167,22 +166,6 @@ public class AdvancedPreferences extends PreferenceFragment {
                     builder.create().show();
                 }
             });
-        } else if ( preference.getKey().equals("clearCache") ) {
-            AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
-            builder.setTitle("Potvrdi brisanje");
-            builder.setMessage("U kešu se nalazi:\n" + ChatSaver.getSavedLobbyMessagesCount() + " haber poruka\n" + ChatSaver.getSavedMessagesCount() + " privatnih poruka.");
-            builder.setPositiveButton("Obriši", new DialogInterface.OnClickListener() {
-                @Override
-                public void onClick(DialogInterface dialog, int which) {
-                    ChatSaver.ClearCache();
-                    Intent intent = new Intent(getActivity(), HaberActivity.class);
-                    Debug.log("finishing due to cache clear...");
-                    getActivity().finish();
-                    startActivity(intent);
-                }
-            });
-            builder.setNegativeButton("Prekid", null);
-            builder.create().show();
         } else if ( preference.getKey().equals("version") ) {
             getActivity().runOnUiThread(new Runnable() {
                 @Override

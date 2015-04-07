@@ -16,7 +16,6 @@ import org.jivesoftware.smack.Chat;
 import org.jivesoftware.smack.packet.Message;
 import org.jivesoftware.smackx.muc.MultiUserChat;
 
-import adnan.haber.util.ChatSaver;
 import adnan.haber.util.Debug;
 
 

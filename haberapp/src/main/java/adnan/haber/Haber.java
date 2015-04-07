@@ -46,7 +46,6 @@ import adnan.haber.packets.DeletePacketProvider;
 import adnan.haber.packets.HellbanPacket;
 import adnan.haber.packets.HellbanPacketProvider;
 import adnan.haber.packets.PacketTimeStamp;
-import adnan.haber.util.ChatSaver;
 import adnan.haber.util.CredentialManager;
 import adnan.haber.util.Debug;
 import adnan.haber.util.ServerTimeSync;
@@ -72,18 +71,11 @@ public class Haber {
     private static boolean isGuest = true;
     private static boolean hellBanned = false;
     private static String  password = "";
-    private static ArrayList<Message> cachedLobbyMessages = new ArrayList<Message>();
+
     private ArrayList<Message> lastMessages = new ArrayList<>();
 
     public static boolean IsHellBanned() {
         return hellBanned;
-    }
-    public static synchronized ArrayList<Message> getCachedLobbyMessages() {
-        ArrayList<Message> messages = new ArrayList<>();
-        for ( Message msg : cachedLobbyMessages )
-            messages.add(msg);
-
-        return messages;
     }
 
     public static boolean IsOnline(String user) {
@@ -93,11 +85,6 @@ public class Haber {
     }
 
     public static boolean IsGuest() { return isGuest; }
-    static synchronized void addMessageToCache(Message msg) {
-        if ( cachedLobbyMessages == null ) return;
-
-        cachedLobbyMessages.add(msg);
-    }
 
     public static void setPassword(String str) { password = Util.encryptPassword(str); }
 
@@ -106,7 +93,10 @@ public class Haber {
     }
 
     public static String getUsername() {
-        return username;
+        if ( username.length() > 0 ) return username;
+        else {
+            return username = "ǂAndro" + getRandomInt();
+        }
     }
 
     public static void QuickDisconnect() {
@@ -235,7 +225,7 @@ public class Haber {
     }
 
     public static String getShortUsername(String user) {
-        if ( user.indexOf("/") != -1 ) {
+        if (user.contains("/")) {
             if ( user.toUpperCase().endsWith("HABER") )
                 return user.substring(0, user.indexOf("@"));
             return user.substring(user.indexOf("/") + 1);
@@ -317,13 +307,9 @@ public class Haber {
                     }
                 }
 
-                lastMessages = ChatSaver.getSavedLobbyMessages(30);
+                // deprecated - lastMessages = ChatSaver.getSavedLobbyMessages(30);
                 MultiUserChat chat = new MultiUserChat(connection, "haber@conference.etf.ba");
                 chat.join(username);
-
-                statusListener.onLoggedIn(chat);
-                haberChat = chat;
-
 
                 chat.addParticipantStatusListener(new ParticipantStatusListener() {
                     @Override
@@ -514,7 +500,6 @@ public class Haber {
 
 
                             statusListener.onMessageReceived(null, message);
-                            addMessageToCache(message);
                         } catch (Exception e) {
                             Debug.log("This exception is expected! " + e.toString());
                             Debug.log(e);
@@ -582,6 +567,8 @@ public class Haber {
                     }
                 });
 
+                statusListener.onLoggedIn(chat);
+                haberChat = chat;
             } catch (SmackException.ConnectionException e ) {
                 for (HostAddress addr : e.getFailedAddresses() ) {
                     Debug.log(addr.getErrorMessage());
@@ -621,7 +608,6 @@ public class Haber {
     }
 
     public static boolean Initialize(HaberListener statusListener, Context context) throws InvalidCredentialsException {
-        cachedLobbyMessages = new ArrayList<>();
 
         if ( instance != null ) {
             Disconnect();

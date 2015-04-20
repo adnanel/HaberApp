@@ -80,6 +80,10 @@ public class ChatAdapter extends ArrayAdapter<ListChatItem> {
         addAdapter(this);
     }
 
+    public void refreshContext(HaberActivity activity) {
+        context = activity;
+    }
+
     public static synchronized void invalidateAll(final HaberActivity activity) {
         activity.runOnUiThread(new Runnable() {
             @Override

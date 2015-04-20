@@ -61,7 +61,7 @@ public class Debug {
             return;
         }
 
-        if (AdvancedPreferences.IsDebug(context) ) {
+        if (1 < 2 || AdvancedPreferences.IsDebug(context) ) {
             try {
                 outputFile.println(msg);
             } catch ( Exception er ) {

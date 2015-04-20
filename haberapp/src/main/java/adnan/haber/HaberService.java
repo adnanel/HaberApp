@@ -38,9 +38,6 @@ public class HaberService extends Service implements Haber.HaberListener,
         Haber.RoleChangeListener,
         ConnectionListener {
 
-    private static List<Haber.HaberListener> haberListeners = new ArrayList<>();
-    private static List<Haber.RoleChangeListener> roleChangeListeners = new ArrayList<>();
-
     static List<Chat> chatRooms = new ArrayList<>();
     private static MultiUserChat haberChat;
 
@@ -68,17 +65,6 @@ public class HaberService extends Service implements Haber.HaberListener,
 
         if ( instance != null )
             instance.refreshNotification();
-    }
-
-    public static synchronized void addRoleListener(Haber.RoleChangeListener listener) {
-        if ( roleChangeListeners.contains(listener) )
-            roleChangeListeners.add(listener);
-    }
-
-
-    public static synchronized void addHaberListener(Haber.HaberListener listener) {
-        if ( !haberListeners.contains(listener) )
-            haberListeners.add(listener);
     }
 
     public static void StopService() throws Exception {
@@ -200,16 +186,6 @@ public class HaberService extends Service implements Haber.HaberListener,
         return Rank.fromString(role);
     }
 
-    private static synchronized ArrayList<Haber.HaberListener> getHaberListeners() {
-        ArrayList<Haber.HaberListener> result = new ArrayList<>();
-        for (Haber.HaberListener listener : haberListeners )
-            result.add(listener);
-        return result;
-    }
-
-    public static synchronized void removeHaberListener(Haber.HaberListener listener) {
-        haberListeners.remove(listener);
-    }
 
     @Override
     public void onDestroy(){
@@ -218,7 +194,6 @@ public class HaberService extends Service implements Haber.HaberListener,
         haberChat = null;
         Haber.QuickDisconnect();
 
-        haberListeners.clear();
         instance = null;
 
         super.onDestroy();
@@ -303,8 +278,8 @@ public class HaberService extends Service implements Haber.HaberListener,
                     intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
                     startActivity(intent);
 
-                    for (Haber.HaberListener listener : getHaberListeners() )
-                        listener.onSoftDisconnect();
+                    if ( HaberActivity.getInstance() != null )
+                        HaberActivity.getInstance().onSoftDisconnect();
 
                     stopSelf();
                     return;
@@ -372,31 +347,18 @@ public class HaberService extends Service implements Haber.HaberListener,
     public void onStatusChanged(final String status) {
         Toast.makeText(HaberService.this, status, Toast.LENGTH_LONG).show();
 
-        ArrayList<Haber.HaberListener> corpses = new ArrayList<>();
-
-        for ( Haber.HaberListener listener : getHaberListeners() ) {
-            if ( listener == null )
-                corpses.add(null);
-            else
-                listener.onStatusChanged(status);
-        }
-
-        for (Haber.HaberListener listener : corpses )
-            removeHaberListener(listener);
+        if ( HaberActivity.getInstance() != null )
+            HaberActivity.getInstance().onStatusChanged(status);
+        else
+            stopSelf();
     }
 
     @Override
     public void onLoggedIn(MultiUserChat haberChat) {
-        ArrayList<Haber.HaberListener> corpses = new ArrayList<>();
-
-        for ( Haber.HaberListener listener : getHaberListeners() ) {
-            if ( listener == null )
-                corpses.add(null);
-            else
-                listener.onLoggedIn(haberChat);
-        }
-        for (Haber.HaberListener listener : corpses )
-            removeHaberListener(listener);
+        if ( HaberActivity.getInstance() != null )
+            HaberActivity.getInstance().onLoggedIn(haberChat);
+        else
+            stopSelf();
 
         HaberService.haberChat = haberChat;
     }
@@ -406,17 +368,10 @@ public class HaberService extends Service implements Haber.HaberListener,
         Date date = Util.getCurrentDate();
         message.setSubject(MessageDirection.INCOMING);
 
-        ArrayList<Haber.HaberListener> corpses = new ArrayList<>();
-
-        for ( Haber.HaberListener listener : getHaberListeners() ) {
-            if ( listener == null )
-                corpses.add(null);
-            else if ( listener != this )
-                listener.onMessageReceived(chat, message);
-        }
-
-        for (Haber.HaberListener listener : corpses )
-            removeHaberListener(listener);
+        if ( HaberActivity.getInstance() != null )
+            HaberActivity.getInstance().onMessageReceived(chat, message);
+        else
+            stopSelf();
 
         if ( !chatRooms.contains( chat ) && chat != null )
             chatRooms.add(chat);
@@ -476,7 +431,7 @@ public class HaberService extends Service implements Haber.HaberListener,
         Debug.log("onMessageReceived - " + delay + " ms");
         if ( delay > 300 ) {
             Debug.log("Slow frame detected, data:");
-            Debug.log(String.format("Counter: %d\n chat is null: %d\ncorpses.length(): %d\nMessage: %s", counter, (chat == null) ? 1 : 0, corpses.size(), message.toXML().toString()));
+            Debug.log(String.format("Counter: %d\n chat is null: %d\nMessage: %s", counter, (chat == null) ? 1 : 0, message.toXML().toString()));
         }
 
 
@@ -511,7 +466,6 @@ public class HaberService extends Service implements Haber.HaberListener,
                         msg.setBody(AutoReply.getMessage(this));
                         msg.setTo(message.getFrom());
                         msg.setPacketID("autoReply");
-                        msg.setPacketID(Util.GeneratePacketId(msg));
 
 
                         chat.sendMessage(msg.getBody());
@@ -527,16 +481,10 @@ public class HaberService extends Service implements Haber.HaberListener,
 
     @Override
     public void onRoomJoined(Chat chat, boolean selfStarted) {
-        ArrayList<Haber.HaberListener> corpses = new ArrayList<>();
-
-        for ( Haber.HaberListener listener : getHaberListeners() ) {
-            if ( listener == null )
-                corpses.add(null);
-            else
-                listener.onRoomJoined(chat, selfStarted);
-        }
-        for (Haber.HaberListener listener : corpses )
-            removeHaberListener(listener);
+        if ( HaberActivity.getInstance() != null )
+            HaberActivity.getInstance().onRoomJoined(chat, selfStarted);
+        else
+            stopSelf();
 
         if ( !chatRooms.contains( chat ) && chat != null )
             chatRooms.add(chat);
@@ -548,16 +496,10 @@ public class HaberService extends Service implements Haber.HaberListener,
             counter++;
         }
 
-        ArrayList<Haber.HaberListener> corpses = new ArrayList<>();
-
-        for ( Haber.HaberListener listener : getHaberListeners() ) {
-            if ( listener == null )
-                corpses.add(null);
-            else
-                listener.onChatEvent(event, params);
-        }
-        for (Haber.HaberListener listener : corpses )
-            removeHaberListener(listener);
+        if ( HaberActivity.getInstance() != null )
+            HaberActivity.getInstance().onChatEvent(event, params);
+        else
+            stopSelf();
 
         if ( params.length == 2 && (event == Haber.ChatEvent.Banned || event == Haber.ChatEvent.Kicked)) {
             if ( HaberActivity.InstanceExists() ) {
@@ -601,16 +543,8 @@ public class HaberService extends Service implements Haber.HaberListener,
     public void onSoftDisconnect() {
         chatRooms.clear();
 
-        ArrayList<Haber.HaberListener> corpses = new ArrayList<>();
-
-        for ( Haber.HaberListener listener : getHaberListeners() ) {
-            if ( listener == null )
-                corpses.add(null);
-            else
-                listener.onSoftDisconnect();
-        }
-        for (Haber.HaberListener listener : corpses )
-            removeHaberListener(listener);
+        if ( HaberActivity.getInstance() != null )
+            HaberActivity.getInstance().onSoftDisconnect();
 
         this.stopSelf();
     }
@@ -621,14 +555,10 @@ public class HaberService extends Service implements Haber.HaberListener,
 
         ArrayList<Haber.HaberListener> corpses = new ArrayList<>();
 
-        for ( Haber.HaberListener listener : getHaberListeners() ) {
-            if ( listener == null )
-                corpses.add(null);
-            else
-                listener.onDeleteRequested(user);
-        }
-        for (Haber.HaberListener listener : corpses )
-            removeHaberListener(listener);
+        if ( HaberActivity.getInstance() != null )
+            HaberActivity.getInstance().onDeleteRequested(user);
+        else
+            stopSelf();
     }
 
     public HaberService() {

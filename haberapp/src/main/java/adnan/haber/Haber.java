@@ -185,7 +185,6 @@ public class Haber {
 
                 try {
                     message.addExtension(new PacketTimeStamp(message));
-                    message.setPacketID(Util.GeneratePacketId(message));
                 } catch ( Exception er ) {
                     Debug.log(er);
                 }
@@ -245,21 +244,6 @@ public class Haber {
                 instance.statusListener.onSoftDisconnect();
         }
         return haberChat;
-    }
-
-    public boolean messageAlreadyCached(Message message) {
-        try {
-            for (PacketExtension ext : message.getExtensions()) {
-                if (ext instanceof DelayInformation) {
-                    for ( Message msg : lastMessages ) {
-                        if ( msg.getBody().equals(message.getBody()) && msg.getFrom().equals(message.getFrom())) return true;
-                    }
-                }
-            }
-        } catch ( Exception er ) {
-            Debug.log(er);
-        }
-        return false;
     }
 
     public boolean connect() throws InvalidCredentialsException {
@@ -489,11 +473,9 @@ public class Haber {
                                 Debug.log(er);
                             }
 
-                            if ( messageAlreadyCached(message) ) return;
 
                             try {
                                 message.addExtension(new PacketTimeStamp(message));
-                                message.setPacketID(Util.GeneratePacketId(message));
                             } catch (Exception er) {
                                 Debug.log(er);
                             }
@@ -546,12 +528,9 @@ public class Haber {
 
                                 try {
                                     message.addExtension(new PacketTimeStamp(message));
-                                    message.setPacketID(Util.GeneratePacketId(message));
                                 } catch ( Exception er ) {
                                     Debug.log(er);
                                 }
-
-                                if ( messageAlreadyCached(message) ) return;
 
 
                                 if ( lchat.getParticipant().equals(message.getFrom()) )

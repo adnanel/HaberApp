@@ -160,12 +160,6 @@ public class Util {
 
     public static String TIME_FORMAT = "HH:mm:ss'.' yyyy-MM-dd";
 
-    public static String GeneratePacketId(Packet packet) {
-        String res = _GeneratePacketId(packet);
-
-        Debug.log("dump: " + packet.toXML().toString() + " - " + res);
-        return res;
-    }
 
     public static String dateToFormat(Date date) {
         String res = dateToFormat(TIME_FORMAT, date);
@@ -205,31 +199,6 @@ public class Util {
     public static Date getDate(String date) {
         return getDate(date, TIME_FORMAT);
     }
-
-    public static String _GeneratePacketId(Packet packet) {
-        try {
-            for (PacketExtension ext : packet.getExtensions() ) {
-                if ( ext instanceof PacketTimeStamp ) {
-                    PacketTimeStamp stamp = (PacketTimeStamp) ext;
-                    Message message = (Message) packet;
-                    Date date = getDate(stamp.getTime());
-
-                    return makeSHA1Hash(date.toString() + message.getBody() + message.getFrom());
-                }
-            }
-            throw new Exception("Couldn't find timestamp!");
-        } catch (Exception er) {
-            Debug.log("GeneratePacketId - " + er.toString());
-
-            try {
-                return makeSHA1Hash(packet.toString());
-            } catch (NoSuchAlgorithmException e) {
-                return "";
-            }
-        }
-    }
-
-
 
     public static void openUrl(final Activity activity, String _url) {
         if (!_url.matches("^\\w+?://.*")) {
@@ -300,8 +269,6 @@ public class Util {
             }
             in.close();
             return text.toString();
-        } catch (MalformedURLException e) {
-            Debug.log(e);
         } catch (IOException e) {
             Debug.log(e);
         }

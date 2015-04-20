@@ -59,6 +59,11 @@ public class SplashScreen extends ActionBarActivity {
     }
 
     @Override
+    public void onBackPressed() {
+        //empty.
+    }
+
+    @Override
     public void onSaveInstanceState(Bundle bundle) {
         super.onSaveInstanceState(bundle);
 

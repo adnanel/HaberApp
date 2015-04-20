@@ -21,7 +21,7 @@ public class Blinker extends Thread {
 
     @Override
     public void run() {
-        while (!this.isInterrupted()) {
+        while (!interrupted) {
             tabView.setPostState(HaberActivity.TabState.Normal);
 
             try {
@@ -42,5 +42,7 @@ public class Blinker extends Thread {
             }
             if ( interrupted ) break;
         }
+
+        tabView.postInvalidate();
     }
 }

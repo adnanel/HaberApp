@@ -4,6 +4,7 @@
 ---------------------------------------------------
 Zadnja verzija APK-a:
 https://dl.dropboxusercontent.com/u/67764496/haber/haberapp-debug.apk
+  
 (Note: aplikacija je jako nestabilna zbog nekompatibilnosti smack APIa sa trenutno instaliranoj verziji openfirea na etf.ba serveru)
 
 # Change log
